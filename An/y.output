@@ -1,0 +1,140 @@
+
+state 0
+	$accept: .INICIO $end 
+	INICIO: .    (1)
+
+	ID  shift 6
+	MOUNT  shift 8
+	SKDIR  shift 7
+	PATH  shift 3
+	AND  shift 4
+	'&'  shift 5
+	.  reduce 1 (src line 48)
+
+	INICIO  goto 1
+	PRODUC  goto 2
+
+state 1
+	$accept:  INICIO.$end 
+
+	$end  accept
+	.  error
+
+
+state 2
+	INICIO:  PRODUC.FLECHA 
+
+	FLECHA  shift 9
+	.  error
+
+
+state 3
+	INICIO:  PATH.FLECHA 
+
+	FLECHA  shift 10
+	.  error
+
+
+state 4
+	INICIO:  AND.    (4)
+
+	.  reduce 4 (src line 51)
+
+
+state 5
+	INICIO:  '&'.NUMERO 
+
+	NUMERO  shift 11
+	.  error
+
+
+state 6
+	PRODUC:  ID.'}' 
+
+	'}'  shift 12
+	.  error
+
+
+state 7
+	PRODUC:  SKDIR.':' '{' '}' 
+
+	':'  shift 13
+	.  error
+
+
+state 8
+	PRODUC:  MOUNT.KI 
+
+	SKDIR  shift 15
+	.  error
+
+	KI  goto 14
+
+state 9
+	INICIO:  PRODUC FLECHA.    (2)
+
+	.  reduce 2 (src line 49)
+
+
+state 10
+	INICIO:  PATH FLECHA.    (3)
+
+	.  reduce 3 (src line 50)
+
+
+state 11
+	INICIO:  '&' NUMERO.    (5)
+
+	.  reduce 5 (src line 52)
+
+
+state 12
+	PRODUC:  ID '}'.    (6)
+
+	.  reduce 6 (src line 55)
+
+
+state 13
+	PRODUC:  SKDIR ':'.'{' '}' 
+
+	'{'  shift 16
+	.  error
+
+
+state 14
+	PRODUC:  MOUNT KI.    (8)
+
+	.  reduce 8 (src line 57)
+
+
+state 15
+	KI:  SKDIR.    (9)
+
+	.  reduce 9 (src line 59)
+
+
+state 16
+	PRODUC:  SKDIR ':' '{'.'}' 
+
+	'}'  shift 17
+	.  error
+
+
+state 17
+	PRODUC:  SKDIR ':' '{' '}'.    (7)
+
+	.  reduce 7 (src line 56)
+
+
+15 terminals, 4 nonterminals
+10 grammar rules, 18/8000 states
+0 shift/reduce, 0 reduce/reduce conflicts reported
+53 working sets used
+memory: parser 2/120000
+0 extra closures
+14 shift entries, 1 exceptions
+3 goto entries
+0 entries saved by goto default
+Optimizer space used: output 17/120000
+17 table entries, 0 zero
+maximum spread: 15, maximum offset: 15
