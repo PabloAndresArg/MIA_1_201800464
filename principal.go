@@ -1,7 +1,7 @@
 package main
 
 import (
-	"PROYECTO-201800464/An"
+	"MI-GITHUB/MIA_1_201800464/An"
 	"fmt"
 )
 
