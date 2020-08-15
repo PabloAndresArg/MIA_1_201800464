@@ -2,62 +2,56 @@
 package An
 
 import (
-  "fmt"
   "bytes"
-  "io"
-  "bufio"
+  "fmt"
+  "bufio" // para esperar una entrada 
 	"os"
 )
-
-type node struct {
-  name string
-  children []node
-}
-
-func (n node) String() string {
-  buf := new(bytes.Buffer)
-  n.print(buf, " ")
-  return buf.String()
-}
-
-func (n node) print(out io.Writer, indent string) {
-  fmt.Fprintf(out, "\n%v%v", indent, n.name)
-  for _, nn := range n.children { nn.print(out, indent + "  ") }
-}
-
-func Node(name string) node { return node{name: name} }
-func (n node) append(nn...node) node { n.children = append(n.children, nn...); return n }
-
-
-
-
+/*
+un archivo .y esta compuesto por 4 secciones 
+- importes , uniones o declaraciones de tokenes , declaracion de gramatica , Segmento de codigo  para las funciones 
+*/
 %}
 
+
+
 %union{
-    node node
-    token string
+    terminal string
+    str string // DEFINO EL TIPO  DE MIS TERMINALES , EN ESTE CASO TODOS LOS QUE ESTEN EN %type<token> lo que va devolver es un tipo string 
 }
 
 // tokens o terminales , doble declaracion..
-%token  ID   MOUNT SKDIR FLECHA PATH AND INORMAL NUMERO EXEC RUTA MKDISK SIZE
-%type <token>  ID  MOUNT SKDIR FLECHA PATH AND  INORMAL NUMERO EXEC RUTA MKDISK SIZE 
+%token  ID   MOUNT RMDISK FLECHA PATH AND INORMAL NUMERO EXEC RUTA MKDISK SIZE NAME UNIT
+%type <str>  ID  MOUNT RMDISK FLECHA PATH AND  INORMAL NUMERO EXEC RUTA MKDISK SIZE  NAME UNIT 
 // producciones o no terminales 
-%type <node> INICIO MENU_COMANDOS 
+%type <terminal> INICIO MENU_COMANDOS 
+/*%= es lo mismo que %prec  , y este significa que no tienen precedencia ni asociatividad :v  */
+
+%start INICIO
 
 %%
+
+
 INICIO: /* epsilon , gramatica decendente :D */ { }
-     | EXEC '-' PATH FLECHA RUTA { leerArchivoDeEntrada(string($5))}
+     | EXEC '-' PATH FLECHA RUTA { leerArchivoDeEntrada($5)}
      | MENU_COMANDOS  {fmt.Println("menu")}
      ;
 //DIGAMOS AQUI LO QUE HACEMOS ES QUE TIENE QUE RECONOCER int InT, FlOat, CHAR,Char, no importa porque en el .l le agrege opcion de case insentive 
-MENU_COMANDOS:  ID '}' {$$ = Node("identifacador")}
-    |  SKDIR ':' '{' '}' {fmt.Println("produccion de una funcion... creando archivo ntt ")}
+MENU_COMANDOS:  ID '}' {fmt.Print("JEJE")}
+    |  RMDISK ':' '{' '}' {fmt.Println("produccion de una funcion... creando archivo ntt ")}
     |  MOUNT KI{ fmt.Println("MONTANDO EL YIP YIP ")}
     ;
-KI: SKDIR{ skdir_fun() }
+KI: RMDISK{ prob() }
 
-%% 
-func skdir_fun(){
+
+
+
+/* TERMINA LA SECCION DE LA  GRAMATICA Y COMIENZA LA DE LAS FUNCIONES */
+%%
+
+
+
+func prob(){
   fmt.Print(" desde una funcion :D ")
 }
 

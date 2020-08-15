@@ -5,9 +5,9 @@ state 0
 
 	ID  shift 4
 	MOUNT  shift 6
-	SKDIR  shift 5
+	RMDISK  shift 5
 	EXEC  shift 2
-	.  reduce 1 (src line 48)
+	.  reduce 1 (src line 35)
 
 	INICIO  goto 1
 	MENU_COMANDOS  goto 3
@@ -29,7 +29,7 @@ state 2
 state 3
 	INICIO:  MENU_COMANDOS.    (3)
 
-	.  reduce 3 (src line 50)
+	.  reduce 3 (src line 37)
 
 
 state 4
@@ -40,7 +40,7 @@ state 4
 
 
 state 5
-	MENU_COMANDOS:  SKDIR.':' '{' '}' 
+	MENU_COMANDOS:  RMDISK.':' '{' '}' 
 
 	':'  shift 9
 	.  error
@@ -49,7 +49,7 @@ state 5
 state 6
 	MENU_COMANDOS:  MOUNT.KI 
 
-	SKDIR  shift 11
+	RMDISK  shift 11
 	.  error
 
 	KI  goto 10
@@ -64,11 +64,11 @@ state 7
 state 8
 	MENU_COMANDOS:  ID '}'.    (4)
 
-	.  reduce 4 (src line 53)
+	.  reduce 4 (src line 40)
 
 
 state 9
-	MENU_COMANDOS:  SKDIR ':'.'{' '}' 
+	MENU_COMANDOS:  RMDISK ':'.'{' '}' 
 
 	'{'  shift 13
 	.  error
@@ -77,13 +77,13 @@ state 9
 state 10
 	MENU_COMANDOS:  MOUNT KI.    (6)
 
-	.  reduce 6 (src line 55)
+	.  reduce 6 (src line 42)
 
 
 state 11
-	KI:  SKDIR.    (7)
+	KI:  RMDISK.    (7)
 
-	.  reduce 7 (src line 57)
+	.  reduce 7 (src line 44)
 
 
 state 12
@@ -94,7 +94,7 @@ state 12
 
 
 state 13
-	MENU_COMANDOS:  SKDIR ':' '{'.'}' 
+	MENU_COMANDOS:  RMDISK ':' '{'.'}' 
 
 	'}'  shift 15
 	.  error
@@ -108,18 +108,18 @@ state 14
 
 
 state 15
-	MENU_COMANDOS:  SKDIR ':' '{' '}'.    (5)
+	MENU_COMANDOS:  RMDISK ':' '{' '}'.    (5)
 
-	.  reduce 5 (src line 54)
+	.  reduce 5 (src line 41)
 
 
 state 16
 	INICIO:  EXEC '-' PATH FLECHA RUTA.    (2)
 
-	.  reduce 2 (src line 49)
+	.  reduce 2 (src line 36)
 
 
-19 terminals, 4 nonterminals
+21 terminals, 4 nonterminals
 8 grammar rules, 17/8000 states
 0 shift/reduce, 0 reduce/reduce conflicts reported
 53 working sets used
@@ -130,4 +130,4 @@ memory: parser 2/120000
 0 entries saved by goto default
 Optimizer space used: output 16/120000
 16 table entries, 0 zero
-maximum spread: 19, maximum offset: 19
+maximum spread: 21, maximum offset: 21

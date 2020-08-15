@@ -28,7 +28,7 @@ const (
 	classUnicodeDigit
 	classOther
 )
-func miniLexico(caracter rune) int {
+func miniLexico(caracter rune) int { // necesario para hacer el nuevo_lex
 	if caracter >= 0 && caracter < 0x80 { 
 		return int(caracter)
 	}
@@ -43,7 +43,7 @@ func miniLexico(caracter rune) int {
 
 
 
-func (l *lexer) Lex(lval *yySymType) int {
+func (l *lexer) Lex( yylval *yySymType) int {
   c := l.Enter()
 %}
 
@@ -66,16 +66,18 @@ cadenaLiteral     (\"[^"]*\")
 	c = l.Rule0()
 
 [ \t\r\n]+
-{flecha}  	lval.token = string(l.TokenBytes(nil)); return FLECHA
-{ruta}		lval.token = string(l.TokenBytes(nil)); return RUTA
-mount 		lval.token = string(l.TokenBytes(nil)); return MOUNT
-path 		lval.token = string(l.TokenBytes(nil)); return PATH 
-skdir 		lval.token= string(l.TokenBytes(nil)); return SKDIR
-exec		lval.token = string(l.TokenBytes(nil)); return EXEC
-mkdisk		lval.token = string(l.TokenBytes(nil)); return MKDISK
-size		lval.token = string(l.TokenBytes(nil)); return SIZE
-{id} lval.token = string(l.TokenBytes(nil)); return ID 
-{digit}  lval.token = string(l.TokenBytes(nil)); return NUMERO
+{flecha}  	 yylval.str = string(l.TokenBytes(nil)); return FLECHA //  yylval ES MI OBJETO %union que esta en el sint.y
+{ruta}		 yylval.str = string(l.TokenBytes(nil)); return RUTA  // NO ES LO MISMO literal pero  los atributos del union los tiene el yyval , el yyval puede tener el nombre que queramos solo lo deje asi por lo que decia le manual xd 
+mount 		 yylval.str = string(l.TokenBytes(nil)); return MOUNT
+path 		 yylval.str = string(l.TokenBytes(nil)); return PATH 
+rmdisk 		 yylval.str = string(l.TokenBytes(nil)); return RMDISK
+exec		 yylval.str = string(l.TokenBytes(nil)); return EXEC
+mkdisk		 yylval.str = string(l.TokenBytes(nil)); return MKDISK
+size		 yylval.str = string(l.TokenBytes(nil)); return SIZE
+name		 yylval.str = string(l.TokenBytes(nil)); return NAME
+unit		 yylval.str = string(l.TokenBytes(nil)); return UNIT
+{id}         yylval.str = string(l.TokenBytes(nil)); return ID 
+{digit}      yylval.str = string(l.TokenBytes(nil)); return NUMERO
 
 %%
 	if u_u, nitido := l.Abort(); nitido { return int(u_u) }

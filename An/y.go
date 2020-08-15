@@ -8,44 +8,27 @@ import __yyfmt__ "fmt"
 //line sint.y:2
 
 import (
-	"bufio"
+	"bufio" // para esperar una entrada
 	"bytes"
 	"fmt"
-	"io"
 	"os"
 )
 
-type node struct {
-	name     string
-	children []node
-}
+/*
+un archivo .y esta compuesto por 4 secciones
+- importes , uniones o declaraciones de tokenes , declaracion de gramatica , Segmento de codigo  para las funciones
+*/
 
-func (n node) String() string {
-	buf := new(bytes.Buffer)
-	n.print(buf, " ")
-	return buf.String()
-}
-
-func (n node) print(out io.Writer, indent string) {
-	fmt.Fprintf(out, "\n%v%v", indent, n.name)
-	for _, nn := range n.children {
-		nn.print(out, indent+"  ")
-	}
-}
-
-func Node(name string) node           { return node{name: name} }
-func (n node) append(nn ...node) node { n.children = append(n.children, nn...); return n }
-
-//line sint.y:36
+//line sint.y:18
 type yySymType struct {
-	yys   int
-	node  node
-	token string
+	yys      int
+	terminal string
+	str      string // DEFINO EL TIPO  DE MIS TERMINALES , EN ESTE CASO TODOS LOS QUE ESTEN EN %type<token> lo que va devolver es un tipo string
 }
 
 const ID = 57346
 const MOUNT = 57347
-const SKDIR = 57348
+const RMDISK = 57348
 const FLECHA = 57349
 const PATH = 57350
 const AND = 57351
@@ -55,6 +38,8 @@ const EXEC = 57354
 const RUTA = 57355
 const MKDISK = 57356
 const SIZE = 57357
+const NAME = 57358
+const UNIT = 57359
 
 var yyToknames = [...]string{
 	"$end",
@@ -62,7 +47,7 @@ var yyToknames = [...]string{
 	"$unk",
 	"ID",
 	"MOUNT",
-	"SKDIR",
+	"RMDISK",
 	"FLECHA",
 	"PATH",
 	"AND",
@@ -72,6 +57,8 @@ var yyToknames = [...]string{
 	"RUTA",
 	"MKDISK",
 	"SIZE",
+	"NAME",
+	"UNIT",
 	"'-'",
 	"'}'",
 	"':'",
@@ -84,9 +71,9 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line sint.y:59
+//line sint.y:50
 
-func skdir_fun() {
+func prob() {
 	fmt.Print(" desde una funcion :D ")
 }
 
@@ -139,8 +126,8 @@ var yyAct = [...]int{
 }
 
 var yyPact = [...]int{
-	1, -1000, -12, -1000, -14, -17, 3, 2, -1000, -19,
-	-1000, -1000, 4, -15, -5, -1000, -1000,
+	1, -1000, -14, -1000, -16, -19, 3, 2, -1000, -21,
+	-1000, -1000, 4, -17, -5, -1000, -1000,
 }
 
 var yyPgo = [...]int{
@@ -156,8 +143,8 @@ var yyR2 = [...]int{
 }
 
 var yyChk = [...]int{
-	-1000, -1, 12, -2, 4, 6, 5, 16, 17, 18,
-	-3, 6, 8, 19, 7, 17, 13,
+	-1000, -1, 12, -2, 4, 6, 5, 18, 19, 20,
+	-3, 6, 8, 21, 7, 19, 13,
 }
 
 var yyDef = [...]int{
@@ -170,20 +157,20 @@ var yyTok1 = [...]int{
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 3, 3, 16, 3, 3, 3, 3,
-	3, 3, 3, 3, 3, 3, 3, 3, 18, 3,
+	3, 3, 3, 3, 3, 18, 3, 3, 3, 3,
+	3, 3, 3, 3, 3, 3, 3, 3, 20, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 19, 3, 17,
+	3, 3, 3, 21, 3, 19,
 }
 
 var yyTok2 = [...]int{
 	2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
-	12, 13, 14, 15,
+	12, 13, 14, 15, 16, 17,
 }
 
 var yyTok3 = [...]int{
@@ -529,44 +516,44 @@ yydefault:
 
 	case 1:
 		yyDollar = yyS[yypt-0 : yypt+1]
-//line sint.y:48
+//line sint.y:35
 		{
 		}
 	case 2:
 		yyDollar = yyS[yypt-5 : yypt+1]
-//line sint.y:49
+//line sint.y:36
 		{
-			leerArchivoDeEntrada(string(yyDollar[5].token))
+			leerArchivoDeEntrada(yyDollar[5].str)
 		}
 	case 3:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:50
+//line sint.y:37
 		{
 			fmt.Println("menu")
 		}
 	case 4:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line sint.y:53
+//line sint.y:40
 		{
-			yyVAL.node = Node("identifacador")
+			fmt.Print("JEJE")
 		}
 	case 5:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:54
+//line sint.y:41
 		{
 			fmt.Println("produccion de una funcion... creando archivo ntt ")
 		}
 	case 6:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line sint.y:55
+//line sint.y:42
 		{
 			fmt.Println("MONTANDO EL YIP YIP ")
 		}
 	case 7:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:57
+//line sint.y:44
 		{
-			skdir_fun()
+			prob()
 		}
 	}
 	goto yystack /* stack new state and value */
