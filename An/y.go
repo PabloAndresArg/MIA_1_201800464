@@ -51,6 +51,10 @@ const PATH = 57350
 const AND = 57351
 const INORMAL = 57352
 const NUMERO = 57353
+const EXEC = 57354
+const RUTA = 57355
+const MKDISK = 57356
+const SIZE = 57357
 
 var yyToknames = [...]string{
 	"$end",
@@ -64,7 +68,11 @@ var yyToknames = [...]string{
 	"AND",
 	"INORMAL",
 	"NUMERO",
-	"'&'",
+	"EXEC",
+	"RUTA",
+	"MKDISK",
+	"SIZE",
+	"'-'",
 	"'}'",
 	"':'",
 	"'{'",
@@ -76,10 +84,15 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line sint.y:61
+//line sint.y:59
 
 func skdir_fun() {
 	fmt.Print(" desde una funcion :D ")
+}
+
+func leerArchivoDeEntrada(entrada string) {
+	fmt.Println(" EJECUTO LA FUNCION PARA LEER UN ARCHIVO DE UNA :D ")
+	fmt.Println("A LEER: " + entrada)
 }
 
 func AnalizarComando() {
@@ -118,58 +131,59 @@ var yyExca = [...]int{
 
 const yyPrivate = 57344
 
-const yyLast = 17
+const yyLast = 16
 
 var yyAct = [...]int{
-	6, 8, 7, 16, 3, 4, 13, 17, 5, 11,
-	12, 10, 9, 15, 14, 2, 1,
+	13, 9, 15, 8, 7, 4, 6, 5, 16, 11,
+	12, 14, 10, 2, 3, 1,
 }
 
 var yyPact = [...]int{
-	-4, -1000, 5, 4, -1000, -2, -3, -8, 7, -1000,
-	-1000, -1000, -1000, -12, -1000, -1000, -6, -1000,
+	1, -1000, -12, -1000, -14, -17, 3, 2, -1000, -19,
+	-1000, -1000, 4, -15, -5, -1000, -1000,
 }
 
 var yyPgo = [...]int{
-	0, 16, 15, 14,
+	0, 15, 14, 12,
 }
 
 var yyR1 = [...]int{
-	0, 1, 1, 1, 1, 1, 2, 2, 2, 3,
+	0, 1, 1, 1, 2, 2, 2, 3,
 }
 
 var yyR2 = [...]int{
-	0, 0, 2, 2, 1, 2, 2, 4, 2, 1,
+	0, 0, 5, 1, 2, 4, 2, 1,
 }
 
 var yyChk = [...]int{
-	-1000, -1, -2, 8, 9, 12, 4, 6, 5, 7,
-	7, 11, 13, 14, -3, 6, 15, 13,
+	-1000, -1, 12, -2, 4, 6, 5, 16, 17, 18,
+	-3, 6, 8, 19, 7, 17, 13,
 }
 
 var yyDef = [...]int{
-	1, -2, 0, 0, 4, 0, 0, 0, 0, 2,
-	3, 5, 6, 0, 8, 9, 0, 7,
+	1, -2, 0, 3, 0, 0, 0, 0, 4, 0,
+	6, 7, 0, 0, 0, 5, 2,
 }
 
 var yyTok1 = [...]int{
 	1, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 3, 3, 3, 3, 3, 12, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 3, 3, 3, 3, 3, 14, 3,
-	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+	3, 3, 3, 3, 3, 16, 3, 3, 3, 3,
+	3, 3, 3, 3, 3, 3, 3, 3, 18, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 15, 3, 13,
+	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+	3, 3, 3, 19, 3, 17,
 }
 
 var yyTok2 = [...]int{
 	2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+	12, 13, 14, 15,
 }
 
 var yyTok3 = [...]int{
@@ -519,50 +533,38 @@ yydefault:
 		{
 		}
 	case 2:
-		yyDollar = yyS[yypt-2 : yypt+1]
+		yyDollar = yyS[yypt-5 : yypt+1]
 //line sint.y:49
 		{
-			fmt.Println(yyDollar[2].token)
+			leerArchivoDeEntrada(string(yyDollar[5].token))
 		}
 	case 3:
-		yyDollar = yyS[yypt-2 : yypt+1]
+		yyDollar = yyS[yypt-1 : yypt+1]
 //line sint.y:50
 		{
-			fmt.Println("OK PATH CON FLECHITA")
+			fmt.Println("menu")
 		}
 	case 4:
-		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:51
+		yyDollar = yyS[yypt-2 : yypt+1]
+//line sint.y:53
 		{
-			fmt.Println("UN AND LOGICO EN PRODUCCION")
+			yyVAL.node = Node("identifacador")
 		}
 	case 5:
-		yyDollar = yyS[yypt-2 : yypt+1]
-//line sint.y:52
+		yyDollar = yyS[yypt-4 : yypt+1]
+//line sint.y:54
 		{
-			fmt.Println(" LA Y   NORMAL  ademas tiene un numero :D")
+			fmt.Println("produccion de una funcion... creando archivo ntt ")
 		}
 	case 6:
 		yyDollar = yyS[yypt-2 : yypt+1]
 //line sint.y:55
 		{
-			yyVAL.node = Node("identifacador")
-		}
-	case 7:
-		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:56
-		{
-			fmt.Println("produccion de una funcion... creando archivo ntt ")
-		}
-	case 8:
-		yyDollar = yyS[yypt-2 : yypt+1]
-//line sint.y:57
-		{
 			fmt.Println("MONTANDO EL YIP YIP ")
 		}
-	case 9:
+	case 7:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:59
+//line sint.y:57
 		{
 			skdir_fun()
 		}

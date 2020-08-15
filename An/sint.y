@@ -39,20 +39,18 @@ func (n node) append(nn...node) node { n.children = append(n.children, nn...); r
 }
 
 // tokens o terminales , doble declaracion..
-%token  ID   MOUNT SKDIR FLECHA PATH AND INORMAL NUMERO
-%type <token>  ID  MOUNT SKDIR FLECHA PATH AND  INORMAL NUMERO 
+%token  ID   MOUNT SKDIR FLECHA PATH AND INORMAL NUMERO EXEC RUTA MKDISK SIZE
+%type <token>  ID  MOUNT SKDIR FLECHA PATH AND  INORMAL NUMERO EXEC RUTA MKDISK SIZE 
 // producciones o no terminales 
-%type <node> INICIO PRODUC 
+%type <node> INICIO MENU_COMANDOS 
 
 %%
 INICIO: /* epsilon , gramatica decendente :D */ { }
-     | PRODUC FLECHA {fmt.Println($2)}
-     | PATH FLECHA {fmt.Println("OK PATH CON FLECHITA")}
-     | AND {fmt.Println("UN AND LOGICO EN PRODUCCION")}
-     | '&' NUMERO {fmt.Println(" LA Y   NORMAL  ademas tiene un numero :D")}
+     | EXEC '-' PATH FLECHA RUTA { leerArchivoDeEntrada(string($5))}
+     | MENU_COMANDOS  {fmt.Println("menu")}
      ;
 //DIGAMOS AQUI LO QUE HACEMOS ES QUE TIENE QUE RECONOCER int InT, FlOat, CHAR,Char, no importa porque en el .l le agrege opcion de case insentive 
-PRODUC:  ID '}' {$$ = Node("identifacador")}
+MENU_COMANDOS:  ID '}' {$$ = Node("identifacador")}
     |  SKDIR ':' '{' '}' {fmt.Println("produccion de una funcion... creando archivo ntt ")}
     |  MOUNT KI{ fmt.Println("MONTANDO EL YIP YIP ")}
     ;
@@ -61,6 +59,11 @@ KI: SKDIR{ skdir_fun() }
 %% 
 func skdir_fun(){
   fmt.Print(" desde una funcion :D ")
+}
+
+func leerArchivoDeEntrada(entrada string){
+fmt.Println(" EJECUTO LA FUNCION PARA LEER UN ARCHIVO DE UNA :D ")
+ fmt.Println("A LEER: "+ entrada)
 }
 
 func AnalizarComando() {
