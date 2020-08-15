@@ -61,11 +61,13 @@ letter        [_a-zA-Z]|{utfLetra}
 flecha 		   (\-\>) | (\-\>)
 ruta			(((\/)({letter})({letter}|{digit}|\.|(\/))+)|{cadenaLiteral})
 cadenaLiteral     (\"[^"]*\")
+comentario		  \#(.)*
 
 %%
 	c = l.Rule0()
 
 [ \t\r\n]+
+{comentario} yylval.str = string(l.TokenBytes(nil)); 
 {flecha}  	 yylval.str = string(l.TokenBytes(nil)); return FLECHA //  yylval ES MI OBJETO %union que esta en el sint.y
 {ruta}		 yylval.str = string(l.TokenBytes(nil)); return RUTA  // NO ES LO MISMO literal pero  los atributos del union los tiene el yyval , el yyval puede tener el nombre que queramos solo lo deje asi por lo que decia le manual xd 
 mount 		 yylval.str = string(l.TokenBytes(nil)); return MOUNT
@@ -90,7 +92,14 @@ usr 		 yylval.str = string(l.TokenBytes(nil)); return USR
 pwd		     yylval.str = string(l.TokenBytes(nil)); return PWD 
 logout		 yylval.str = string(l.TokenBytes(nil)); return LOGOUT
 mkgrp		 yylval.str = string(l.TokenBytes(nil)); return MKGRP
+mkurs		 yylval.str = string(l.TokenBytes(nil)); return MKURS
+rmusr		 yylval.str = string(l.TokenBytes(nil)); return RMUSR
+chmod		 yylval.str = string(l.TokenBytes(nil)); return CHMOD
+ugo			 yylval.str = string(l.TokenBytes(nil)); return UGO 
 rmgrp		 yylval.str = string(l.TokenBytes(nil)); return RMGRP // PAGINA 14 DEL ENCUNCIADO :'V '
+R 			 yylval.str = string(l.TokenBytes(nil)); return R // OPCIONALES DENTRO DE LA GRAMATICA 
+cont		 yylval.str = string(l.TokenBytes(nil)); return CONT
+P			 yylval.str = string(l.TokenBytes(nil)); return P
 {id}         yylval.str = string(l.TokenBytes(nil)); return ID 
 {digit}      yylval.str = string(l.TokenBytes(nil)); return NUMERO
 

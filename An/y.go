@@ -21,44 +21,54 @@ un archivo .y esta compuesto por 4 secciones
 
 //line sint.y:18
 type yySymType struct {
-	yys        int
-	NoTerminal string
-	str        string // DEFINO EL TIPO  DE MIS TERMINALES , EN ESTE CASO TODOS LOS QUE ESTEN EN %type<token> lo que va devolver es un tipo string
+	yys         int
+	NoTerminal  string
+	str         string // DEFINO EL TIPO  DE MIS TERMINALES , EN ESTE CASO TODOS LOS QUE ESTEN EN %type<token> lo que va devolver es un tipo string
+	tokenEntero int64
 }
 
 const COMANDO_ID = 57346
-const LOGOUT = 57347
-const ID = 57348
-const MKGRP = 57349
-const RMGRP = 57350
-const USR = 57351
-const MOUNT = 57352
-const RMDISK = 57353
-const FLECHA = 57354
-const PATH = 57355
-const ADD = 57356
-const NUMERO = 57357
-const EXEC = 57358
-const RUTA = 57359
-const MKDISK = 57360
-const SIZE = 57361
-const NAME = 57362
-const UNIT = 57363
-const FDISK = 57364
-const TYPE = 57365
-const FIT = 57366
-const DELETE = 57367
-const fast = 57368
-const full = 57369
-const UNMOUNT = 57370
-const MKFS = 57371
-const PWD = 57372
+const R = 57347
+const P = 57348
+const LOGOUT = 57349
+const ID = 57350
+const MKGRP = 57351
+const RMGRP = 57352
+const USR = 57353
+const MOUNT = 57354
+const RMDISK = 57355
+const FLECHA = 57356
+const PATH = 57357
+const ADD = 57358
+const NUMERO = 57359
+const EXEC = 57360
+const RUTA = 57361
+const MKDISK = 57362
+const SIZE = 57363
+const NAME = 57364
+const UNIT = 57365
+const FDISK = 57366
+const TYPE = 57367
+const FIT = 57368
+const DELETE = 57369
+const fast = 57370
+const full = 57371
+const UNMOUNT = 57372
+const MKFS = 57373
+const PWD = 57374
+const RMUSR = 57375
+const MKURS = 57376
+const CHMOD = 57377
+const UGO = 57378
+const CONT = 57379
 
 var yyToknames = [...]string{
 	"$end",
 	"error",
 	"$unk",
 	"COMANDO_ID",
+	"R",
+	"P",
 	"LOGOUT",
 	"ID",
 	"MKGRP",
@@ -85,6 +95,11 @@ var yyToknames = [...]string{
 	"UNMOUNT",
 	"MKFS",
 	"PWD",
+	"RMUSR",
+	"MKURS",
+	"CHMOD",
+	"UGO",
+	"CONT",
 	"'-'",
 	"'}'",
 	"':'",
@@ -97,7 +112,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line sint.y:50
+//line sint.y:51
 
 func prob() {
 	fmt.Print(" desde una funcion :D ")
@@ -112,7 +127,7 @@ func AnalizarComando() {
 	fi := bufio.NewReader(os.NewFile(0, "stdin"))
 	yyDebug = 0
 	yyErrorVerbose = true
-	for {
+	for { // ciclo infinito
 		var entrada string
 		var bandera_todo_bien bool
 
@@ -152,8 +167,8 @@ var yyAct = [...]int{
 }
 
 var yyPact = [...]int{
-	-1, -1000, -27, -1000, -29, -32, 0, -6, -1000, -34,
-	-1000, -1000, -4, -30, -11, -1000, -1000,
+	-3, -1000, -34, -1000, -36, -39, -2, -8, -1000, -41,
+	-1000, -1000, -6, -37, -13, -1000, -1000,
 }
 
 var yyPgo = [...]int{
@@ -169,8 +184,8 @@ var yyR2 = [...]int{
 }
 
 var yyChk = [...]int{
-	-1000, -1, 16, -2, 6, 11, 10, 31, 32, 33,
-	-3, 11, 13, 34, 12, 32, 17,
+	-1000, -1, 18, -2, 8, 13, 12, 38, 39, 40,
+	-3, 13, 15, 41, 14, 39, 19,
 }
 
 var yyDef = [...]int{
@@ -183,21 +198,22 @@ var yyTok1 = [...]int{
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 3, 3, 31, 3, 3, 3, 3,
-	3, 3, 3, 3, 3, 3, 3, 3, 33, 3,
+	3, 3, 3, 3, 3, 38, 3, 3, 3, 3,
+	3, 3, 3, 3, 3, 3, 3, 3, 40, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 34, 3, 32,
+	3, 3, 3, 41, 3, 39,
 }
 
 var yyTok2 = [...]int{
 	2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
 	12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-	22, 23, 24, 25, 26, 27, 28, 29, 30,
+	22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
+	32, 33, 34, 35, 36, 37,
 }
 
 var yyTok3 = [...]int{
@@ -543,42 +559,42 @@ yydefault:
 
 	case 1:
 		yyDollar = yyS[yypt-0 : yypt+1]
-//line sint.y:35
+//line sint.y:36
 		{
 		}
 	case 2:
 		yyDollar = yyS[yypt-5 : yypt+1]
-//line sint.y:36
+//line sint.y:37
 		{
 			leerArchivoDeEntrada(yyDollar[5].str)
 		}
 	case 3:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:37
+//line sint.y:38
 		{
 			fmt.Println("menu")
 		}
 	case 4:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line sint.y:40
+//line sint.y:41
 		{
 			fmt.Print("JEJE")
 		}
 	case 5:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:41
+//line sint.y:42
 		{
 			fmt.Println("produccion de una funcion... creando archivo ntt ")
 		}
 	case 6:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line sint.y:42
+//line sint.y:43
 		{
 			fmt.Println("MONTANDO EL YIP YIP ")
 		}
 	case 7:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:44
+//line sint.y:45
 		{
 			prob()
 		}
