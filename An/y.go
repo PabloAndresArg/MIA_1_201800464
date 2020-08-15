@@ -21,37 +21,54 @@ un archivo .y esta compuesto por 4 secciones
 
 //line sint.y:18
 type yySymType struct {
-	yys      int
-	terminal string
-	str      string // DEFINO EL TIPO  DE MIS TERMINALES , EN ESTE CASO TODOS LOS QUE ESTEN EN %type<token> lo que va devolver es un tipo string
+	yys        int
+	NoTerminal string
+	str        string // DEFINO EL TIPO  DE MIS TERMINALES , EN ESTE CASO TODOS LOS QUE ESTEN EN %type<token> lo que va devolver es un tipo string
 }
 
-const ID = 57346
-const MOUNT = 57347
-const RMDISK = 57348
-const FLECHA = 57349
-const PATH = 57350
-const AND = 57351
-const INORMAL = 57352
-const NUMERO = 57353
-const EXEC = 57354
-const RUTA = 57355
-const MKDISK = 57356
-const SIZE = 57357
-const NAME = 57358
-const UNIT = 57359
+const COMANDO_ID = 57346
+const LOGOUT = 57347
+const ID = 57348
+const MKGRP = 57349
+const RMGRP = 57350
+const USR = 57351
+const MOUNT = 57352
+const RMDISK = 57353
+const FLECHA = 57354
+const PATH = 57355
+const ADD = 57356
+const NUMERO = 57357
+const EXEC = 57358
+const RUTA = 57359
+const MKDISK = 57360
+const SIZE = 57361
+const NAME = 57362
+const UNIT = 57363
+const FDISK = 57364
+const TYPE = 57365
+const FIT = 57366
+const DELETE = 57367
+const fast = 57368
+const full = 57369
+const UNMOUNT = 57370
+const MKFS = 57371
+const PWD = 57372
 
 var yyToknames = [...]string{
 	"$end",
 	"error",
 	"$unk",
+	"COMANDO_ID",
+	"LOGOUT",
 	"ID",
+	"MKGRP",
+	"RMGRP",
+	"USR",
 	"MOUNT",
 	"RMDISK",
 	"FLECHA",
 	"PATH",
-	"AND",
-	"INORMAL",
+	"ADD",
 	"NUMERO",
 	"EXEC",
 	"RUTA",
@@ -59,6 +76,15 @@ var yyToknames = [...]string{
 	"SIZE",
 	"NAME",
 	"UNIT",
+	"FDISK",
+	"TYPE",
+	"FIT",
+	"DELETE",
+	"fast",
+	"full",
+	"UNMOUNT",
+	"MKFS",
+	"PWD",
 	"'-'",
 	"'}'",
 	"':'",
@@ -121,17 +147,17 @@ const yyPrivate = 57344
 const yyLast = 16
 
 var yyAct = [...]int{
-	13, 9, 15, 8, 7, 4, 6, 5, 16, 11,
-	12, 14, 10, 2, 3, 1,
+	13, 9, 15, 8, 7, 4, 16, 12, 14, 6,
+	5, 11, 10, 3, 1, 2,
 }
 
 var yyPact = [...]int{
-	1, -1000, -14, -1000, -16, -19, 3, 2, -1000, -21,
-	-1000, -1000, 4, -17, -5, -1000, -1000,
+	-1, -1000, -27, -1000, -29, -32, 0, -6, -1000, -34,
+	-1000, -1000, -4, -30, -11, -1000, -1000,
 }
 
 var yyPgo = [...]int{
-	0, 15, 14, 12,
+	0, 14, 13, 12,
 }
 
 var yyR1 = [...]int{
@@ -143,8 +169,8 @@ var yyR2 = [...]int{
 }
 
 var yyChk = [...]int{
-	-1000, -1, 12, -2, 4, 6, 5, 18, 19, 20,
-	-3, 6, 8, 21, 7, 19, 13,
+	-1000, -1, 16, -2, 6, 11, 10, 31, 32, 33,
+	-3, 11, 13, 34, 12, 32, 17,
 }
 
 var yyDef = [...]int{
@@ -157,20 +183,21 @@ var yyTok1 = [...]int{
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 3, 3, 18, 3, 3, 3, 3,
-	3, 3, 3, 3, 3, 3, 3, 3, 20, 3,
+	3, 3, 3, 3, 3, 31, 3, 3, 3, 3,
+	3, 3, 3, 3, 3, 3, 3, 3, 33, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 21, 3, 19,
+	3, 3, 3, 34, 3, 32,
 }
 
 var yyTok2 = [...]int{
 	2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
-	12, 13, 14, 15, 16, 17,
+	12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+	22, 23, 24, 25, 26, 27, 28, 29, 30,
 }
 
 var yyTok3 = [...]int{

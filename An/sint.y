@@ -16,16 +16,16 @@ un archivo .y esta compuesto por 4 secciones
 
 
 %union{
-    terminal string
+    NoTerminal string
     str string // DEFINO EL TIPO  DE MIS TERMINALES , EN ESTE CASO TODOS LOS QUE ESTEN EN %type<token> lo que va devolver es un tipo string 
 }
 
 // tokens o terminales , doble declaracion..
-%token  ID   MOUNT RMDISK FLECHA PATH AND INORMAL NUMERO EXEC RUTA MKDISK SIZE NAME UNIT
-%type <str>  ID  MOUNT RMDISK FLECHA PATH AND  INORMAL NUMERO EXEC RUTA MKDISK SIZE  NAME UNIT 
+%token COMANDO_ID LOGOUT ID MKGRP RMGRP USR  MOUNT RMDISK FLECHA PATH ADD  NUMERO EXEC RUTA MKDISK SIZE NAME UNIT FDISK TYPE FIT DELETE fast full UNMOUNT MKFS  PWD
+%type <str> COMANDO_ID LOGOUT ID MKGRP RMGRP USR MOUNT RMDISK FLECHA PATH ADD   NUMERO EXEC RUTA MKDISK SIZE  NAME UNIT FDISK TYPE FIT DELETE fast full UNMOUNT MKFS  PWD
 // producciones o no terminales 
-%type <terminal> INICIO MENU_COMANDOS 
-/*%= es lo mismo que %prec  , y este significa que no tienen precedencia ni asociatividad :v  */
+%type <NoTerminal> INICIO MENU_COMANDOS 
+/* % = es lo mismo que %prec  , y este significa que no tienen precedencia ni asociatividad :v  */
 
 %start INICIO
 
