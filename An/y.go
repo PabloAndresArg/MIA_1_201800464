@@ -29,38 +29,41 @@ type yySymType struct {
 
 const COMANDO_ID = 57346
 const R = 57347
-const P = 57348
-const LOGOUT = 57349
-const ID = 57350
-const MKGRP = 57351
-const RMGRP = 57352
-const USR = 57353
-const MOUNT = 57354
-const RMDISK = 57355
-const FLECHA = 57356
-const PATH = 57357
-const ADD = 57358
-const NUMERO = 57359
-const EXEC = 57360
-const RUTA = 57361
-const MKDISK = 57362
-const SIZE = 57363
-const NAME = 57364
-const UNIT = 57365
-const FDISK = 57366
-const TYPE = 57367
-const FIT = 57368
-const DELETE = 57369
-const fast = 57370
-const full = 57371
-const UNMOUNT = 57372
-const MKFS = 57373
-const PWD = 57374
-const RMUSR = 57375
-const MKURS = 57376
-const CHMOD = 57377
-const UGO = 57378
-const CONT = 57379
+const CAT = 57348
+const P = 57349
+const MKFILE = 57350
+const LOGOUT = 57351
+const ID = 57352
+const FILE_N = 57353
+const MKGRP = 57354
+const RMGRP = 57355
+const USR = 57356
+const MOUNT = 57357
+const RMDISK = 57358
+const FLECHA = 57359
+const PATH = 57360
+const ADD = 57361
+const NUMERO = 57362
+const EXEC = 57363
+const RUTA = 57364
+const MKDISK = 57365
+const SIZE = 57366
+const NAME = 57367
+const UNIT = 57368
+const FDISK = 57369
+const TYPE = 57370
+const FIT = 57371
+const DELETE = 57372
+const fast = 57373
+const full = 57374
+const UNMOUNT = 57375
+const MKFS = 57376
+const PWD = 57377
+const RMUSR = 57378
+const MKURS = 57379
+const CHMOD = 57380
+const UGO = 57381
+const CONT = 57382
 
 var yyToknames = [...]string{
 	"$end",
@@ -68,9 +71,12 @@ var yyToknames = [...]string{
 	"$unk",
 	"COMANDO_ID",
 	"R",
+	"CAT",
 	"P",
+	"MKFILE",
 	"LOGOUT",
 	"ID",
+	"FILE_N",
 	"MKGRP",
 	"RMGRP",
 	"USR",
@@ -104,6 +110,7 @@ var yyToknames = [...]string{
 	"'}'",
 	"':'",
 	"'{'",
+	"';'",
 }
 
 var yyStatenames = [...]string{}
@@ -112,7 +119,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line sint.y:51
+//line sint.y:52
 
 func prob() {
 	fmt.Print(" desde una funcion :D ")
@@ -159,38 +166,38 @@ var yyExca = [...]int{
 
 const yyPrivate = 57344
 
-const yyLast = 16
+const yyLast = 18
 
 var yyAct = [...]int{
-	13, 9, 15, 8, 7, 4, 16, 12, 14, 6,
-	5, 11, 10, 3, 1, 2,
+	13, 15, 10, 17, 9, 8, 4, 7, 18, 14,
+	16, 6, 5, 12, 11, 3, 1, 2,
 }
 
 var yyPact = [...]int{
-	-3, -1000, -34, -1000, -36, -39, -2, -8, -1000, -41,
-	-1000, -1000, -6, -37, -13, -1000, -1000,
+	-4, -1000, -36, -1000, -38, -41, -3, -45, -9, -1000,
+	-43, -1000, -1000, -1000, -7, -39, -14, -1000, -1000,
 }
 
 var yyPgo = [...]int{
-	0, 14, 13, 12,
+	0, 16, 15, 14,
 }
 
 var yyR1 = [...]int{
-	0, 1, 1, 1, 2, 2, 2, 3,
+	0, 1, 1, 1, 2, 2, 2, 2, 3,
 }
 
 var yyR2 = [...]int{
-	0, 0, 5, 1, 2, 4, 2, 1,
+	0, 0, 5, 1, 2, 4, 2, 2, 1,
 }
 
 var yyChk = [...]int{
-	-1000, -1, 18, -2, 8, 13, 12, 38, 39, 40,
-	-3, 13, 15, 41, 14, 39, 19,
+	-1000, -1, 21, -2, 10, 16, 15, 11, 41, 42,
+	43, -3, 16, 45, 18, 44, 17, 42, 22,
 }
 
 var yyDef = [...]int{
-	1, -2, 0, 3, 0, 0, 0, 0, 4, 0,
-	6, 7, 0, 0, 0, 5, 2,
+	1, -2, 0, 3, 0, 0, 0, 0, 0, 4,
+	0, 6, 8, 7, 0, 0, 0, 5, 2,
 }
 
 var yyTok1 = [...]int{
@@ -198,22 +205,22 @@ var yyTok1 = [...]int{
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 3, 3, 38, 3, 3, 3, 3,
-	3, 3, 3, 3, 3, 3, 3, 3, 40, 3,
+	3, 3, 3, 3, 3, 41, 3, 3, 3, 3,
+	3, 3, 3, 3, 3, 3, 3, 3, 43, 45,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 41, 3, 39,
+	3, 3, 3, 44, 3, 42,
 }
 
 var yyTok2 = [...]int{
 	2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
 	12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
 	22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
-	32, 33, 34, 35, 36, 37,
+	32, 33, 34, 35, 36, 37, 38, 39, 40,
 }
 
 var yyTok3 = [...]int{
@@ -593,8 +600,14 @@ yydefault:
 			fmt.Println("MONTANDO EL YIP YIP ")
 		}
 	case 7:
+		yyDollar = yyS[yypt-2 : yypt+1]
+//line sint.y:44
+		{
+			fmt.Println("----OK---")
+		}
+	case 8:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:45
+//line sint.y:46
 		{
 			prob()
 		}

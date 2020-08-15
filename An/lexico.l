@@ -62,6 +62,7 @@ flecha 		   (\-\>) | (\-\>)
 ruta			(((\/)({letter})({letter}|{digit}|\.|(\/))+)|{cadenaLiteral})
 cadenaLiteral     (\"[^"]*\")
 comentario		  \#(.)*
+file_n 				[f][i][l][e]([0-9])+
 
 %%
 	c = l.Rule0()
@@ -99,7 +100,11 @@ ugo			 yylval.str = string(l.TokenBytes(nil)); return UGO
 rmgrp		 yylval.str = string(l.TokenBytes(nil)); return RMGRP // PAGINA 14 DEL ENCUNCIADO :'V '
 R 			 yylval.str = string(l.TokenBytes(nil)); return R // OPCIONALES DENTRO DE LA GRAMATICA 
 cont		 yylval.str = string(l.TokenBytes(nil)); return CONT
-P			 yylval.str = string(l.TokenBytes(nil)); return P
+P			 yylval.str = string(l.TokenBytes(nil)); return P  
+mkfile       yylval.str = string(l.TokenBytes(nil)); return MKFILE
+cat 		 yylval.str = string(l.TokenBytes(nil)); return CAT
+rm           yylval.str = string(l.TokenBytes(nil)); return RM 
+{file_n} 	 yylval.str = string(l.TokenBytes(nil)); return FILE_N
 {id}         yylval.str = string(l.TokenBytes(nil)); return ID 
 {digit}      yylval.str = string(l.TokenBytes(nil)); return NUMERO
 

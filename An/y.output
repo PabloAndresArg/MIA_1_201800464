@@ -4,6 +4,7 @@ state 0
 	INICIO: .    (1)
 
 	ID  shift 4
+	FILE_N  shift 7
 	MOUNT  shift 6
 	RMDISK  shift 5
 	EXEC  shift 2
@@ -22,7 +23,7 @@ state 1
 state 2
 	INICIO:  EXEC.'-' PATH FLECHA RUTA 
 
-	'-'  shift 7
+	'-'  shift 8
 	.  error
 
 
@@ -35,99 +36,112 @@ state 3
 state 4
 	MENU_COMANDOS:  ID.'}' 
 
-	'}'  shift 8
+	'}'  shift 9
 	.  error
 
 
 state 5
 	MENU_COMANDOS:  RMDISK.':' '{' '}' 
 
-	':'  shift 9
+	':'  shift 10
 	.  error
 
 
 state 6
 	MENU_COMANDOS:  MOUNT.KI 
 
-	RMDISK  shift 11
+	RMDISK  shift 12
 	.  error
 
-	KI  goto 10
+	KI  goto 11
 
 state 7
-	INICIO:  EXEC '-'.PATH FLECHA RUTA 
+	MENU_COMANDOS:  FILE_N.';' 
 
-	PATH  shift 12
+	';'  shift 13
 	.  error
 
 
 state 8
+	INICIO:  EXEC '-'.PATH FLECHA RUTA 
+
+	PATH  shift 14
+	.  error
+
+
+state 9
 	MENU_COMANDOS:  ID '}'.    (4)
 
 	.  reduce 4 (src line 41)
 
 
-state 9
+state 10
 	MENU_COMANDOS:  RMDISK ':'.'{' '}' 
 
-	'{'  shift 13
+	'{'  shift 15
 	.  error
 
 
-state 10
+state 11
 	MENU_COMANDOS:  MOUNT KI.    (6)
 
 	.  reduce 6 (src line 43)
 
 
-state 11
-	KI:  RMDISK.    (7)
-
-	.  reduce 7 (src line 45)
-
-
 state 12
-	INICIO:  EXEC '-' PATH.FLECHA RUTA 
+	KI:  RMDISK.    (8)
 
-	FLECHA  shift 14
-	.  error
+	.  reduce 8 (src line 46)
 
 
 state 13
-	MENU_COMANDOS:  RMDISK ':' '{'.'}' 
+	MENU_COMANDOS:  FILE_N ';'.    (7)
 
-	'}'  shift 15
-	.  error
+	.  reduce 7 (src line 44)
 
 
 state 14
-	INICIO:  EXEC '-' PATH FLECHA.RUTA 
+	INICIO:  EXEC '-' PATH.FLECHA RUTA 
 
-	RUTA  shift 16
+	FLECHA  shift 16
 	.  error
 
 
 state 15
+	MENU_COMANDOS:  RMDISK ':' '{'.'}' 
+
+	'}'  shift 17
+	.  error
+
+
+state 16
+	INICIO:  EXEC '-' PATH FLECHA.RUTA 
+
+	RUTA  shift 18
+	.  error
+
+
+state 17
 	MENU_COMANDOS:  RMDISK ':' '{' '}'.    (5)
 
 	.  reduce 5 (src line 42)
 
 
-state 16
+state 18
 	INICIO:  EXEC '-' PATH FLECHA RUTA.    (2)
 
 	.  reduce 2 (src line 37)
 
 
-41 terminals, 4 nonterminals
-8 grammar rules, 17/8000 states
+45 terminals, 4 nonterminals
+9 grammar rules, 19/8000 states
 0 shift/reduce, 0 reduce/reduce conflicts reported
 53 working sets used
 memory: parser 2/120000
 0 extra closures
-13 shift entries, 1 exceptions
+15 shift entries, 1 exceptions
 3 goto entries
 0 entries saved by goto default
-Optimizer space used: output 16/120000
-16 table entries, 0 zero
-maximum spread: 41, maximum offset: 41
+Optimizer space used: output 18/120000
+18 table entries, 0 zero
+maximum spread: 45, maximum offset: 45
