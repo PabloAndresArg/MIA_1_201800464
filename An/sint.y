@@ -22,8 +22,8 @@ un archivo .y esta compuesto por 4 secciones
 }
 
 // tokens o terminales , doble declaracion..
-%token COMANDO_ID R CAT RM P MKFILE LOGOUT ID  FILE_N MKGRP RMGRP USR  MOUNT RMDISK FLECHA PATH ADD  NUMERO EXEC RUTA MKDISK SIZE NAME UNIT FDISK TYPE FIT DELETE fast full UNMOUNT MKFS  PWD RMUSR MKURS CHMOD UGO CONT
-%type <str> COMANDO_ID R CAT RM P MKFILE LOGOUT ID FILE_N MKGRP RMGRP USR MOUNT RMDISK FLECHA PATH ADD   NUMERO EXEC RUTA MKDISK SIZE  NAME UNIT FDISK TYPE FIT DELETE fast full UNMOUNT MKFS  PWD RMUSR MKURS CHMOD UGO CONT
+%token RF COMANDO_ID R CAT RM REN P MKFILE MKDIR LOGOUT ID  FILE_N EDIT MKGRP RMGRP USR  MOUNT RMDISK FLECHA PATH ADD  NUMERO EXEC RUTA MKDISK SIZE NAME UNIT FDISK TYPE FIT DELETE fast full UNMOUNT MKFS  PWD RMUSR MKURS CHMOD UGO CONT
+%type <str> RF COMANDO_ID R CAT RM REN P MKFILE MKDIR LOGOUT ID FILE_N EDIT MKGRP RMGRP USR MOUNT RMDISK FLECHA PATH ADD   NUMERO EXEC RUTA MKDISK SIZE  NAME UNIT FDISK TYPE FIT DELETE fast full UNMOUNT MKFS  PWD RMUSR MKURS CHMOD UGO CONT
 // producciones o no terminales 
 %type <NoTerminal> INICIO MENU_COMANDOS 
 /* % = es lo mismo que %prec  , y este significa que no tienen precedencia ni asociatividad :v  */
@@ -41,7 +41,7 @@ INICIO: /* epsilon , gramatica decendente :D */ { }
 MENU_COMANDOS:  ID '}' {fmt.Print("JEJE")}
     |  RMDISK ':' '{' '}' {fmt.Println("produccion de una funcion... creando archivo ntt ")}
     |  MOUNT KI{ fmt.Println("MONTANDO EL YIP YIP ")}
-	|  FILE_N  ';' {  fmt.Println("----OK---")}
+	|  FILE_N  R {  fmt.Println("----OK---")}
     ;
 KI: RMDISK{ prob() }
 

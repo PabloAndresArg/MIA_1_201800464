@@ -27,56 +27,66 @@ type yySymType struct {
 	tokenEntero int64
 }
 
-const COMANDO_ID = 57346
-const R = 57347
-const CAT = 57348
-const P = 57349
-const MKFILE = 57350
-const LOGOUT = 57351
-const ID = 57352
-const FILE_N = 57353
-const MKGRP = 57354
-const RMGRP = 57355
-const USR = 57356
-const MOUNT = 57357
-const RMDISK = 57358
-const FLECHA = 57359
-const PATH = 57360
-const ADD = 57361
-const NUMERO = 57362
-const EXEC = 57363
-const RUTA = 57364
-const MKDISK = 57365
-const SIZE = 57366
-const NAME = 57367
-const UNIT = 57368
-const FDISK = 57369
-const TYPE = 57370
-const FIT = 57371
-const DELETE = 57372
-const fast = 57373
-const full = 57374
-const UNMOUNT = 57375
-const MKFS = 57376
-const PWD = 57377
-const RMUSR = 57378
-const MKURS = 57379
-const CHMOD = 57380
-const UGO = 57381
-const CONT = 57382
+const RF = 57346
+const COMANDO_ID = 57347
+const R = 57348
+const CAT = 57349
+const RM = 57350
+const REN = 57351
+const P = 57352
+const MKFILE = 57353
+const MKDIR = 57354
+const LOGOUT = 57355
+const ID = 57356
+const FILE_N = 57357
+const EDIT = 57358
+const MKGRP = 57359
+const RMGRP = 57360
+const USR = 57361
+const MOUNT = 57362
+const RMDISK = 57363
+const FLECHA = 57364
+const PATH = 57365
+const ADD = 57366
+const NUMERO = 57367
+const EXEC = 57368
+const RUTA = 57369
+const MKDISK = 57370
+const SIZE = 57371
+const NAME = 57372
+const UNIT = 57373
+const FDISK = 57374
+const TYPE = 57375
+const FIT = 57376
+const DELETE = 57377
+const fast = 57378
+const full = 57379
+const UNMOUNT = 57380
+const MKFS = 57381
+const PWD = 57382
+const RMUSR = 57383
+const MKURS = 57384
+const CHMOD = 57385
+const UGO = 57386
+const CONT = 57387
 
 var yyToknames = [...]string{
 	"$end",
 	"error",
 	"$unk",
+	"RF",
 	"COMANDO_ID",
 	"R",
 	"CAT",
+	"RM",
+	"REN",
 	"P",
 	"MKFILE",
+	"MKDIR",
 	"LOGOUT",
 	"ID",
 	"FILE_N",
+	"EDIT",
 	"MKGRP",
 	"RMGRP",
 	"USR",
@@ -110,7 +120,6 @@ var yyToknames = [...]string{
 	"'}'",
 	"':'",
 	"'{'",
-	"';'",
 }
 
 var yyStatenames = [...]string{}
@@ -169,13 +178,13 @@ const yyPrivate = 57344
 const yyLast = 18
 
 var yyAct = [...]int{
-	13, 15, 10, 17, 9, 8, 4, 7, 18, 14,
-	16, 6, 5, 12, 11, 3, 1, 2,
+	15, 10, 17, 9, 8, 4, 7, 18, 14, 16,
+	12, 6, 5, 13, 11, 3, 1, 2,
 }
 
 var yyPact = [...]int{
-	-4, -1000, -36, -1000, -38, -41, -3, -45, -9, -1000,
-	-43, -1000, -1000, -1000, -7, -39, -14, -1000, -1000,
+	-9, -1000, -42, -1000, -44, -47, -11, 7, -15, -1000,
+	-49, -1000, -1000, -1000, -13, -45, -20, -1000, -1000,
 }
 
 var yyPgo = [...]int{
@@ -191,8 +200,8 @@ var yyR2 = [...]int{
 }
 
 var yyChk = [...]int{
-	-1000, -1, 21, -2, 10, 16, 15, 11, 41, 42,
-	43, -3, 16, 45, 18, 44, 17, 42, 22,
+	-1000, -1, 26, -2, 14, 21, 20, 15, 46, 47,
+	48, -3, 21, 6, 23, 49, 22, 47, 27,
 }
 
 var yyDef = [...]int{
@@ -205,22 +214,23 @@ var yyTok1 = [...]int{
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 3, 3, 41, 3, 3, 3, 3,
-	3, 3, 3, 3, 3, 3, 3, 3, 43, 45,
+	3, 3, 3, 3, 3, 46, 3, 3, 3, 3,
+	3, 3, 3, 3, 3, 3, 3, 3, 48, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 44, 3, 42,
+	3, 3, 3, 49, 3, 47,
 }
 
 var yyTok2 = [...]int{
 	2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
 	12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
 	22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
-	32, 33, 34, 35, 36, 37, 38, 39, 40,
+	32, 33, 34, 35, 36, 37, 38, 39, 40, 41,
+	42, 43, 44, 45,
 }
 
 var yyTok3 = [...]int{

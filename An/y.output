@@ -56,9 +56,9 @@ state 6
 	KI  goto 11
 
 state 7
-	MENU_COMANDOS:  FILE_N.';' 
+	MENU_COMANDOS:  FILE_N.R 
 
-	';'  shift 13
+	R  shift 13
 	.  error
 
 
@@ -95,7 +95,7 @@ state 12
 
 
 state 13
-	MENU_COMANDOS:  FILE_N ';'.    (7)
+	MENU_COMANDOS:  FILE_N R.    (7)
 
 	.  reduce 7 (src line 44)
 
@@ -133,7 +133,7 @@ state 18
 	.  reduce 2 (src line 37)
 
 
-45 terminals, 4 nonterminals
+49 terminals, 4 nonterminals
 9 grammar rules, 19/8000 states
 0 shift/reduce, 0 reduce/reduce conflicts reported
 53 working sets used
@@ -144,4 +144,4 @@ memory: parser 2/120000
 0 entries saved by goto default
 Optimizer space used: output 18/120000
 18 table entries, 0 zero
-maximum spread: 45, maximum offset: 45
+maximum spread: 49, maximum offset: 49
