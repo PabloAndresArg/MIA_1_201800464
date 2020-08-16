@@ -109,6 +109,14 @@ mkdir		 yylval.str = string(l.TokenBytes(nil)); return MKDIR
 {file_n} 	 yylval.str = string(l.TokenBytes(nil)); return FILE_N
 R 			 yylval.str = string(l.TokenBytes(nil)); return R // OPCIONALES DENTRO DE LA GRAMATICA 
 P			 yylval.str = string(l.TokenBytes(nil)); return P  
+cp 		     yylval.str = string(l.TokenBytes(nil)); return CP 
+dest         yylval.str = string(l.TokenBytes(nil)); return DEST
+find         yylval.str = string(l.TokenBytes(nil)); return FIND
+chown        yylval.str = string(l.TokenBytes(nil)); return CHOWN
+chgrp		 yylval.str = string(l.TokenBytes(nil)); return CHGRP 	
+mv			 yylval.str = string(l.TokenBytes(nil)); return MV
+grp			 yylval.str = string(l.TokenBytes(nil)); return GRP
+pause        yylval.str = string(l.TokenBytes(nil)); return PAUSE
 {id}         yylval.str = string(l.TokenBytes(nil)); return ID 
 {digit}      yylval.str = string(l.TokenBytes(nil)); return NUMERO
 

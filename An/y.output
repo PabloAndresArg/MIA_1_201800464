@@ -3,6 +3,7 @@ state 0
 	$accept: .INICIO $end 
 	INICIO: .    (1)
 
+	PAUSE  shift 8
 	ID  shift 4
 	FILE_N  shift 7
 	MOUNT  shift 6
@@ -23,7 +24,7 @@ state 1
 state 2
 	INICIO:  EXEC.'-' PATH FLECHA RUTA 
 
-	'-'  shift 8
+	'-'  shift 9
 	.  error
 
 
@@ -36,112 +37,118 @@ state 3
 state 4
 	MENU_COMANDOS:  ID.'}' 
 
-	'}'  shift 9
+	'}'  shift 10
 	.  error
 
 
 state 5
 	MENU_COMANDOS:  RMDISK.':' '{' '}' 
 
-	':'  shift 10
+	':'  shift 11
 	.  error
 
 
 state 6
 	MENU_COMANDOS:  MOUNT.KI 
 
-	RMDISK  shift 12
+	RMDISK  shift 13
 	.  error
 
-	KI  goto 11
+	KI  goto 12
 
 state 7
 	MENU_COMANDOS:  FILE_N.R 
 
-	R  shift 13
+	R  shift 14
 	.  error
 
 
 state 8
-	INICIO:  EXEC '-'.PATH FLECHA RUTA 
+	MENU_COMANDOS:  PAUSE.    (8)
 
-	PATH  shift 14
-	.  error
+	.  reduce 8 (src line 45)
 
 
 state 9
+	INICIO:  EXEC '-'.PATH FLECHA RUTA 
+
+	PATH  shift 15
+	.  error
+
+
+state 10
 	MENU_COMANDOS:  ID '}'.    (4)
 
 	.  reduce 4 (src line 41)
 
 
-state 10
+state 11
 	MENU_COMANDOS:  RMDISK ':'.'{' '}' 
 
-	'{'  shift 15
+	'{'  shift 16
 	.  error
 
 
-state 11
+state 12
 	MENU_COMANDOS:  MOUNT KI.    (6)
 
 	.  reduce 6 (src line 43)
 
 
-state 12
-	KI:  RMDISK.    (8)
-
-	.  reduce 8 (src line 46)
-
-
 state 13
+	KI:  RMDISK.    (9)
+
+	.  reduce 9 (src line 47)
+
+
+state 14
 	MENU_COMANDOS:  FILE_N R.    (7)
 
 	.  reduce 7 (src line 44)
 
 
-state 14
+state 15
 	INICIO:  EXEC '-' PATH.FLECHA RUTA 
 
-	FLECHA  shift 16
-	.  error
-
-
-state 15
-	MENU_COMANDOS:  RMDISK ':' '{'.'}' 
-
-	'}'  shift 17
+	FLECHA  shift 17
 	.  error
 
 
 state 16
-	INICIO:  EXEC '-' PATH FLECHA.RUTA 
+	MENU_COMANDOS:  RMDISK ':' '{'.'}' 
 
-	RUTA  shift 18
+	'}'  shift 18
 	.  error
 
 
 state 17
+	INICIO:  EXEC '-' PATH FLECHA.RUTA 
+
+	RUTA  shift 19
+	.  error
+
+
+state 18
 	MENU_COMANDOS:  RMDISK ':' '{' '}'.    (5)
 
 	.  reduce 5 (src line 42)
 
 
-state 18
+state 19
 	INICIO:  EXEC '-' PATH FLECHA RUTA.    (2)
 
 	.  reduce 2 (src line 37)
 
 
-49 terminals, 4 nonterminals
-9 grammar rules, 19/8000 states
+57 terminals, 4 nonterminals
+10 grammar rules, 20/8000 states
 0 shift/reduce, 0 reduce/reduce conflicts reported
 53 working sets used
 memory: parser 2/120000
 0 extra closures
-15 shift entries, 1 exceptions
+16 shift entries, 1 exceptions
 3 goto entries
 0 entries saved by goto default
-Optimizer space used: output 18/120000
-18 table entries, 0 zero
-maximum spread: 49, maximum offset: 49
+Optimizer space used: output 33/120000
+33 table entries, 14 zero
+maximum spread: 57, maximum offset: 57

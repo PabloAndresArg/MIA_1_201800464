@@ -28,56 +28,72 @@ type yySymType struct {
 }
 
 const RF = 57346
-const COMANDO_ID = 57347
-const R = 57348
-const CAT = 57349
-const RM = 57350
-const REN = 57351
-const P = 57352
-const MKFILE = 57353
-const MKDIR = 57354
-const LOGOUT = 57355
-const ID = 57356
-const FILE_N = 57357
-const EDIT = 57358
-const MKGRP = 57359
-const RMGRP = 57360
-const USR = 57361
-const MOUNT = 57362
-const RMDISK = 57363
-const FLECHA = 57364
-const PATH = 57365
-const ADD = 57366
-const NUMERO = 57367
-const EXEC = 57368
-const RUTA = 57369
-const MKDISK = 57370
-const SIZE = 57371
-const NAME = 57372
-const UNIT = 57373
-const FDISK = 57374
-const TYPE = 57375
-const FIT = 57376
-const DELETE = 57377
-const fast = 57378
-const full = 57379
-const UNMOUNT = 57380
-const MKFS = 57381
-const PWD = 57382
-const RMUSR = 57383
-const MKURS = 57384
-const CHMOD = 57385
-const UGO = 57386
-const CONT = 57387
+const CHGRP = 57347
+const GRP = 57348
+const PAUSE = 57349
+const COMANDO_ID = 57350
+const R = 57351
+const CHOWN = 57352
+const CP = 57353
+const DEST = 57354
+const FIND = 57355
+const CAT = 57356
+const MV = 57357
+const RM = 57358
+const REN = 57359
+const P = 57360
+const MKFILE = 57361
+const MKDIR = 57362
+const LOGOUT = 57363
+const ID = 57364
+const FILE_N = 57365
+const EDIT = 57366
+const MKGRP = 57367
+const RMGRP = 57368
+const USR = 57369
+const MOUNT = 57370
+const RMDISK = 57371
+const FLECHA = 57372
+const PATH = 57373
+const ADD = 57374
+const NUMERO = 57375
+const EXEC = 57376
+const RUTA = 57377
+const MKDISK = 57378
+const SIZE = 57379
+const NAME = 57380
+const UNIT = 57381
+const FDISK = 57382
+const TYPE = 57383
+const FIT = 57384
+const DELETE = 57385
+const fast = 57386
+const full = 57387
+const UNMOUNT = 57388
+const MKFS = 57389
+const PWD = 57390
+const RMUSR = 57391
+const MKURS = 57392
+const CHMOD = 57393
+const UGO = 57394
+const CONT = 57395
 
 var yyToknames = [...]string{
 	"$end",
 	"error",
 	"$unk",
 	"RF",
+	"CHGRP",
+	"GRP",
+	"PAUSE",
 	"COMANDO_ID",
 	"R",
+	"CHOWN",
+	"CP",
+	"DEST",
+	"FIND",
 	"CAT",
+	"MV",
 	"RM",
 	"REN",
 	"P",
@@ -128,42 +144,66 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line sint.y:52
+//line sint.y:55
+
+func pausar_() {
+	fmt.Println("Presiona enter para continuar")
+	bufio.NewReader(os.Stdin).ReadBytes('\n')
+}
 
 func prob() {
 	fmt.Print(" desde una funcion :D ")
 }
 
-func leerArchivoDeEntrada(entrada string) {
+func leerArchivoDeEntrada(ruta string) {
+
 	fmt.Println(" EJECUTO LA FUNCION PARA LEER UN ARCHIVO DE UNA :D ")
-	fmt.Println("A LEER: " + entrada)
+
+	ARCHIVO, error := os.Open(ruta)
+	algo_salio_mal := false
+	if error != nil {
+		fmt.Println("ERROR REPORTADO")
+		algo_salio_mal = true
+	}
+
+	if !(algo_salio_mal) {
+		yyDebug = 0
+		yyErrorVerbose = true
+		scanner := bufio.NewScanner(ARCHIVO)
+		for scanner.Scan() {
+			linea_entrada := scanner.Text()
+			l := nuevo_lexico__(bytes.NewBufferString(linea_entrada), os.Stdout, "file.name") // ESTA FUNCION VIENE DEL ANALIZADOR LEXICO
+			yyParse(l)
+
+		}
+	}
+	fmt.Println("...Archivo terminado de leer...")
 }
 
 func AnalizarComando() {
-	fi := bufio.NewReader(os.NewFile(0, "stdin"))
+	puntero_lector := bufio.NewReader(os.NewFile(0, "stdin"))
 	yyDebug = 0
 	yyErrorVerbose = true
 	for { // ciclo infinito
 		var entrada string
 		var bandera_todo_bien bool
 
-		fmt.Printf("Ingrese el comando: ")
-		if entrada, bandera_todo_bien = leerLineComando(fi); bandera_todo_bien {
+		fmt.Printf(">> ")
+		if entrada, bandera_todo_bien = leerLineComando(puntero_lector); bandera_todo_bien {
 			l := nuevo_lexico__(bytes.NewBufferString(entrada), os.Stdout, "file.name") // ESTA FUNCION VIENE DEL ANALIZADOR LEXICO
 			yyParse(l)
 		} else {
 			break
 		}
 	}
-
 }
 
-func leerLineComando(fi *bufio.Reader) (string, bool) {
-	s, err := fi.ReadString('\n')
+func leerLineComando(puntero_lector *bufio.Reader) (string, bool) {
+	salida, err := puntero_lector.ReadString('\n')
 	if err != nil {
 		return "", false
 	}
-	return s, true
+	return salida, true
 }
 
 //line yacctab:1
@@ -175,38 +215,40 @@ var yyExca = [...]int{
 
 const yyPrivate = 57344
 
-const yyLast = 18
+const yyLast = 33
 
 var yyAct = [...]int{
-	15, 10, 17, 9, 8, 4, 7, 18, 14, 16,
-	12, 6, 5, 13, 11, 3, 1, 2,
+	16, 11, 18, 10, 9, 8, 19, 15, 17, 13,
+	14, 12, 3, 1, 0, 0, 0, 0, 0, 0,
+	4, 7, 0, 0, 0, 0, 6, 5, 0, 0,
+	0, 0, 2,
 }
 
 var yyPact = [...]int{
-	-9, -1000, -42, -1000, -44, -47, -11, 7, -15, -1000,
-	-49, -1000, -1000, -1000, -13, -45, -20, -1000, -1000,
+	-2, -1000, -50, -1000, -52, -55, -20, 1, -1000, -24,
+	-1000, -57, -1000, -1000, -1000, -22, -53, -29, -1000, -1000,
 }
 
 var yyPgo = [...]int{
-	0, 16, 15, 14,
+	0, 13, 12, 11,
 }
 
 var yyR1 = [...]int{
-	0, 1, 1, 1, 2, 2, 2, 2, 3,
+	0, 1, 1, 1, 2, 2, 2, 2, 2, 3,
 }
 
 var yyR2 = [...]int{
-	0, 0, 5, 1, 2, 4, 2, 2, 1,
+	0, 0, 5, 1, 2, 4, 2, 2, 1, 1,
 }
 
 var yyChk = [...]int{
-	-1000, -1, 26, -2, 14, 21, 20, 15, 46, 47,
-	48, -3, 21, 6, 23, 49, 22, 47, 27,
+	-1000, -1, 34, -2, 22, 29, 28, 23, 7, 54,
+	55, 56, -3, 29, 9, 31, 57, 30, 55, 35,
 }
 
 var yyDef = [...]int{
-	1, -2, 0, 3, 0, 0, 0, 0, 0, 4,
-	0, 6, 8, 7, 0, 0, 0, 5, 2,
+	1, -2, 0, 3, 0, 0, 0, 0, 8, 0,
+	4, 0, 6, 9, 7, 0, 0, 0, 5, 2,
 }
 
 var yyTok1 = [...]int{
@@ -214,15 +256,15 @@ var yyTok1 = [...]int{
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 3, 3, 46, 3, 3, 3, 3,
-	3, 3, 3, 3, 3, 3, 3, 3, 48, 3,
+	3, 3, 3, 3, 3, 54, 3, 3, 3, 3,
+	3, 3, 3, 3, 3, 3, 3, 3, 56, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 49, 3, 47,
+	3, 3, 3, 57, 3, 55,
 }
 
 var yyTok2 = [...]int{
@@ -230,7 +272,8 @@ var yyTok2 = [...]int{
 	12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
 	22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
 	32, 33, 34, 35, 36, 37, 38, 39, 40, 41,
-	42, 43, 44, 45,
+	42, 43, 44, 45, 46, 47, 48, 49, 50, 51,
+	52, 53,
 }
 
 var yyTok3 = [...]int{
@@ -613,11 +656,17 @@ yydefault:
 		yyDollar = yyS[yypt-2 : yypt+1]
 //line sint.y:44
 		{
-			fmt.Println("----OK---")
+			fmt.Println(" ----OK--- ")
 		}
 	case 8:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:46
+//line sint.y:45
+		{
+			pausar_()
+		}
+	case 9:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line sint.y:47
 		{
 			prob()
 		}
