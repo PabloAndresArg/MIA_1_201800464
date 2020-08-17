@@ -124,7 +124,7 @@ ff			 yylval.str = string(l.TokenBytes(nil)); return FF
 wf 		 	 yylval.str = string(l.TokenBytes(nil)); return WF // opcionales para el fit pero mmm quedaria mejor en la gramatica con comillas simples 
 {extension_dsk} yylval.str = string(l.TokenBytes(nil));return EXTENSION_DSK
 {id}         yylval.str = string(l.TokenBytes(nil)); return ID 
-{digit}      yylval.str = string(l.TokenBytes(nil)); return NUMERO
+{digit}      yylval.str = string(l.TokenBytes(nil)); return NUMERO // strconv.Atoi("1")
 
 %%
 	if u_u, nitido := l.Abort(); nitido { return int(u_u) }

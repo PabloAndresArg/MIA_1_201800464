@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 )
 
 // LAS FUNCIONES DE ESTE ARCHIVO ESTAN COMPARTIDAS PORQUE PERTENECEN AL MISMO PACKAGE , siempre deben de iniciar con MAYUSCULA el nombre del metodo para ser exportado
@@ -36,9 +37,12 @@ func QuitarComillas(ruta string) string {
 	return salida
 }
 
-func CrearDisco(tamanio int, ruta string, nombre string, K_o_M string) {
+func CrearDisco(numero string, ruta string, nombre string, K_o_M string) {
+	tamanio, _ := strconv.ParseInt(numero, 10, 64)
+	//	fmt.Printf("%v\n", tamanio)
+
 	size := int64(0)
-	if K_o_M == "K" {
+	if K_o_M == "K" || K_o_M == "k" {
 		size = int64(tamanio * 1024)
 	} else { // SINO SON MEGABYTES
 		size = int64(tamanio * 1024 * 1024)

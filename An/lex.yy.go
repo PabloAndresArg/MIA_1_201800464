@@ -2865,7 +2865,7 @@ yyrule57: // {id}
 yyrule58: // {digit}
 	if true { // avoid go vet determining the below panic will not be reached
 		yylval.str = string(l.TokenBytes(nil))
-		return NUMERO
+		return NUMERO // strconv.Atoi("1")
 		goto yystate0
 	}
 	panic("unreachable")

@@ -10,7 +10,7 @@ state 0
 	RMDISK  shift 5
 	EXEC  shift 2
 	MKDISK  shift 10
-	.  reduce 1 (src line 36)
+	.  reduce 1 (src line 38)
 
 	INICIO  goto 1
 	MENU_COMANDOS  goto 3
@@ -33,7 +33,7 @@ state 2
 state 3
 	INICIO:  MENU_COMANDOS.    (3)
 
-	.  reduce 3 (src line 38)
+	.  reduce 3 (src line 40)
 
 
 state 4
@@ -68,13 +68,13 @@ state 7
 state 8
 	MENU_COMANDOS:  PAUSE.    (8)
 
-	.  reduce 8 (src line 45)
+	.  reduce 8 (src line 47)
 
 
 state 9
 	MENU_COMANDOS:  CREAR_DISCO.    (9)
 
-	.  reduce 9 (src line 46)
+	.  reduce 9 (src line 48)
 
 
 state 10
@@ -95,7 +95,7 @@ state 11
 state 12
 	MENU_COMANDOS:  ID '}'.    (4)
 
-	.  reduce 4 (src line 41)
+	.  reduce 4 (src line 43)
 
 
 state 13
@@ -108,19 +108,19 @@ state 13
 state 14
 	MENU_COMANDOS:  MOUNT KI.    (6)
 
-	.  reduce 6 (src line 43)
+	.  reduce 6 (src line 45)
 
 
 state 15
 	KI:  RMDISK.    (10)
 
-	.  reduce 10 (src line 48)
+	.  reduce 10 (src line 50)
 
 
 state 16
 	MENU_COMANDOS:  FILE_N R.    (7)
 
-	.  reduce 7 (src line 44)
+	.  reduce 7 (src line 46)
 
 
 state 17
@@ -163,7 +163,7 @@ state 21
 state 22
 	MENU_COMANDOS:  RMDISK ':' '{' '}'.    (5)
 
-	.  reduce 5 (src line 42)
+	.  reduce 5 (src line 44)
 
 
 state 23
@@ -177,7 +177,7 @@ state 23
 state 24
 	INICIO:  EXEC '-' PATH FLECHA RUTA.    (2)
 
-	.  reduce 2 (src line 37)
+	.  reduce 2 (src line 39)
 
 
 state 25
@@ -249,7 +249,7 @@ state 33
 	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-' NAME FLECHA EXTENSION_DSK.'-' UNIT FLECHA TAM 
 
 	'-'  shift 34
-	.  reduce 11 (src line 49)
+	.  reduce 11 (src line 51)
 
 
 state 34
@@ -278,19 +278,19 @@ state 36
 state 37
 	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-' NAME FLECHA EXTENSION_DSK '-' UNIT FLECHA TAM.    (12)
 
-	.  reduce 12 (src line 50)
+	.  reduce 12 (src line 52)
 
 
 state 38
 	TAM:  K.    (13)
 
-	.  reduce 13 (src line 53)
+	.  reduce 13 (src line 55)
 
 
 state 39
 	TAM:  M.    (14)
 
-	.  reduce 14 (src line 54)
+	.  reduce 14 (src line 56)
 
 
 63 terminals, 6 nonterminals
