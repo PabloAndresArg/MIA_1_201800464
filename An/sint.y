@@ -22,10 +22,10 @@ un archivo .y esta compuesto por 4 secciones
 }
 
 // tokens o terminales , doble declaracion..
-%token RF CHGRP GRP PAUSE COMANDO_ID R CHOWN CP DEST FIND CAT MV RM REN P MKFILE MKDIR LOGOUT ID  FILE_N EDIT MKGRP RMGRP USR  MOUNT RMDISK FLECHA PATH ADD  NUMERO EXEC RUTA MKDISK SIZE NAME UNIT FDISK TYPE FIT DELETE fast full UNMOUNT MKFS  PWD RMUSR MKURS CHMOD UGO CONT
-%type <str> RF CHGRP GRP PAUSE COMANDO_ID R CHOWN CP DEST FIND CAT MV RM REN P MKFILE MKDIR LOGOUT ID FILE_N EDIT MKGRP RMGRP USR MOUNT RMDISK FLECHA PATH ADD   NUMERO EXEC RUTA MKDISK SIZE  NAME UNIT FDISK TYPE FIT DELETE fast full UNMOUNT MKFS  PWD RMUSR MKURS CHMOD UGO CONT
+%token EXTENSION_DSK RF BF FF WF K M CHGRP GRP PAUSE COMANDO_ID R CHOWN CP DEST FIND CAT MV RM REN P MKFILE MKDIR LOGOUT ID  FILE_N EDIT MKGRP RMGRP USR  MOUNT RMDISK FLECHA PATH ADD  NUMERO EXEC RUTA MKDISK SIZE NAME UNIT FDISK TYPE FIT DELETE fast full UNMOUNT MKFS  PWD RMUSR MKURS CHMOD UGO CONT
+%type <str> EXTENSION_DSK RF BF K M FF WF CHGRP GRP PAUSE COMANDO_ID R CHOWN CP DEST FIND CAT MV RM REN P MKFILE MKDIR LOGOUT ID FILE_N EDIT MKGRP RMGRP USR MOUNT RMDISK FLECHA PATH ADD   NUMERO EXEC RUTA MKDISK SIZE  NAME UNIT FDISK TYPE FIT DELETE fast full UNMOUNT MKFS  PWD RMUSR MKURS CHMOD UGO CONT
 // producciones o no terminales 
-%type <NoTerminal> INICIO MENU_COMANDOS 
+%type <NoTerminal> INICIO MENU_COMANDOS CREAR_DISCO TAM
 /* % = es lo mismo que %prec  , y este significa que no tienen precedencia ni asociatividad :v  */
 
 %start INICIO
@@ -35,19 +35,24 @@ un archivo .y esta compuesto por 4 secciones
 
 INICIO: /* epsilon , gramatica decendente :D */ { }
       | EXEC '-' PATH FLECHA RUTA { leerArchivoDeEntrada($5)}
-      | MENU_COMANDOS  { fmt.Println("menu") }
-      ;
-
+      | MENU_COMANDOS  { fmt.Println(":)") }
+	  ;
+	  
 MENU_COMANDOS:  ID '}' {fmt.Print("JEJE")}
     |  RMDISK ':' '{' '}' {fmt.Println("produccion de una funcion... creando archivo ntt ")}
     |  MOUNT KI{ fmt.Println("MONTANDO EL YIP YIP ")}
 	|  FILE_N  R {  fmt.Println(" ----OK--- ")}
 	|  PAUSE { pausar_() }
+	|  CREAR_DISCO
     ;
-KI: RMDISK{ prob() }
-  ;
+KI: RMDISK{ prob() }; 
+CREAR_DISCO: MKDISK '-'SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-' NAME  FLECHA EXTENSION_DSK  {fmt.Println("CREANDO UN DISCO")}
+           | MKDISK '-'SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-' NAME  FLECHA EXTENSION_DSK '-' UNIT FLECHA TAM {fmt.Print("CREANDO UN DISCO con tamaño especifico")}
+		   ;
 
-
+ TAM: K {$$ = $1}
+    | M {$$ = $1}
+	;
 
 
 

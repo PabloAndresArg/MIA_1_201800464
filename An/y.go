@@ -27,62 +27,74 @@ type yySymType struct {
 	tokenEntero int64
 }
 
-const RF = 57346
-const CHGRP = 57347
-const GRP = 57348
-const PAUSE = 57349
-const COMANDO_ID = 57350
-const R = 57351
-const CHOWN = 57352
-const CP = 57353
-const DEST = 57354
-const FIND = 57355
-const CAT = 57356
-const MV = 57357
-const RM = 57358
-const REN = 57359
-const P = 57360
-const MKFILE = 57361
-const MKDIR = 57362
-const LOGOUT = 57363
-const ID = 57364
-const FILE_N = 57365
-const EDIT = 57366
-const MKGRP = 57367
-const RMGRP = 57368
-const USR = 57369
-const MOUNT = 57370
-const RMDISK = 57371
-const FLECHA = 57372
-const PATH = 57373
-const ADD = 57374
-const NUMERO = 57375
-const EXEC = 57376
-const RUTA = 57377
-const MKDISK = 57378
-const SIZE = 57379
-const NAME = 57380
-const UNIT = 57381
-const FDISK = 57382
-const TYPE = 57383
-const FIT = 57384
-const DELETE = 57385
-const fast = 57386
-const full = 57387
-const UNMOUNT = 57388
-const MKFS = 57389
-const PWD = 57390
-const RMUSR = 57391
-const MKURS = 57392
-const CHMOD = 57393
-const UGO = 57394
-const CONT = 57395
+const EXTENSION_DSK = 57346
+const RF = 57347
+const BF = 57348
+const FF = 57349
+const WF = 57350
+const K = 57351
+const M = 57352
+const CHGRP = 57353
+const GRP = 57354
+const PAUSE = 57355
+const COMANDO_ID = 57356
+const R = 57357
+const CHOWN = 57358
+const CP = 57359
+const DEST = 57360
+const FIND = 57361
+const CAT = 57362
+const MV = 57363
+const RM = 57364
+const REN = 57365
+const P = 57366
+const MKFILE = 57367
+const MKDIR = 57368
+const LOGOUT = 57369
+const ID = 57370
+const FILE_N = 57371
+const EDIT = 57372
+const MKGRP = 57373
+const RMGRP = 57374
+const USR = 57375
+const MOUNT = 57376
+const RMDISK = 57377
+const FLECHA = 57378
+const PATH = 57379
+const ADD = 57380
+const NUMERO = 57381
+const EXEC = 57382
+const RUTA = 57383
+const MKDISK = 57384
+const SIZE = 57385
+const NAME = 57386
+const UNIT = 57387
+const FDISK = 57388
+const TYPE = 57389
+const FIT = 57390
+const DELETE = 57391
+const fast = 57392
+const full = 57393
+const UNMOUNT = 57394
+const MKFS = 57395
+const PWD = 57396
+const RMUSR = 57397
+const MKURS = 57398
+const CHMOD = 57399
+const UGO = 57400
+const CONT = 57401
 
 var yyToknames = [...]string{
 	"$end",
 	"error",
 	"$unk",
+	"EXTENSION_DSK",
 	"RF",
+	"BF",
+	"FF",
+	"WF",
+	"K",
+	"M",
 	"CHGRP",
 	"GRP",
 	"PAUSE",
@@ -144,7 +156,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line sint.y:55
+//line sint.y:60
 
 func pausar_() {
 	fmt.Println("Presiona enter para continuar")
@@ -177,7 +189,7 @@ func leerArchivoDeEntrada(ruta string) {
 
 		}
 	}
-	fmt.Println("...Archivo terminado de leer...")
+	fmt.Println("...Archivo terminado de analizar...")
 }
 
 func AnalizarComando() {
@@ -215,40 +227,48 @@ var yyExca = [...]int{
 
 const yyPrivate = 57344
 
-const yyLast = 33
+const yyLast = 39
 
 var yyAct = [...]int{
-	16, 11, 18, 10, 9, 8, 19, 15, 17, 13,
-	14, 12, 3, 1, 0, 0, 0, 0, 0, 0,
-	4, 7, 0, 0, 0, 0, 6, 5, 0, 0,
-	0, 0, 2,
+	19, 13, 22, 12, 34, 30, 26, 17, 11, 8,
+	35, 31, 20, 29, 24, 25, 27, 18, 36, 32,
+	28, 23, 21, 15, 4, 7, 16, 38, 39, 33,
+	6, 5, 14, 37, 9, 3, 2, 1, 10,
 }
 
 var yyPact = [...]int{
-	-2, -1000, -50, -1000, -52, -55, -20, 1, -1000, -24,
-	-1000, -57, -1000, -1000, -1000, -22, -53, -29, -1000, -1000,
+	-4, -1000, -52, -1000, -58, -61, -12, 11, -1000, -1000,
+	-53, -20, -1000, -63, -1000, -1000, -1000, -31, -14, -59,
+	-15, -27, -1000, -24, -1000, -54, -21, -16, -28, -55,
+	-33, -17, 25, -56, -35, -18, 18, -1000, -1000, -1000,
 }
 
 var yyPgo = [...]int{
-	0, 13, 12, 11,
+	0, 37, 35, 34, 33, 32,
 }
 
 var yyR1 = [...]int{
-	0, 1, 1, 1, 2, 2, 2, 2, 2, 3,
+	0, 1, 1, 1, 2, 2, 2, 2, 2, 2,
+	5, 3, 3, 4, 4,
 }
 
 var yyR2 = [...]int{
 	0, 0, 5, 1, 2, 4, 2, 2, 1, 1,
+	1, 13, 17, 1, 1,
 }
 
 var yyChk = [...]int{
-	-1000, -1, 34, -2, 22, 29, 28, 23, 7, 54,
-	55, 56, -3, 29, 9, 31, 57, 30, 55, 35,
+	-1000, -1, 40, -2, 28, 35, 34, 29, 13, -3,
+	42, 60, 61, 62, -5, 35, 15, 60, 37, 63,
+	43, 36, 61, 36, 41, 39, 60, 37, 36, 41,
+	60, 44, 36, 4, 60, 45, 36, -4, 9, 10,
 }
 
 var yyDef = [...]int{
-	1, -2, 0, 3, 0, 0, 0, 0, 8, 0,
-	4, 0, 6, 9, 7, 0, 0, 0, 5, 2,
+	1, -2, 0, 3, 0, 0, 0, 0, 8, 9,
+	0, 0, 4, 0, 6, 10, 7, 0, 0, 0,
+	0, 0, 5, 0, 2, 0, 0, 0, 0, 0,
+	0, 0, 0, 11, 0, 0, 0, 12, 13, 14,
 }
 
 var yyTok1 = [...]int{
@@ -256,15 +276,15 @@ var yyTok1 = [...]int{
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 3, 3, 54, 3, 3, 3, 3,
-	3, 3, 3, 3, 3, 3, 3, 3, 56, 3,
+	3, 3, 3, 3, 3, 60, 3, 3, 3, 3,
+	3, 3, 3, 3, 3, 3, 3, 3, 62, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 57, 3, 55,
+	3, 3, 3, 63, 3, 61,
 }
 
 var yyTok2 = [...]int{
@@ -273,7 +293,7 @@ var yyTok2 = [...]int{
 	22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
 	32, 33, 34, 35, 36, 37, 38, 39, 40, 41,
 	42, 43, 44, 45, 46, 47, 48, 49, 50, 51,
-	52, 53,
+	52, 53, 54, 55, 56, 57, 58, 59,
 }
 
 var yyTok3 = [...]int{
@@ -664,11 +684,35 @@ yydefault:
 		{
 			pausar_()
 		}
-	case 9:
+	case 10:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:47
+//line sint.y:48
 		{
 			prob()
+		}
+	case 11:
+		yyDollar = yyS[yypt-13 : yypt+1]
+//line sint.y:49
+		{
+			fmt.Print("CREANDO UN DISCO")
+		}
+	case 12:
+		yyDollar = yyS[yypt-17 : yypt+1]
+//line sint.y:50
+		{
+			fmt.Print("CREANDO UN DISCO con tamaño especifico")
+		}
+	case 13:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line sint.y:53
+		{
+			yyVAL.NoTerminal = yyDollar[1].str
+		}
+	case 14:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line sint.y:54
+		{
+			yyVAL.NoTerminal = yyDollar[1].str
 		}
 	}
 	goto yystack /* stack new state and value */

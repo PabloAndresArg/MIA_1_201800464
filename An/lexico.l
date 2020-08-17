@@ -57,13 +57,13 @@ utfDigito  \x81
 utfLetra \x80
 digit         [0-9]+|{utfDigito}+
 id    {letter}({letter}|{digit})*
-letter        [_a-zA-Z]|{utfLetra}
+letter        [a-zA-Z_]|{utfLetra}
 flecha 		   (\-\>) | (\-\>)
 ruta			(((\/)({letter})({letter}|{digit}|\.|(\/))+)|{cadenaLiteral})
 cadenaLiteral     (\"[^"]*\")
 comentario		  \#(.)*
 file_n 				[f][i][l][e]([0-9])+
-
+extension_dsk   {id}(\.)dsk
 %%
 	c = l.Rule0()
 
@@ -108,7 +108,9 @@ ren 		 yylval.str = string(l.TokenBytes(nil)); return REN // pag 20
 mkdir		 yylval.str = string(l.TokenBytes(nil)); return MKDIR
 {file_n} 	 yylval.str = string(l.TokenBytes(nil)); return FILE_N
 R 			 yylval.str = string(l.TokenBytes(nil)); return R // OPCIONALES DENTRO DE LA GRAMATICA 
-P			 yylval.str = string(l.TokenBytes(nil)); return P  
+P			 yylval.str = string(l.TokenBytes(nil)); return P 
+k			 yylval.str = string(l.TokenBytes(nil)); return K 
+m	 		 yylval.str = string(l.TokenBytes(nil)); return M   
 cp 		     yylval.str = string(l.TokenBytes(nil)); return CP 
 dest         yylval.str = string(l.TokenBytes(nil)); return DEST
 find         yylval.str = string(l.TokenBytes(nil)); return FIND
@@ -117,6 +119,10 @@ chgrp		 yylval.str = string(l.TokenBytes(nil)); return CHGRP
 mv			 yylval.str = string(l.TokenBytes(nil)); return MV
 grp			 yylval.str = string(l.TokenBytes(nil)); return GRP
 pause        yylval.str = string(l.TokenBytes(nil)); return PAUSE
+bf			 yylval.str = string(l.TokenBytes(nil)); return BF
+ff			 yylval.str = string(l.TokenBytes(nil)); return FF
+wf 		 	 yylval.str = string(l.TokenBytes(nil)); return WF // opcionales para el fit pero mmm quedaria mejor en la gramatica con comillas simples 
+{extension_dsk} yylval.str = string(l.TokenBytes(nil));return EXTENSION_DSK
 {id}         yylval.str = string(l.TokenBytes(nil)); return ID 
 {digit}      yylval.str = string(l.TokenBytes(nil)); return NUMERO
 
