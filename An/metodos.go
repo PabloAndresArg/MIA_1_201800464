@@ -2,7 +2,11 @@
 
 package An
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+	"os"
+)
 
 // LAS FUNCIONES DE ESTE ARCHIVO ESTAN COMPARTIDAS PORQUE PERTENECEN AL MISMO PACKAGE , siempre deben de iniciar con MAYUSCULA el nombre del metodo para ser exportado
 
@@ -30,4 +34,33 @@ func QuitarComillas(ruta string) string {
 		salida = ruta
 	}
 	return salida
+}
+
+func CrearDisco(tamanio int, ruta string, nombre string, K_o_M string) {
+	size := int64(0)
+	if K_o_M == "K" {
+		size = int64(tamanio * 1024)
+	} else { // SINO SON MEGABYTES
+		size = int64(tamanio * 1024 * 1024)
+	}
+	rutaCompleta := ruta + nombre
+	fichero, err := os.Create(rutaCompleta)
+	if err != nil {
+		log.Fatal("fallo creando el archivo de salida")
+	}
+
+	_, err = fichero.Seek(size-1, 0)
+
+	if err != nil {
+		log.Fatal("FALLO EN SEEK")
+	}
+	_, err = fichero.Write([]byte{0})
+	if err != nil {
+		log.Fatal("write")
+	}
+	err = fichero.Close()
+	if err != nil {
+		log.Fatal("ERROR AL CEERAR EL PROGRAMA ")
+	}
+
 }
