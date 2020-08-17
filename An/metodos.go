@@ -3,6 +3,7 @@
 package An
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -76,5 +77,21 @@ func CrearDisco(numero string, ruta string, nombre string, K_o_M string) {
 	if err != nil {
 		log.Fatal("ERROR AL CEERAR EL PROGRAMA ")
 	}
+}
 
+// elimina un disco duro o archivo
+func EliminarDisco(ruta_absoluta string) {
+	ruta_absoluta = QuitarComillas(ruta_absoluta)
+	fmt.Println("¿ESTA SEGURO DE QUERER ELIMINAR ESTE DISCO? ")
+	fmt.Print("Presione 1 para confirmar, dsino presione 0")
+	var decision int
+	fmt.Scanln(&decision)
+	if decision == 1 {
+		erro := os.Remove(ruta_absoluta)
+		if erro == nil {
+			fmt.Println("Disco eliminado...")
+		} else {
+			fmt.Printf("ERROR , NO SE PUEDO ELIMINAR EL DISCO: %v\n", erro)
+		}
+	}
 }

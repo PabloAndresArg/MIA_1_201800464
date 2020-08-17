@@ -26,7 +26,7 @@ un archivo .y esta compuesto por 4 secciones
 %token NUMERO EXTENSION_DSK RF BF FF WF K M CHGRP GRP PAUSE COMANDO_ID R CHOWN CP DEST FIND CAT MV RM REN P MKFILE MKDIR LOGOUT ID  FILE_N EDIT MKGRP RMGRP USR  MOUNT RMDISK FLECHA PATH ADD   EXEC RUTA MKDISK SIZE NAME UNIT FDISK TYPE FIT DELETE fast full UNMOUNT MKFS  PWD RMUSR MKURS CHMOD UGO CONT
 %type <str>NUMERO  EXTENSION_DSK RF BF K M FF WF CHGRP GRP PAUSE COMANDO_ID R CHOWN CP DEST FIND CAT MV RM REN P MKFILE MKDIR LOGOUT ID FILE_N EDIT MKGRP RMGRP USR MOUNT RMDISK FLECHA PATH ADD    EXEC RUTA MKDISK SIZE  NAME UNIT FDISK TYPE FIT DELETE fast full UNMOUNT MKFS  PWD RMUSR MKURS CHMOD UGO CONT
 // producciones o no terminales 
-%type <NoTerminal> INICIO MENU_COMANDOS CREAR_DISCO TAM
+%type <NoTerminal> INICIO MENU_COMANDOS CREAR_DISCO TAM ELIMINAR_DISCO
 /* % = es lo mismo que %prec  , y este significa que no tienen precedencia ni asociatividad :v  */
 
 
@@ -42,16 +42,19 @@ INICIO: /* epsilon , gramatica decendente :D */ { }
 	  ;
 	  
 MENU_COMANDOS:  ID '}' {fmt.Print("JEJE")}
-    |  RMDISK ':' '{' '}' {fmt.Println("produccion de una funcion... creando archivo ntt ")}
-    |  MOUNT KI{ fmt.Println("MONTANDO EL YIP YIP ")}
-	|  FILE_N  R {  fmt.Println(" ----OK--- ")}
-	|  PAUSE { pausar_() }
-	|  CREAR_DISCO
-    ;
-KI: RMDISK{ prob() }; 
+   		     |  MOUNT KI{ fmt.Println("MONTANDO EL YIP YIP ")}
+			 |  FILE_N  R {  fmt.Println(" ----OK--- ")}
+		     |  PAUSE { pausar_() }
+			 |  CREAR_DISCO
+			 |  ELIMINAR_DISCO
+   	         ;
+KI: RMDISK{ prob() }
+  ; 
 CREAR_DISCO: MKDISK '-'SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-' NAME  FLECHA EXTENSION_DSK  { CrearDisco($5 , $9 , $13 , "M" )}
            | MKDISK '-'SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-' NAME  FLECHA EXTENSION_DSK '-' UNIT FLECHA TAM { CrearDisco($5 , $9 , $13 , $17 ) }
 		   ;
+ELIMINAR_DISCO: RMDISK '-' PATH FLECHA RUTA { EliminarDisco($5) } 
+			  ; 
 
  TAM: K {$$ = $1}
     | M {$$ = $1}

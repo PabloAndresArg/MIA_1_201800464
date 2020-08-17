@@ -147,8 +147,6 @@ var yyToknames = [...]string{
 	"CONT",
 	"'-'",
 	"'}'",
-	"':'",
-	"'{'",
 }
 
 var yyStatenames = [...]string{}
@@ -157,7 +155,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line sint.y:63
+//line sint.y:66
 
 func pausar_() {
 	fmt.Println("--Presiona enter para continuar--")
@@ -259,48 +257,52 @@ var yyExca = [...]int{
 
 const yyPrivate = 57344
 
-const yyLast = 39
+const yyLast = 41
 
 var yyAct = [...]int{
-	19, 13, 22, 12, 34, 30, 26, 17, 11, 8,
-	35, 31, 20, 29, 24, 27, 18, 36, 32, 28,
-	23, 21, 15, 16, 4, 7, 38, 39, 33, 25,
-	6, 5, 14, 37, 9, 2, 3, 10, 1,
+	13, 36, 32, 28, 18, 17, 12, 7, 37, 33,
+	20, 31, 27, 25, 29, 21, 19, 38, 34, 30,
+	24, 23, 4, 6, 22, 15, 16, 35, 5, 11,
+	40, 41, 26, 2, 14, 10, 9, 39, 8, 3,
+	1,
 }
 
 var yyPact = [...]int{
-	-5, -1000, -52, -1000, -58, -61, -14, 7, -1000, -1000,
-	-53, -22, -1000, -63, -1000, -1000, -1000, -31, -16, -59,
-	-17, -27, -1000, 25, -1000, -54, -23, -18, -28, -55,
-	-33, -19, 23, -56, -35, -20, 16, -1000, -1000, -1000,
+	-7, -1000, -54, -1000, -61, -11, 10, -1000, -1000, -1000,
+	-55, -56, -22, -1000, -1000, -1000, -1000, -33, -23, -13,
+	-16, -17, -28, 28, -29, -1000, -57, -1000, -24, -18,
+	-30, -58, -35, -19, 22, -59, -37, -20, 20, -1000,
+	-1000, -1000,
 }
 
 var yyPgo = [...]int{
-	0, 38, 36, 34, 33, 32,
+	0, 40, 39, 38, 37, 36, 34,
 }
 
 var yyR1 = [...]int{
 	0, 1, 1, 1, 2, 2, 2, 2, 2, 2,
-	5, 3, 3, 4, 4,
+	6, 3, 3, 5, 4, 4,
 }
 
 var yyR2 = [...]int{
-	0, 0, 5, 1, 2, 4, 2, 2, 1, 1,
-	1, 13, 17, 1, 1,
+	0, 0, 5, 1, 2, 2, 2, 1, 1, 1,
+	1, 13, 17, 5, 1, 1,
 }
 
 var yyChk = [...]int{
-	-1000, -1, 40, -2, 29, 36, 35, 30, 14, -3,
-	42, 60, 61, 62, -5, 36, 16, 60, 38, 63,
-	43, 37, 61, 37, 41, 4, 60, 38, 37, 41,
-	60, 44, 37, 5, 60, 45, 37, -4, 10, 11,
+	-1000, -1, 40, -2, 29, 35, 30, 14, -3, -5,
+	42, 36, 60, 61, -6, 36, 16, 60, 60, 38,
+	43, 38, 37, 37, 37, 41, 4, 41, 60, 38,
+	37, 41, 60, 44, 37, 5, 60, 45, 37, -4,
+	10, 11,
 }
 
 var yyDef = [...]int{
-	1, -2, 0, 3, 0, 0, 0, 0, 8, 9,
-	0, 0, 4, 0, 6, 10, 7, 0, 0, 0,
-	0, 0, 5, 0, 2, 0, 0, 0, 0, 0,
-	0, 0, 0, 11, 0, 0, 0, 12, 13, 14,
+	1, -2, 0, 3, 0, 0, 0, 7, 8, 9,
+	0, 0, 0, 4, 5, 10, 6, 0, 0, 0,
+	0, 0, 0, 0, 0, 2, 0, 13, 0, 0,
+	0, 0, 0, 0, 0, 11, 0, 0, 0, 12,
+	14, 15,
 }
 
 var yyTok1 = [...]int{
@@ -309,14 +311,14 @@ var yyTok1 = [...]int{
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 60, 3, 3, 3, 3,
-	3, 3, 3, 3, 3, 3, 3, 3, 62, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 63, 3, 61,
+	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+	3, 3, 3, 3, 3, 61,
 }
 
 var yyTok2 = [...]int{
@@ -687,26 +689,20 @@ yydefault:
 			fmt.Print("JEJE")
 		}
 	case 5:
-		yyDollar = yyS[yypt-4 : yypt+1]
+		yyDollar = yyS[yypt-2 : yypt+1]
 //line sint.y:45
 		{
-			fmt.Println("produccion de una funcion... creando archivo ntt ")
+			fmt.Println("MONTANDO EL YIP YIP ")
 		}
 	case 6:
 		yyDollar = yyS[yypt-2 : yypt+1]
 //line sint.y:46
 		{
-			fmt.Println("MONTANDO EL YIP YIP ")
-		}
-	case 7:
-		yyDollar = yyS[yypt-2 : yypt+1]
-//line sint.y:47
-		{
 			fmt.Println(" ----OK--- ")
 		}
-	case 8:
+	case 7:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:48
+//line sint.y:47
 		{
 			pausar_()
 		}
@@ -718,25 +714,31 @@ yydefault:
 		}
 	case 11:
 		yyDollar = yyS[yypt-13 : yypt+1]
-//line sint.y:52
+//line sint.y:53
 		{
 			CrearDisco(yyDollar[5].str, yyDollar[9].str, yyDollar[13].str, "M")
 		}
 	case 12:
 		yyDollar = yyS[yypt-17 : yypt+1]
-//line sint.y:53
+//line sint.y:54
 		{
 			CrearDisco(yyDollar[5].str, yyDollar[9].str, yyDollar[13].str, yyDollar[17].NoTerminal)
 		}
 	case 13:
-		yyDollar = yyS[yypt-1 : yypt+1]
+		yyDollar = yyS[yypt-5 : yypt+1]
 //line sint.y:56
 		{
-			yyVAL.NoTerminal = yyDollar[1].str
+			EliminarDisco(yyDollar[5].str)
 		}
 	case 14:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:57
+//line sint.y:59
+		{
+			yyVAL.NoTerminal = yyDollar[1].str
+		}
+	case 15:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line sint.y:60
 		{
 			yyVAL.NoTerminal = yyDollar[1].str
 		}

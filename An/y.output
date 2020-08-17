@@ -3,18 +3,19 @@ state 0
 	$accept: .INICIO $end 
 	INICIO: .    (1)
 
-	PAUSE  shift 8
+	PAUSE  shift 7
 	ID  shift 4
-	FILE_N  shift 7
-	MOUNT  shift 6
-	RMDISK  shift 5
+	FILE_N  shift 6
+	MOUNT  shift 5
+	RMDISK  shift 11
 	EXEC  shift 2
 	MKDISK  shift 10
 	.  reduce 1 (src line 39)
 
 	INICIO  goto 1
 	MENU_COMANDOS  goto 3
-	CREAR_DISCO  goto 9
+	CREAR_DISCO  goto 8
+	ELIMINAR_DISCO  goto 9
 
 state 1
 	$accept:  INICIO.$end 
@@ -26,7 +27,7 @@ state 1
 state 2
 	INICIO:  EXEC.'-' PATH FLECHA RUTA 
 
-	'-'  shift 11
+	'-'  shift 12
 	.  error
 
 
@@ -39,18 +40,11 @@ state 3
 state 4
 	MENU_COMANDOS:  ID.'}' 
 
-	'}'  shift 12
+	'}'  shift 13
 	.  error
 
 
 state 5
-	MENU_COMANDOS:  RMDISK.':' '{' '}' 
-
-	':'  shift 13
-	.  error
-
-
-state 6
 	MENU_COMANDOS:  MOUNT.KI 
 
 	RMDISK  shift 15
@@ -58,21 +52,27 @@ state 6
 
 	KI  goto 14
 
-state 7
+state 6
 	MENU_COMANDOS:  FILE_N.R 
 
 	R  shift 16
 	.  error
 
 
+state 7
+	MENU_COMANDOS:  PAUSE.    (7)
+
+	.  reduce 7 (src line 47)
+
+
 state 8
-	MENU_COMANDOS:  PAUSE.    (8)
+	MENU_COMANDOS:  CREAR_DISCO.    (8)
 
 	.  reduce 8 (src line 48)
 
 
 state 9
-	MENU_COMANDOS:  CREAR_DISCO.    (9)
+	MENU_COMANDOS:  ELIMINAR_DISCO.    (9)
 
 	.  reduce 9 (src line 49)
 
@@ -86,29 +86,29 @@ state 10
 
 
 state 11
-	INICIO:  EXEC '-'.PATH FLECHA RUTA 
+	ELIMINAR_DISCO:  RMDISK.'-' PATH FLECHA RUTA 
 
-	PATH  shift 18
+	'-'  shift 18
 	.  error
 
 
 state 12
+	INICIO:  EXEC '-'.PATH FLECHA RUTA 
+
+	PATH  shift 19
+	.  error
+
+
+state 13
 	MENU_COMANDOS:  ID '}'.    (4)
 
 	.  reduce 4 (src line 44)
 
 
-state 13
-	MENU_COMANDOS:  RMDISK ':'.'{' '}' 
-
-	'{'  shift 19
-	.  error
-
-
 state 14
-	MENU_COMANDOS:  MOUNT KI.    (6)
+	MENU_COMANDOS:  MOUNT KI.    (5)
 
-	.  reduce 6 (src line 46)
+	.  reduce 5 (src line 45)
 
 
 state 15
@@ -118,9 +118,9 @@ state 15
 
 
 state 16
-	MENU_COMANDOS:  FILE_N R.    (7)
+	MENU_COMANDOS:  FILE_N R.    (6)
 
-	.  reduce 7 (src line 47)
+	.  reduce 6 (src line 46)
 
 
 state 17
@@ -132,16 +132,16 @@ state 17
 
 
 state 18
-	INICIO:  EXEC '-' PATH.FLECHA RUTA 
+	ELIMINAR_DISCO:  RMDISK '-'.PATH FLECHA RUTA 
 
-	FLECHA  shift 21
+	PATH  shift 21
 	.  error
 
 
 state 19
-	MENU_COMANDOS:  RMDISK ':' '{'.'}' 
+	INICIO:  EXEC '-' PATH.FLECHA RUTA 
 
-	'}'  shift 22
+	FLECHA  shift 22
 	.  error
 
 
@@ -154,154 +154,168 @@ state 20
 
 
 state 21
-	INICIO:  EXEC '-' PATH FLECHA.RUTA 
+	ELIMINAR_DISCO:  RMDISK '-' PATH.FLECHA RUTA 
 
-	RUTA  shift 24
+	FLECHA  shift 24
 	.  error
 
 
 state 22
-	MENU_COMANDOS:  RMDISK ':' '{' '}'.    (5)
+	INICIO:  EXEC '-' PATH FLECHA.RUTA 
 
-	.  reduce 5 (src line 45)
+	RUTA  shift 25
+	.  error
 
 
 state 23
 	CREAR_DISCO:  MKDISK '-' SIZE FLECHA.NUMERO '-' PATH FLECHA RUTA '-' NAME FLECHA EXTENSION_DSK 
 	CREAR_DISCO:  MKDISK '-' SIZE FLECHA.NUMERO '-' PATH FLECHA RUTA '-' NAME FLECHA EXTENSION_DSK '-' UNIT FLECHA TAM 
 
-	NUMERO  shift 25
+	NUMERO  shift 26
 	.  error
 
 
 state 24
+	ELIMINAR_DISCO:  RMDISK '-' PATH FLECHA.RUTA 
+
+	RUTA  shift 27
+	.  error
+
+
+state 25
 	INICIO:  EXEC '-' PATH FLECHA RUTA.    (2)
 
 	.  reduce 2 (src line 40)
 
 
-state 25
+state 26
 	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO.'-' PATH FLECHA RUTA '-' NAME FLECHA EXTENSION_DSK 
 	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO.'-' PATH FLECHA RUTA '-' NAME FLECHA EXTENSION_DSK '-' UNIT FLECHA TAM 
 
-	'-'  shift 26
-	.  error
-
-
-state 26
-	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-'.PATH FLECHA RUTA '-' NAME FLECHA EXTENSION_DSK 
-	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-'.PATH FLECHA RUTA '-' NAME FLECHA EXTENSION_DSK '-' UNIT FLECHA TAM 
-
-	PATH  shift 27
+	'-'  shift 28
 	.  error
 
 
 state 27
-	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH.FLECHA RUTA '-' NAME FLECHA EXTENSION_DSK 
-	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH.FLECHA RUTA '-' NAME FLECHA EXTENSION_DSK '-' UNIT FLECHA TAM 
-
-	FLECHA  shift 28
-	.  error
-
-
-state 28
-	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA.RUTA '-' NAME FLECHA EXTENSION_DSK 
-	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA.RUTA '-' NAME FLECHA EXTENSION_DSK '-' UNIT FLECHA TAM 
-
-	RUTA  shift 29
-	.  error
-
-
-state 29
-	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA RUTA.'-' NAME FLECHA EXTENSION_DSK 
-	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA RUTA.'-' NAME FLECHA EXTENSION_DSK '-' UNIT FLECHA TAM 
-
-	'-'  shift 30
-	.  error
-
-
-state 30
-	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-'.NAME FLECHA EXTENSION_DSK 
-	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-'.NAME FLECHA EXTENSION_DSK '-' UNIT FLECHA TAM 
-
-	NAME  shift 31
-	.  error
-
-
-state 31
-	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-' NAME.FLECHA EXTENSION_DSK 
-	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-' NAME.FLECHA EXTENSION_DSK '-' UNIT FLECHA TAM 
-
-	FLECHA  shift 32
-	.  error
-
-
-state 32
-	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-' NAME FLECHA.EXTENSION_DSK 
-	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-' NAME FLECHA.EXTENSION_DSK '-' UNIT FLECHA TAM 
-
-	EXTENSION_DSK  shift 33
-	.  error
-
-
-state 33
-	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-' NAME FLECHA EXTENSION_DSK.    (11)
-	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-' NAME FLECHA EXTENSION_DSK.'-' UNIT FLECHA TAM 
-
-	'-'  shift 34
-	.  reduce 11 (src line 52)
-
-
-state 34
-	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-' NAME FLECHA EXTENSION_DSK '-'.UNIT FLECHA TAM 
-
-	UNIT  shift 35
-	.  error
-
-
-state 35
-	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-' NAME FLECHA EXTENSION_DSK '-' UNIT.FLECHA TAM 
-
-	FLECHA  shift 36
-	.  error
-
-
-state 36
-	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-' NAME FLECHA EXTENSION_DSK '-' UNIT FLECHA.TAM 
-
-	K  shift 38
-	M  shift 39
-	.  error
-
-	TAM  goto 37
-
-state 37
-	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-' NAME FLECHA EXTENSION_DSK '-' UNIT FLECHA TAM.    (12)
-
-	.  reduce 12 (src line 53)
-
-
-state 38
-	TAM:  K.    (13)
+	ELIMINAR_DISCO:  RMDISK '-' PATH FLECHA RUTA.    (13)
 
 	.  reduce 13 (src line 56)
 
 
+state 28
+	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-'.PATH FLECHA RUTA '-' NAME FLECHA EXTENSION_DSK 
+	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-'.PATH FLECHA RUTA '-' NAME FLECHA EXTENSION_DSK '-' UNIT FLECHA TAM 
+
+	PATH  shift 29
+	.  error
+
+
+state 29
+	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH.FLECHA RUTA '-' NAME FLECHA EXTENSION_DSK 
+	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH.FLECHA RUTA '-' NAME FLECHA EXTENSION_DSK '-' UNIT FLECHA TAM 
+
+	FLECHA  shift 30
+	.  error
+
+
+state 30
+	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA.RUTA '-' NAME FLECHA EXTENSION_DSK 
+	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA.RUTA '-' NAME FLECHA EXTENSION_DSK '-' UNIT FLECHA TAM 
+
+	RUTA  shift 31
+	.  error
+
+
+state 31
+	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA RUTA.'-' NAME FLECHA EXTENSION_DSK 
+	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA RUTA.'-' NAME FLECHA EXTENSION_DSK '-' UNIT FLECHA TAM 
+
+	'-'  shift 32
+	.  error
+
+
+state 32
+	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-'.NAME FLECHA EXTENSION_DSK 
+	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-'.NAME FLECHA EXTENSION_DSK '-' UNIT FLECHA TAM 
+
+	NAME  shift 33
+	.  error
+
+
+state 33
+	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-' NAME.FLECHA EXTENSION_DSK 
+	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-' NAME.FLECHA EXTENSION_DSK '-' UNIT FLECHA TAM 
+
+	FLECHA  shift 34
+	.  error
+
+
+state 34
+	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-' NAME FLECHA.EXTENSION_DSK 
+	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-' NAME FLECHA.EXTENSION_DSK '-' UNIT FLECHA TAM 
+
+	EXTENSION_DSK  shift 35
+	.  error
+
+
+state 35
+	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-' NAME FLECHA EXTENSION_DSK.    (11)
+	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-' NAME FLECHA EXTENSION_DSK.'-' UNIT FLECHA TAM 
+
+	'-'  shift 36
+	.  reduce 11 (src line 53)
+
+
+state 36
+	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-' NAME FLECHA EXTENSION_DSK '-'.UNIT FLECHA TAM 
+
+	UNIT  shift 37
+	.  error
+
+
+state 37
+	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-' NAME FLECHA EXTENSION_DSK '-' UNIT.FLECHA TAM 
+
+	FLECHA  shift 38
+	.  error
+
+
+state 38
+	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-' NAME FLECHA EXTENSION_DSK '-' UNIT FLECHA.TAM 
+
+	K  shift 40
+	M  shift 41
+	.  error
+
+	TAM  goto 39
+
 state 39
-	TAM:  M.    (14)
+	CREAR_DISCO:  MKDISK '-' SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-' NAME FLECHA EXTENSION_DSK '-' UNIT FLECHA TAM.    (12)
 
-	.  reduce 14 (src line 57)
+	.  reduce 12 (src line 54)
 
 
-63 terminals, 6 nonterminals
-15 grammar rules, 40/8000 states
+state 40
+	TAM:  K.    (14)
+
+	.  reduce 14 (src line 59)
+
+
+state 41
+	TAM:  M.    (15)
+
+	.  reduce 15 (src line 60)
+
+
+61 terminals, 7 nonterminals
+16 grammar rules, 42/8000 states
 0 shift/reduce, 0 reduce/reduce conflicts reported
-55 working sets used
-memory: parser 4/120000
+56 working sets used
+memory: parser 5/120000
 0 extra closures
-34 shift entries, 1 exceptions
-5 goto entries
+35 shift entries, 1 exceptions
+6 goto entries
 0 entries saved by goto default
-Optimizer space used: output 39/120000
-39 table entries, 0 zero
-maximum spread: 63, maximum offset: 63
+Optimizer space used: output 41/120000
+41 table entries, 0 zero
+maximum spread: 61, maximum offset: 61
