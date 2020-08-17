@@ -12,6 +12,7 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"strings" // PARA HACER EL STRIM() EN LAS CADENAS
 )
 
 /*
@@ -19,7 +20,7 @@ un archivo .y esta compuesto por 4 secciones
 - importes , uniones o declaraciones de tokenes , declaracion de gramatica , Segmento de codigo  para las funciones
 */
 
-//line sint.y:18
+//line sint.y:19
 type yySymType struct {
 	yys         int
 	NoTerminal  string
@@ -156,10 +157,10 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line sint.y:62
+//line sint.y:63
 
 func pausar_() {
-	fmt.Println("Presiona enter para continuar")
+	fmt.Println("--Presiona enter para continuar--")
 	bufio.NewReader(os.Stdin).ReadBytes('\n')
 }
 
@@ -168,28 +169,41 @@ func prob() {
 }
 
 func leerArchivoDeEntrada(ruta string) {
-
-	fmt.Println(" EJECUTO LA FUNCION PARA LEER UN ARCHIVO DE UNA :D ")
-
+	fmt.Println("							.... Analizando un archivo ...")
+	fmt.Println("")
 	ARCHIVO, error := os.Open(ruta)
 	algo_salio_mal := false
 	if error != nil {
 		fmt.Println("ERROR REPORTADO")
 		algo_salio_mal = true
 	}
-
 	if !(algo_salio_mal) {
 		yyDebug = 0
 		yyErrorVerbose = true
 		scanner := bufio.NewScanner(ARCHIVO)
+		entrada := ""
 		for scanner.Scan() {
 			linea_entrada := scanner.Text()
-			l := nuevo_lexico__(bytes.NewBufferString(linea_entrada), os.Stdout, "file.name") // ESTA FUNCION VIENE DEL ANALIZADOR LEXICO
-			yyParse(l)
+			linea_entrada = strings.TrimSpace(linea_entrada) // 	QUITO LOS ESPACIOS A LOS LADOS
+			entrada = entrada + linea_entrada
+			var listo_para_analizar bool = true
+			// PREGUNTA SI TIENE UN CARACTER PARA CONTINUAR CON LA SIGUIENTE LINEA
+			if len(entrada) >= 2 && entrada[len(entrada)-1] == '*' && entrada[len(entrada)-2] == '\\' {
+				listo_para_analizar = false // TENGO QUE CONCATENAR LA ENTRADA ANTERIOR CON LA LINEA ACTUAL
+				entrada = QuitarSimboloNextLine(entrada)
+			}
 
+			if listo_para_analizar {
+				fmt.Println("EJECUTANDO>> " + entrada)
+				l := nuevo_lexico__(bytes.NewBufferString(entrada), os.Stdout, "file.name") // ESTA FUNCION VIENE DEL ANALIZADOR LEXICO
+				yyParse(l)
+				entrada = "" //limpio la entrada
+			}
 		}
 	}
-	fmt.Println("...Archivo terminado de analizar...")
+	fmt.Println("")
+	fmt.Println("							...Archivo terminado de analizar...")
+	fmt.Println("")
 }
 
 func AnalizarComando() {
@@ -202,6 +216,24 @@ func AnalizarComando() {
 
 		fmt.Printf(">> ")
 		if entrada, bandera_todo_bien = leerLineComando(puntero_lector); bandera_todo_bien {
+			entrada = strings.TrimSpace(entrada)
+
+			if len(entrada) >= 2 && entrada[len(entrada)-1] == '*' && entrada[len(entrada)-2] == '\\' {
+				entrada = QuitarSimboloNextLine(entrada)
+				for {
+					fmt.Print("continua esa linea>>")
+					temporal := ""
+					temporal, bandera_todo_bien = leerLineComando(puntero_lector)
+					entrada += temporal
+					entrada = strings.TrimSpace(entrada)
+					if entrada[len(entrada)-1] != '*' && entrada[len(entrada)-2] != '\\' {
+						break
+					} else {
+						entrada = QuitarSimboloNextLine(entrada)
+					}
+				}
+
+			}
 			l := nuevo_lexico__(bytes.NewBufferString(entrada), os.Stdout, "file.name") // ESTA FUNCION VIENE DEL ANALIZADOR LEXICO
 			yyParse(l)
 		} else {
@@ -639,78 +671,72 @@ yydefault:
 
 	case 1:
 		yyDollar = yyS[yypt-0 : yypt+1]
-//line sint.y:38
+//line sint.y:39
 		{
 		}
 	case 2:
 		yyDollar = yyS[yypt-5 : yypt+1]
-//line sint.y:39
+//line sint.y:40
 		{
 			leerArchivoDeEntrada(yyDollar[5].str)
 		}
-	case 3:
-		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:40
-		{
-			fmt.Println(":)")
-		}
 	case 4:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line sint.y:43
+//line sint.y:44
 		{
 			fmt.Print("JEJE")
 		}
 	case 5:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:44
+//line sint.y:45
 		{
 			fmt.Println("produccion de una funcion... creando archivo ntt ")
 		}
 	case 6:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line sint.y:45
+//line sint.y:46
 		{
 			fmt.Println("MONTANDO EL YIP YIP ")
 		}
 	case 7:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line sint.y:46
+//line sint.y:47
 		{
 			fmt.Println(" ----OK--- ")
 		}
 	case 8:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:47
+//line sint.y:48
 		{
 			pausar_()
 		}
 	case 10:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:50
+//line sint.y:51
 		{
 			prob()
 		}
 	case 11:
 		yyDollar = yyS[yypt-13 : yypt+1]
-//line sint.y:51
+//line sint.y:52
 		{
 			CrearDisco(yyDollar[5].str, yyDollar[9].str, yyDollar[13].str, "M")
 		}
 	case 12:
 		yyDollar = yyS[yypt-17 : yypt+1]
-//line sint.y:52
+//line sint.y:53
 		{
 			CrearDisco(yyDollar[5].str, yyDollar[9].str, yyDollar[13].str, yyDollar[17].NoTerminal)
 		}
 	case 13:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:55
+//line sint.y:56
 		{
 			yyVAL.NoTerminal = yyDollar[1].str
 		}
 	case 14:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:56
+//line sint.y:57
 		{
 			yyVAL.NoTerminal = yyDollar[1].str
 		}

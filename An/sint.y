@@ -6,6 +6,7 @@ import (
   "fmt"
   "bufio" // para esperar una entrada 
   "os"
+  "strings" // PARA HACER EL STRIM() EN LAS CADENAS 
 )
 /*
 un archivo .y esta compuesto por 4 secciones 
@@ -37,7 +38,7 @@ un archivo .y esta compuesto por 4 secciones
 
 INICIO: /* epsilon , gramatica decendente :D */ { }
       | EXEC '-' PATH FLECHA RUTA { leerArchivoDeEntrada($5)}
-      | MENU_COMANDOS  { fmt.Println(":)") }
+      | MENU_COMANDOS 
 	  ;
 	  
 MENU_COMANDOS:  ID '}' {fmt.Print("JEJE")}
@@ -62,7 +63,7 @@ CREAR_DISCO: MKDISK '-'SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-' NAME  FLECHA 
 %%
 
 func pausar_(){
-	fmt.Println("Presiona enter para continuar")
+	fmt.Println("--Presiona enter para continuar--")
 	bufio.NewReader(os.Stdin).ReadBytes('\n')
 }
 
@@ -71,28 +72,41 @@ func prob(){
 }
 
 func leerArchivoDeEntrada(ruta string){
-
-	fmt.Println(" EJECUTO LA FUNCION PARA LEER UN ARCHIVO DE UNA :D ")
-
+	fmt.Println("							.... Analizando un archivo ...")
+	fmt.Println("")
     ARCHIVO, error := os.Open(ruta)
 	algo_salio_mal:= false
 	if error != nil {
 		fmt.Println("ERROR REPORTADO")
 		algo_salio_mal = true 
 	}
-
 	if  !(algo_salio_mal) {
 	yyDebug = 0
 	yyErrorVerbose = true
 	scanner := bufio.NewScanner(ARCHIVO)
+	entrada := ""
 		for scanner.Scan() {
 			linea_entrada := scanner.Text()
-			l := nuevo_lexico__(bytes.NewBufferString(linea_entrada), os.Stdout, "file.name") // ESTA FUNCION VIENE DEL ANALIZADOR LEXICO 
+			linea_entrada = strings.TrimSpace(linea_entrada) // 	QUITO LOS ESPACIOS A LOS LADOS 
+			entrada = entrada + linea_entrada
+			var listo_para_analizar bool = true
+			// PREGUNTA SI TIENE UN CARACTER PARA CONTINUAR CON LA SIGUIENTE LINEA 
+			if len(entrada) >= 2 && entrada[len(entrada)-1] == '*' && entrada[len(entrada)-2] == '\\' {
+			listo_para_analizar = false // TENGO QUE CONCATENAR LA ENTRADA ANTERIOR CON LA LINEA ACTUAL 
+			entrada = QuitarSimboloNextLine(entrada)
+			}	
+
+			if listo_para_analizar{
+			fmt.Println("EJECUTANDO>> " + entrada)
+			l := nuevo_lexico__(bytes.NewBufferString(entrada), os.Stdout, "file.name") // ESTA FUNCION VIENE DEL ANALIZADOR LEXICO 
 			yyParse(l)
-			
+			entrada = "" //limpio la entrada 
+			}
 		}
 	}
-	fmt.Println("...Archivo terminado de analizar...")
+	fmt.Println("")
+	fmt.Println("							...Archivo terminado de analizar...")
+	fmt.Println("")
 }
 
 
@@ -106,6 +120,25 @@ func AnalizarComando() {
 
 		fmt.Printf(">> ")
 		if entrada, bandera_todo_bien = leerLineComando(puntero_lector); bandera_todo_bien {
+			entrada= strings.TrimSpace(entrada)
+
+			if len(entrada) >= 2 && entrada[len(entrada)-1] == '*' && entrada[len(entrada)-2] == '\\' {
+			entrada = QuitarSimboloNextLine(entrada)
+			for {
+				fmt.Print("continua esa linea>>")
+				temporal:= ""
+				temporal, bandera_todo_bien = leerLineComando(puntero_lector)
+				entrada += temporal
+				entrada = strings.TrimSpace(entrada)
+				if entrada[len(entrada)-1] != '*' && entrada[len(entrada)-2] != '\\' {
+					break
+				}else{
+					entrada = QuitarSimboloNextLine(entrada)	
+				}
+			}	
+
+				
+			}
 			l := nuevo_lexico__(bytes.NewBufferString(entrada), os.Stdout, "file.name") // ESTA FUNCION VIENE DEL ANALIZADOR LEXICO 
 			yyParse(l)
 		} else {

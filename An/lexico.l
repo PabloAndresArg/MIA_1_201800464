@@ -63,11 +63,13 @@ ruta			(((\/)({letter})({letter}|{digit}|\.|(\/))+)|{cadenaLiteral})
 cadenaLiteral     (\"[^"]*\")
 comentario		  \#(.)*
 file_n 				[f][i][l][e]([0-9])+
-extension_dsk   {id}(\.)dsk
+extension_dsk   	{id}(\.)dsk
+continuacio_de_linea  \\\*
 %%
 	c = l.Rule0()
 
 [ \t\r\n]+
+{continuacio_de_linea} 
 {comentario} yylval.str = string(l.TokenBytes(nil)); 
 {flecha}  	 yylval.str = string(l.TokenBytes(nil)); return FLECHA //  yylval ES MI OBJETO %union que esta en el sint.y
 {ruta}		 yylval.str = string(l.TokenBytes(nil)); return RUTA  // NO ES LO MISMO literal pero  los atributos del union los tiene el yyval , el yyval puede tener el nombre que queramos solo lo deje asi por lo que decia le manual xd 

@@ -3,7 +3,6 @@
 package An
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -17,27 +16,38 @@ func init() {
 	// es una funcion especial que permite iniciazar variables o estructuras
 }
 
+//quita \* de continuacion de linea
+func QuitarSimboloNextLine(cadena string) string {
+	salida := ""
+	for i := 0; i < len(cadena); i++ {
+		if (i != len(cadena)-2) && (i != len(cadena)-1) {
+			salida += string(cadena[i])
+		}
+	}
+	return salida
+}
+
 // QuitarComillas lo que hace es quitar comillas xd
 func QuitarComillas(ruta string) string {
 
 	salida := ""
 	if ruta[0] == '"' {
-		fmt.Println("tiene comillas")
+		//fmt.Println("tiene comillas")
 		for i := 0; i < len(ruta); i++ {
 			if i != 0 && (i != len(ruta)-1) {
 				salida += string(ruta[i])
 			}
 
 		}
-		fmt.Println("SALIDA: " + salida)
+		//fmt.Println("SALIDA: " + salida)
 	} else {
-		fmt.Println("no tiene comillas")
 		salida = ruta
 	}
 	return salida
 }
 
 func CrearDisco(numero string, ruta string, nombre string, K_o_M string) {
+	ruta = QuitarComillas(ruta)
 	tamanio, _ := strconv.ParseInt(numero, 10, 64)
 	//	fmt.Printf("%v\n", tamanio)
 
