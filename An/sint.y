@@ -151,11 +151,5 @@ func AnalizarComando() {
 }
 
 
-func leerLineComando(puntero_lector *bufio.Reader) (string, bool) {
-	salida, err := puntero_lector.ReadString('\n')
-	if err != nil {
-		return "", false
-	}
-	return salida, true
-}
+
 
