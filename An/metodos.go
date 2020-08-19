@@ -3,10 +3,14 @@
 package An
 
 import (
+	"bytes"
+	"encoding/binary"
 	"fmt"
 	"log"
 	"os"
 	"strconv"
+	"strings"
+	"time"
 )
 
 // LAS FUNCIONES DE ESTE ARCHIVO ESTAN COMPARTIDAS PORQUE PERTENECEN AL MISMO PACKAGE , siempre deben de iniciar con MAYUSCULA el nombre del metodo para ser exportado
@@ -47,11 +51,34 @@ func QuitarComillas(ruta string) string {
 	return salida
 }
 
+func verificarRuta(ruta string) {
+	rutas := strings.Split(ruta, "/")
+
+	var temporal string = ""
+	if ruta[len(ruta)-1] != '/' {
+		i := 0
+		for i < len(rutas) {
+			temporal += rutas[i] + "/"
+			CrearDirectorio_si_no_exist(temporal)
+			//mkdisk-SIze->1-path->/home/pablo/Escritorio/carpetae/hola/-name->prub.dsk-unit->K
+			i++
+		}
+	} else {
+		i := 0
+		for i < len(rutas) {
+			if i != (len(rutas) - 1) {
+				temporal += rutas[i] + "/"
+				CrearDirectorio_si_no_exist(temporal)
+			}
+			i++
+		}
+	}
+}
 func CrearDisco(numero string, ruta string, nombre string, K_o_M string) {
 	ruta = QuitarComillas(ruta)
 	tamanio, _ := strconv.ParseInt(numero, 10, 64)
 	//	fmt.Printf("%v\n", tamanio)
-
+	verificarRuta(ruta)
 	size := int64(0)
 	if K_o_M == "K" || K_o_M == "k" {
 		size = int64(tamanio * 1024)
@@ -60,22 +87,38 @@ func CrearDisco(numero string, ruta string, nombre string, K_o_M string) {
 	}
 	rutaCompleta := ruta + nombre
 	fichero, err := os.Create(rutaCompleta)
+	defer fichero.Close()
 	if err != nil {
 		log.Fatal("fallo creando el archivo de salida")
 	}
+	otro := int64(0) // asignando el cero
+	direccion_otro := &otro
+	var binario_ bytes.Buffer
+	binary.Write(&binario_, binary.BigEndian, direccion_otro) // SE ESCRIBE UN CERO AL INICIO DEL ARCHIVO
+	escribirBinariamente(fichero, binario_.Bytes())
+	fichero.Seek(size-1, 0) // posicionarse en la pos 0
 
-	_, err = fichero.Seek(size-1, 0)
+	var bin2_ bytes.Buffer // se escribe un cero al final del archivo
+	binary.Write(&bin2_, binary.BigEndian, direccion_otro)
+	escribirBinariamente(fichero, bin2_.Bytes())
+	/*
+		METIENDO EL STRUCT AL DISCO
+	*/
+	fichero.Seek(0, 0) // POS AL INICIO DEL ARCHIVO
+	// SEREALIZACION DEL STRUCT , escribir al inicio del archivo el struct
+	disco := tipoMbr{tamanio: 0, fecha: time.Now()}
+	dirMemory_disco := &disco
 
-	if err != nil {
-		log.Fatal("FALLO EN SEEK")
-	}
-	_, err = fichero.Write([]byte{0})
-	if err != nil {
-		log.Fatal("write")
-	}
-	err = fichero.Close()
-	if err != nil {
-		log.Fatal("ERROR AL CEERAR EL PROGRAMA ")
+	var bin3_ bytes.Buffer
+	binary.Write(&bin3_, binary.BigEndian, dirMemory_disco)
+	escribirBinariamente(fichero, bin3_.Bytes())
+
+}
+
+func escribirBinariamente(fichero *os.File, bytes []byte) {
+	_, erro := fichero.Write(bytes)
+	if erro != nil {
+		log.Fatal(erro)
 	}
 }
 
@@ -94,4 +137,43 @@ func EliminarDisco(ruta_absoluta string) {
 			fmt.Printf("ERROR , NO SE PUEDO ELIMINAR EL DISCO: %v\n", erro)
 		}
 	}
+}
+
+// crea un direcctorio si no encuentra la ruta
+func CrearDirectorio_si_no_exist(dir__ string) {
+
+	if _, err := os.Stat(dir__); os.IsNotExist(err) {
+
+		err = os.Mkdir(dir__, 0755)
+		fmt.Println("Crea la carpeta:  " + dir__)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+}
+
+type tipoMbr struct {
+	tamanio       int64
+	fecha         time.Time
+	diskSignature int64
+	particiones   [4]Particion
+}
+
+type Particion struct {
+	status byte
+	fit    byte // son char de GOLANG
+	inicio int64
+	size   byte
+	nombre [16]byte
+	tipo   byte
+}
+
+type Extended_B_R struct {
+	status byte
+	fit    byte // son char de GOLANG
+	inicio int64
+	size   byte
+	nombre [16]byte
+	next   int64
 }

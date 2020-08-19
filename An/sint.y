@@ -48,8 +48,7 @@ MENU_COMANDOS:  ID '}' {fmt.Print("JEJE")}
 			 |  CREAR_DISCO
 			 |  ELIMINAR_DISCO
    	         ;
-KI: RMDISK{ prob() }
-  ; 
+
 CREAR_DISCO: MKDISK '-'SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-' NAME  FLECHA EXTENSION_DSK  { CrearDisco($5 , $9 , $13 , "M" )}
            | MKDISK '-'SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-' NAME  FLECHA EXTENSION_DSK '-' UNIT FLECHA TAM { CrearDisco($5 , $9 , $13 , $17 ) }
 		   ;
@@ -60,7 +59,8 @@ ELIMINAR_DISCO: RMDISK '-' PATH FLECHA RUTA { EliminarDisco($5) }
     | M {$$ = $1}
 	;
 
-
+KI: RMDISK{ prob($1) }
+  ; 
 
 /* TERMINA LA SECCION DE LA  GRAMATICA Y COMIENZA LA DE LAS FUNCIONES */
 %%
@@ -70,8 +70,8 @@ func pausar_(){
 	bufio.NewReader(os.Stdin).ReadBytes('\n')
 }
 
-func prob(){
-  fmt.Print(" desde una funcion :D ")
+func prob(string rm_disk_eliminar ){
+  fmt.Print(" eliminando el disco... ")
 }
 
 func leerArchivoDeEntrada(ruta string){
