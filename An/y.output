@@ -3,19 +3,19 @@ state 0
 	$accept: .INICIO $end 
 	INICIO: .    (1)
 
-	PAUSE  shift 7
-	ID  shift 4
-	FILE_N  shift 6
-	MOUNT  shift 5
-	RMDISK  shift 11
+	MOUNT  shift 11
+	RMDISK  shift 9
 	EXEC  shift 2
-	MKDISK  shift 10
+	MKDISK  shift 8
+	FDISK  shift 10
 	.  reduce 1 (src line 39)
 
 	INICIO  goto 1
+	MONTAR  goto 7
 	MENU_COMANDOS  goto 3
-	CREAR_DISCO  goto 8
-	ELIMINAR_DISCO  goto 9
+	CREAR_DISCO  goto 4
+	ELIMINAR_DISCO  goto 5
+	ADMINISTRAR_PARTICIONES  goto 6
 
 state 1
 	$accept:  INICIO.$end 
@@ -38,276 +38,595 @@ state 3
 
 
 state 4
-	MENU_COMANDOS:  ID.'}' 
+	MENU_COMANDOS:  CREAR_DISCO.    (4)
 
-	'}'  shift 13
-	.  error
+	.  reduce 4 (src line 44)
 
 
 state 5
-	MENU_COMANDOS:  MOUNT.KI 
+	MENU_COMANDOS:  ELIMINAR_DISCO.    (5)
 
-	RMDISK  shift 15
-	.  error
+	.  reduce 5 (src line 45)
 
-	KI  goto 14
 
 state 6
-	MENU_COMANDOS:  FILE_N.R 
+	MENU_COMANDOS:  ADMINISTRAR_PARTICIONES.    (6)
 
-	R  shift 16
-	.  error
+	.  reduce 6 (src line 46)
 
 
 state 7
-	MENU_COMANDOS:  PAUSE.    (7)
+	MENU_COMANDOS:  MONTAR.    (7)
 
 	.  reduce 7 (src line 47)
 
 
 state 8
-	MENU_COMANDOS:  CREAR_DISCO.    (8)
+	CREAR_DISCO:  MKDISK.PARAMETROS_MKDISK 
 
-	.  reduce 8 (src line 48)
+	'-'  shift 15
+	.  error
 
+	PARAMETROS_MKDISK  goto 13
+	P_MKDISK  goto 14
 
 state 9
-	MENU_COMANDOS:  ELIMINAR_DISCO.    (9)
+	ELIMINAR_DISCO:  RMDISK.'-' PATH FLECHA RUTA 
 
-	.  reduce 9 (src line 49)
+	'-'  shift 16
+	.  error
 
 
 state 10
-	CREAR_DISCO:  MKDISK.PARAMETROS_MKDISK 
+	ADMINISTRAR_PARTICIONES:  FDISK.PARAMETROS_FDISK 
 
 	'-'  shift 19
 	.  error
 
-	PARAMETROS_MKDISK  goto 17
-	P_MKDISK  goto 18
+	PARAMETROS_FDISK  goto 17
+	P_FDISK  goto 18
 
 state 11
-	ELIMINAR_DISCO:  RMDISK.'-' PATH FLECHA RUTA 
+	MONTAR:  MOUNT.PARAMETROS_MONTAR PARAMETROS_MONTAR 
 
-	'-'  shift 20
+	'-'  shift 21
 	.  error
 
+	PARAMETROS_MONTAR  goto 20
 
 state 12
 	INICIO:  EXEC '-'.PATH FLECHA RUTA 
 
-	PATH  shift 21
+	PATH  shift 22
 	.  error
 
 
 state 13
-	MENU_COMANDOS:  ID '}'.    (4)
+	CREAR_DISCO:  MKDISK PARAMETROS_MKDISK.    (12)
+	PARAMETROS_MKDISK:  PARAMETROS_MKDISK.P_MKDISK 
 
-	.  reduce 4 (src line 44)
+	'-'  shift 15
+	.  reduce 12 (src line 58)
 
+	P_MKDISK  goto 23
 
 state 14
-	MENU_COMANDOS:  MOUNT KI.    (5)
+	PARAMETROS_MKDISK:  P_MKDISK.    (14)
 
-	.  reduce 5 (src line 45)
+	.  reduce 14 (src line 60)
 
 
 state 15
-	KI:  RMDISK.    (20)
-
-	.  reduce 20 (src line 72)
-
-
-state 16
-	MENU_COMANDOS:  FILE_N R.    (6)
-
-	.  reduce 6 (src line 46)
-
-
-state 17
-	CREAR_DISCO:  MKDISK PARAMETROS_MKDISK.    (10)
-	PARAMETROS_MKDISK:  PARAMETROS_MKDISK.P_MKDISK 
-
-	'-'  shift 19
-	.  reduce 10 (src line 52)
-
-	P_MKDISK  goto 22
-
-state 18
-	PARAMETROS_MKDISK:  P_MKDISK.    (12)
-
-	.  reduce 12 (src line 55)
-
-
-state 19
 	P_MKDISK:  '-'.SIZE FLECHA NUMERO 
 	P_MKDISK:  '-'.PATH FLECHA RUTA 
 	P_MKDISK:  '-'.NAME FLECHA EXTENSION_DSK 
 	P_MKDISK:  '-'.UNIT FLECHA TAM 
 
-	PATH  shift 24
-	SIZE  shift 23
-	NAME  shift 25
-	UNIT  shift 26
+	PATH  shift 25
+	SIZE  shift 24
+	NAME  shift 26
+	UNIT  shift 27
+	.  error
+
+
+state 16
+	ELIMINAR_DISCO:  RMDISK '-'.PATH FLECHA RUTA 
+
+	PATH  shift 28
+	.  error
+
+
+state 17
+	ADMINISTRAR_PARTICIONES:  FDISK PARAMETROS_FDISK.    (24)
+	PARAMETROS_FDISK:  PARAMETROS_FDISK.P_FDISK 
+
+	'-'  shift 19
+	.  reduce 24 (src line 80)
+
+	P_FDISK  goto 29
+
+state 18
+	PARAMETROS_FDISK:  P_FDISK.    (26)
+
+	.  reduce 26 (src line 82)
+
+
+state 19
+	P_FDISK:  '-'.SIZE FLECHA NUMERO 
+	P_FDISK:  '-'.PATH FLECHA RUTA 
+	P_FDISK:  '-'.NAME FLECHA ID 
+	P_FDISK:  '-'.UNIT FLECHA TAM2 
+	P_FDISK:  '-'.TYPE FLECHA TYPE_PARTICION 
+	P_FDISK:  '-'.FIT FLECHA OPCIONES_FIT 
+	P_FDISK:  '-'.DELETE FLECHA OPCIONES_DELETE 
+	P_FDISK:  '-'.ADD FLECHA NUMERO 
+
+	PATH  shift 31
+	ADD  shift 37
+	SIZE  shift 30
+	NAME  shift 32
+	UNIT  shift 33
+	TYPE  shift 34
+	FIT  shift 35
+	DELETE  shift 36
 	.  error
 
 
 state 20
-	ELIMINAR_DISCO:  RMDISK '-'.PATH FLECHA RUTA 
+	MONTAR:  MOUNT PARAMETROS_MONTAR.PARAMETROS_MONTAR 
 
-	PATH  shift 27
+	'-'  shift 21
 	.  error
 
+	PARAMETROS_MONTAR  goto 38
 
 state 21
-	INICIO:  EXEC '-' PATH.FLECHA RUTA 
+	PARAMETROS_MONTAR:  '-'.PATH FLECHA RUTA 
+	PARAMETROS_MONTAR:  '-'.NAME FLECHA ID 
 
-	FLECHA  shift 28
+	PATH  shift 39
+	NAME  shift 40
 	.  error
 
 
 state 22
-	PARAMETROS_MKDISK:  PARAMETROS_MKDISK P_MKDISK.    (11)
+	INICIO:  EXEC '-' PATH.FLECHA RUTA 
 
-	.  reduce 11 (src line 54)
-
-
-state 23
-	P_MKDISK:  '-' SIZE.FLECHA NUMERO 
-
-	FLECHA  shift 29
+	FLECHA  shift 41
 	.  error
 
 
-state 24
-	P_MKDISK:  '-' PATH.FLECHA RUTA 
+state 23
+	PARAMETROS_MKDISK:  PARAMETROS_MKDISK P_MKDISK.    (13)
 
-	FLECHA  shift 30
+	.  reduce 13 (src line 59)
+
+
+state 24
+	P_MKDISK:  '-' SIZE.FLECHA NUMERO 
+
+	FLECHA  shift 42
 	.  error
 
 
 state 25
-	P_MKDISK:  '-' NAME.FLECHA EXTENSION_DSK 
+	P_MKDISK:  '-' PATH.FLECHA RUTA 
 
-	FLECHA  shift 31
+	FLECHA  shift 43
 	.  error
 
 
 state 26
-	P_MKDISK:  '-' UNIT.FLECHA TAM 
+	P_MKDISK:  '-' NAME.FLECHA EXTENSION_DSK 
 
-	FLECHA  shift 32
+	FLECHA  shift 44
 	.  error
 
 
 state 27
-	ELIMINAR_DISCO:  RMDISK '-' PATH.FLECHA RUTA 
+	P_MKDISK:  '-' UNIT.FLECHA TAM 
 
-	FLECHA  shift 33
+	FLECHA  shift 45
 	.  error
 
 
 state 28
-	INICIO:  EXEC '-' PATH FLECHA.RUTA 
+	ELIMINAR_DISCO:  RMDISK '-' PATH.FLECHA RUTA 
 
-	RUTA  shift 34
+	FLECHA  shift 46
 	.  error
 
 
 state 29
-	P_MKDISK:  '-' SIZE FLECHA.NUMERO 
+	PARAMETROS_FDISK:  PARAMETROS_FDISK P_FDISK.    (25)
 
-	NUMERO  shift 35
-	.  error
+	.  reduce 25 (src line 81)
 
 
 state 30
-	P_MKDISK:  '-' PATH FLECHA.RUTA 
+	P_FDISK:  '-' SIZE.FLECHA NUMERO 
 
-	RUTA  shift 36
+	FLECHA  shift 47
 	.  error
 
 
 state 31
-	P_MKDISK:  '-' NAME FLECHA.EXTENSION_DSK 
+	P_FDISK:  '-' PATH.FLECHA RUTA 
 
-	EXTENSION_DSK  shift 37
+	FLECHA  shift 48
 	.  error
 
 
 state 32
-	P_MKDISK:  '-' UNIT FLECHA.TAM 
+	P_FDISK:  '-' NAME.FLECHA ID 
 
-	K  shift 39
-	M  shift 40
+	FLECHA  shift 49
 	.  error
 
-	TAM  goto 38
 
 state 33
-	ELIMINAR_DISCO:  RMDISK '-' PATH FLECHA.RUTA 
+	P_FDISK:  '-' UNIT.FLECHA TAM2 
 
-	RUTA  shift 41
+	FLECHA  shift 50
 	.  error
 
 
 state 34
+	P_FDISK:  '-' TYPE.FLECHA TYPE_PARTICION 
+
+	FLECHA  shift 51
+	.  error
+
+
+state 35
+	P_FDISK:  '-' FIT.FLECHA OPCIONES_FIT 
+
+	FLECHA  shift 52
+	.  error
+
+
+state 36
+	P_FDISK:  '-' DELETE.FLECHA OPCIONES_DELETE 
+
+	FLECHA  shift 53
+	.  error
+
+
+state 37
+	P_FDISK:  '-' ADD.FLECHA NUMERO 
+
+	FLECHA  shift 54
+	.  error
+
+
+state 38
+	MONTAR:  MOUNT PARAMETROS_MONTAR PARAMETROS_MONTAR.    (8)
+
+	.  reduce 8 (src line 50)
+
+
+state 39
+	PARAMETROS_MONTAR:  '-' PATH.FLECHA RUTA 
+
+	FLECHA  shift 55
+	.  error
+
+
+state 40
+	PARAMETROS_MONTAR:  '-' NAME.FLECHA ID 
+
+	FLECHA  shift 56
+	.  error
+
+
+state 41
+	INICIO:  EXEC '-' PATH FLECHA.RUTA 
+
+	RUTA  shift 57
+	.  error
+
+
+state 42
+	P_MKDISK:  '-' SIZE FLECHA.NUMERO 
+
+	NUMERO  shift 58
+	.  error
+
+
+state 43
+	P_MKDISK:  '-' PATH FLECHA.RUTA 
+
+	RUTA  shift 59
+	.  error
+
+
+state 44
+	P_MKDISK:  '-' NAME FLECHA.EXTENSION_DSK 
+
+	EXTENSION_DSK  shift 60
+	.  error
+
+
+state 45
+	P_MKDISK:  '-' UNIT FLECHA.TAM 
+
+	K  shift 62
+	M  shift 63
+	.  error
+
+	TAM  goto 61
+
+state 46
+	ELIMINAR_DISCO:  RMDISK '-' PATH FLECHA.RUTA 
+
+	RUTA  shift 64
+	.  error
+
+
+state 47
+	P_FDISK:  '-' SIZE FLECHA.NUMERO 
+
+	NUMERO  shift 65
+	.  error
+
+
+state 48
+	P_FDISK:  '-' PATH FLECHA.RUTA 
+
+	RUTA  shift 66
+	.  error
+
+
+state 49
+	P_FDISK:  '-' NAME FLECHA.ID 
+
+	ID  shift 67
+	.  error
+
+
+state 50
+	P_FDISK:  '-' UNIT FLECHA.TAM2 
+
+	B  shift 71
+	K  shift 69
+	M  shift 70
+	.  error
+
+	TAM2  goto 68
+
+state 51
+	P_FDISK:  '-' TYPE FLECHA.TYPE_PARTICION 
+
+	E  shift 74
+	L  shift 75
+	P  shift 73
+	.  error
+
+	TYPE_PARTICION  goto 72
+
+state 52
+	P_FDISK:  '-' FIT FLECHA.OPCIONES_FIT 
+
+	BF  shift 77
+	FF  shift 78
+	WF  shift 79
+	.  error
+
+	OPCIONES_FIT  goto 76
+
+state 53
+	P_FDISK:  '-' DELETE FLECHA.OPCIONES_DELETE 
+
+	fast  shift 81
+	full  shift 82
+	.  error
+
+	OPCIONES_DELETE  goto 80
+
+state 54
+	P_FDISK:  '-' ADD FLECHA.NUMERO 
+
+	NUMERO  shift 83
+	.  error
+
+
+state 55
+	PARAMETROS_MONTAR:  '-' PATH FLECHA.RUTA 
+
+	RUTA  shift 84
+	.  error
+
+
+state 56
+	PARAMETROS_MONTAR:  '-' NAME FLECHA.ID 
+
+	ID  shift 85
+	.  error
+
+
+state 57
 	INICIO:  EXEC '-' PATH FLECHA RUTA.    (2)
 
 	.  reduce 2 (src line 40)
 
 
-state 35
-	P_MKDISK:  '-' SIZE FLECHA NUMERO.    (13)
+state 58
+	P_MKDISK:  '-' SIZE FLECHA NUMERO.    (15)
 
-	.  reduce 13 (src line 57)
-
-
-state 36
-	P_MKDISK:  '-' PATH FLECHA RUTA.    (14)
-
-	.  reduce 14 (src line 58)
+	.  reduce 15 (src line 63)
 
 
-state 37
-	P_MKDISK:  '-' NAME FLECHA EXTENSION_DSK.    (15)
+state 59
+	P_MKDISK:  '-' PATH FLECHA RUTA.    (16)
 
-	.  reduce 15 (src line 59)
-
-
-state 38
-	P_MKDISK:  '-' UNIT FLECHA TAM.    (16)
-
-	.  reduce 16 (src line 60)
+	.  reduce 16 (src line 64)
 
 
-state 39
-	TAM:  K.    (17)
+state 60
+	P_MKDISK:  '-' NAME FLECHA EXTENSION_DSK.    (17)
 
-	.  reduce 17 (src line 64)
-
-
-state 40
-	TAM:  M.    (18)
-
-	.  reduce 18 (src line 65)
+	.  reduce 17 (src line 65)
 
 
-state 41
-	ELIMINAR_DISCO:  RMDISK '-' PATH FLECHA RUTA.    (19)
+state 61
+	P_MKDISK:  '-' UNIT FLECHA TAM.    (18)
 
-	.  reduce 19 (src line 68)
+	.  reduce 18 (src line 66)
 
 
-61 terminals, 9 nonterminals
-21 grammar rules, 42/8000 states
+state 62
+	TAM:  K.    (19)
+
+	.  reduce 19 (src line 71)
+
+
+state 63
+	TAM:  M.    (20)
+
+	.  reduce 20 (src line 72)
+
+
+state 64
+	ELIMINAR_DISCO:  RMDISK '-' PATH FLECHA RUTA.    (11)
+
+	.  reduce 11 (src line 56)
+
+
+state 65
+	P_FDISK:  '-' SIZE FLECHA NUMERO.    (27)
+
+	.  reduce 27 (src line 84)
+
+
+state 66
+	P_FDISK:  '-' PATH FLECHA RUTA.    (28)
+
+	.  reduce 28 (src line 85)
+
+
+state 67
+	P_FDISK:  '-' NAME FLECHA ID.    (29)
+
+	.  reduce 29 (src line 86)
+
+
+state 68
+	P_FDISK:  '-' UNIT FLECHA TAM2.    (30)
+
+	.  reduce 30 (src line 87)
+
+
+state 69
+	TAM2:  K.    (21)
+
+	.  reduce 21 (src line 75)
+
+
+state 70
+	TAM2:  M.    (22)
+
+	.  reduce 22 (src line 76)
+
+
+state 71
+	TAM2:  B.    (23)
+
+	.  reduce 23 (src line 77)
+
+
+state 72
+	P_FDISK:  '-' TYPE FLECHA TYPE_PARTICION.    (31)
+
+	.  reduce 31 (src line 88)
+
+
+state 73
+	TYPE_PARTICION:  P.    (40)
+
+	.  reduce 40 (src line 103)
+
+
+state 74
+	TYPE_PARTICION:  E.    (41)
+
+	.  reduce 41 (src line 104)
+
+
+state 75
+	TYPE_PARTICION:  L.    (42)
+
+	.  reduce 42 (src line 105)
+
+
+state 76
+	P_FDISK:  '-' FIT FLECHA OPCIONES_FIT.    (32)
+
+	.  reduce 32 (src line 89)
+
+
+state 77
+	OPCIONES_FIT:  BF.    (37)
+
+	.  reduce 37 (src line 98)
+
+
+state 78
+	OPCIONES_FIT:  FF.    (38)
+
+	.  reduce 38 (src line 99)
+
+
+state 79
+	OPCIONES_FIT:  WF.    (39)
+
+	.  reduce 39 (src line 100)
+
+
+state 80
+	P_FDISK:  '-' DELETE FLECHA OPCIONES_DELETE.    (33)
+
+	.  reduce 33 (src line 90)
+
+
+state 81
+	OPCIONES_DELETE:  fast.    (35)
+
+	.  reduce 35 (src line 94)
+
+
+state 82
+	OPCIONES_DELETE:  full.    (36)
+
+	.  reduce 36 (src line 95)
+
+
+state 83
+	P_FDISK:  '-' ADD FLECHA NUMERO.    (34)
+
+	.  reduce 34 (src line 91)
+
+
+state 84
+	PARAMETROS_MONTAR:  '-' PATH FLECHA RUTA.    (9)
+
+	.  reduce 9 (src line 52)
+
+
+state 85
+	PARAMETROS_MONTAR:  '-' NAME FLECHA ID.    (10)
+
+	.  reduce 10 (src line 53)
+
+
+63 terminals, 17 nonterminals
+43 grammar rules, 86/8000 states
 0 shift/reduce, 0 reduce/reduce conflicts reported
-58 working sets used
-memory: parser 8/120000
+66 working sets used
+memory: parser 18/120000
 0 extra closures
-33 shift entries, 1 exceptions
-9 goto entries
+69 shift entries, 1 exceptions
+19 goto entries
 0 entries saved by goto default
-Optimizer space used: output 42/120000
-42 table entries, 1 zero
-maximum spread: 61, maximum offset: 61
+Optimizer space used: output 85/120000
+85 table entries, 0 zero
+maximum spread: 63, maximum offset: 63

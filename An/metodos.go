@@ -90,6 +90,8 @@ func CrearDisco(numero string, ruta string, nombre string, K_o_M string) {
 	defer fichero.Close()
 	if err != nil {
 		log.Fatal("fallo creando el archivo de salida")
+	} else {
+		fmt.Println("Disco creado Correctamente")
 	}
 	otro := int64(0) // asignando el cero
 	direccion_otro := &otro
@@ -117,7 +119,8 @@ func CrearDisco(numero string, ruta string, nombre string, K_o_M string) {
 	Name_ = ""
 	Path_ = ""
 	Size_ = ""
-	Unit_ = "M"
+	Unit_m_ = "M"
+
 }
 
 func escribirBinariamente(fichero *os.File, bytes []byte) {
