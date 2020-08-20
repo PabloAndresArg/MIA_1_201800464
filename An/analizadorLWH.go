@@ -1,5 +1,6 @@
 package An
 
+/*
 import (
 	"bufio"
 	"fmt"
@@ -9,7 +10,14 @@ import (
 
 // analizador sin herramienta
 func Analizar_comando(entrada string) {
-	fmt.Println(":::::" + entrada)
+	/*fmt.Println("::" + entrada)
+	comandos := strings.Split(entrada, "-")
+	fmt.Println(comandos)
+	switch strings.ToLower(comandos[0]) {
+	case "exect":
+		fmt.Println("CREAR DISCO")
+		for i := 0 ;
+	}
 }
 
 //crack
@@ -46,6 +54,7 @@ func IniciarArchivos() {
 	}
 }
 
+
 func leerLineComando(puntero_lector *bufio.Reader) (string, bool) {
 	salida, err := puntero_lector.ReadString('\n')
 	if err != nil {
@@ -53,3 +62,5 @@ func leerLineComando(puntero_lector *bufio.Reader) (string, bool) {
 	}
 	return salida, true
 }
+
+*/

@@ -9,6 +9,6 @@ func main() {
 	fmt.Println("****************************************")
 	fmt.Println("	   SISTEMA DE ARCHIVOS   			 ")
 	fmt.Println("****************************************")
-	An.IniciarArchivos()
+	An.AnalizarComando()
 
 }

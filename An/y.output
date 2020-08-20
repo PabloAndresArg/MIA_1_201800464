@@ -1,0 +1,313 @@
+
+state 0
+	$accept: .INICIO $end 
+	INICIO: .    (1)
+
+	PAUSE  shift 7
+	ID  shift 4
+	FILE_N  shift 6
+	MOUNT  shift 5
+	RMDISK  shift 11
+	EXEC  shift 2
+	MKDISK  shift 10
+	.  reduce 1 (src line 39)
+
+	INICIO  goto 1
+	MENU_COMANDOS  goto 3
+	CREAR_DISCO  goto 8
+	ELIMINAR_DISCO  goto 9
+
+state 1
+	$accept:  INICIO.$end 
+
+	$end  accept
+	.  error
+
+
+state 2
+	INICIO:  EXEC.'-' PATH FLECHA RUTA 
+
+	'-'  shift 12
+	.  error
+
+
+state 3
+	INICIO:  MENU_COMANDOS.    (3)
+
+	.  reduce 3 (src line 41)
+
+
+state 4
+	MENU_COMANDOS:  ID.'}' 
+
+	'}'  shift 13
+	.  error
+
+
+state 5
+	MENU_COMANDOS:  MOUNT.KI 
+
+	RMDISK  shift 15
+	.  error
+
+	KI  goto 14
+
+state 6
+	MENU_COMANDOS:  FILE_N.R 
+
+	R  shift 16
+	.  error
+
+
+state 7
+	MENU_COMANDOS:  PAUSE.    (7)
+
+	.  reduce 7 (src line 47)
+
+
+state 8
+	MENU_COMANDOS:  CREAR_DISCO.    (8)
+
+	.  reduce 8 (src line 48)
+
+
+state 9
+	MENU_COMANDOS:  ELIMINAR_DISCO.    (9)
+
+	.  reduce 9 (src line 49)
+
+
+state 10
+	CREAR_DISCO:  MKDISK.PARAMETROS_MKDISK 
+
+	'-'  shift 19
+	.  error
+
+	PARAMETROS_MKDISK  goto 17
+	P_MKDISK  goto 18
+
+state 11
+	ELIMINAR_DISCO:  RMDISK.'-' PATH FLECHA RUTA 
+
+	'-'  shift 20
+	.  error
+
+
+state 12
+	INICIO:  EXEC '-'.PATH FLECHA RUTA 
+
+	PATH  shift 21
+	.  error
+
+
+state 13
+	MENU_COMANDOS:  ID '}'.    (4)
+
+	.  reduce 4 (src line 44)
+
+
+state 14
+	MENU_COMANDOS:  MOUNT KI.    (5)
+
+	.  reduce 5 (src line 45)
+
+
+state 15
+	KI:  RMDISK.    (20)
+
+	.  reduce 20 (src line 72)
+
+
+state 16
+	MENU_COMANDOS:  FILE_N R.    (6)
+
+	.  reduce 6 (src line 46)
+
+
+state 17
+	CREAR_DISCO:  MKDISK PARAMETROS_MKDISK.    (10)
+	PARAMETROS_MKDISK:  PARAMETROS_MKDISK.P_MKDISK 
+
+	'-'  shift 19
+	.  reduce 10 (src line 52)
+
+	P_MKDISK  goto 22
+
+state 18
+	PARAMETROS_MKDISK:  P_MKDISK.    (12)
+
+	.  reduce 12 (src line 55)
+
+
+state 19
+	P_MKDISK:  '-'.SIZE FLECHA NUMERO 
+	P_MKDISK:  '-'.PATH FLECHA RUTA 
+	P_MKDISK:  '-'.NAME FLECHA EXTENSION_DSK 
+	P_MKDISK:  '-'.UNIT FLECHA TAM 
+
+	PATH  shift 24
+	SIZE  shift 23
+	NAME  shift 25
+	UNIT  shift 26
+	.  error
+
+
+state 20
+	ELIMINAR_DISCO:  RMDISK '-'.PATH FLECHA RUTA 
+
+	PATH  shift 27
+	.  error
+
+
+state 21
+	INICIO:  EXEC '-' PATH.FLECHA RUTA 
+
+	FLECHA  shift 28
+	.  error
+
+
+state 22
+	PARAMETROS_MKDISK:  PARAMETROS_MKDISK P_MKDISK.    (11)
+
+	.  reduce 11 (src line 54)
+
+
+state 23
+	P_MKDISK:  '-' SIZE.FLECHA NUMERO 
+
+	FLECHA  shift 29
+	.  error
+
+
+state 24
+	P_MKDISK:  '-' PATH.FLECHA RUTA 
+
+	FLECHA  shift 30
+	.  error
+
+
+state 25
+	P_MKDISK:  '-' NAME.FLECHA EXTENSION_DSK 
+
+	FLECHA  shift 31
+	.  error
+
+
+state 26
+	P_MKDISK:  '-' UNIT.FLECHA TAM 
+
+	FLECHA  shift 32
+	.  error
+
+
+state 27
+	ELIMINAR_DISCO:  RMDISK '-' PATH.FLECHA RUTA 
+
+	FLECHA  shift 33
+	.  error
+
+
+state 28
+	INICIO:  EXEC '-' PATH FLECHA.RUTA 
+
+	RUTA  shift 34
+	.  error
+
+
+state 29
+	P_MKDISK:  '-' SIZE FLECHA.NUMERO 
+
+	NUMERO  shift 35
+	.  error
+
+
+state 30
+	P_MKDISK:  '-' PATH FLECHA.RUTA 
+
+	RUTA  shift 36
+	.  error
+
+
+state 31
+	P_MKDISK:  '-' NAME FLECHA.EXTENSION_DSK 
+
+	EXTENSION_DSK  shift 37
+	.  error
+
+
+state 32
+	P_MKDISK:  '-' UNIT FLECHA.TAM 
+
+	K  shift 39
+	M  shift 40
+	.  error
+
+	TAM  goto 38
+
+state 33
+	ELIMINAR_DISCO:  RMDISK '-' PATH FLECHA.RUTA 
+
+	RUTA  shift 41
+	.  error
+
+
+state 34
+	INICIO:  EXEC '-' PATH FLECHA RUTA.    (2)
+
+	.  reduce 2 (src line 40)
+
+
+state 35
+	P_MKDISK:  '-' SIZE FLECHA NUMERO.    (13)
+
+	.  reduce 13 (src line 57)
+
+
+state 36
+	P_MKDISK:  '-' PATH FLECHA RUTA.    (14)
+
+	.  reduce 14 (src line 58)
+
+
+state 37
+	P_MKDISK:  '-' NAME FLECHA EXTENSION_DSK.    (15)
+
+	.  reduce 15 (src line 59)
+
+
+state 38
+	P_MKDISK:  '-' UNIT FLECHA TAM.    (16)
+
+	.  reduce 16 (src line 60)
+
+
+state 39
+	TAM:  K.    (17)
+
+	.  reduce 17 (src line 64)
+
+
+state 40
+	TAM:  M.    (18)
+
+	.  reduce 18 (src line 65)
+
+
+state 41
+	ELIMINAR_DISCO:  RMDISK '-' PATH FLECHA RUTA.    (19)
+
+	.  reduce 19 (src line 68)
+
+
+61 terminals, 9 nonterminals
+21 grammar rules, 42/8000 states
+0 shift/reduce, 0 reduce/reduce conflicts reported
+58 working sets used
+memory: parser 8/120000
+0 extra closures
+33 shift entries, 1 exceptions
+9 goto entries
+0 entries saved by goto default
+Optimizer space used: output 42/120000
+42 table entries, 1 zero
+maximum spread: 61, maximum offset: 61

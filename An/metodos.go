@@ -113,6 +113,11 @@ func CrearDisco(numero string, ruta string, nombre string, K_o_M string) {
 	binary.Write(&bin3_, binary.BigEndian, dirMemory_disco)
 	escribirBinariamente(fichero, bin3_.Bytes())
 
+	// limpiar variables
+	Name_ = ""
+	Path_ = ""
+	Size_ = ""
+	Unit_ = "M"
 }
 
 func escribirBinariamente(fichero *os.File, bytes []byte) {

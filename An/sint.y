@@ -26,7 +26,7 @@ un archivo .y esta compuesto por 4 secciones
 %token NUMERO EXTENSION_DSK RF BF FF WF K M CHGRP GRP PAUSE COMANDO_ID R CHOWN CP DEST FIND CAT MV RM REN P MKFILE MKDIR LOGOUT ID  FILE_N EDIT MKGRP RMGRP USR  MOUNT RMDISK FLECHA PATH ADD   EXEC RUTA MKDISK SIZE NAME UNIT FDISK TYPE FIT DELETE fast full UNMOUNT MKFS  PWD RMUSR MKURS CHMOD UGO CONT
 %type <str>NUMERO  EXTENSION_DSK RF BF K M FF WF CHGRP GRP PAUSE COMANDO_ID R CHOWN CP DEST FIND CAT MV RM REN P MKFILE MKDIR LOGOUT ID FILE_N EDIT MKGRP RMGRP USR MOUNT RMDISK FLECHA PATH ADD    EXEC RUTA MKDISK SIZE  NAME UNIT FDISK TYPE FIT DELETE fast full UNMOUNT MKFS  PWD RMUSR MKURS CHMOD UGO CONT
 // producciones o no terminales 
-%type <NoTerminal> INICIO MENU_COMANDOS CREAR_DISCO TAM ELIMINAR_DISCO
+%type <NoTerminal> INICIO MENU_COMANDOS CREAR_DISCO TAM ELIMINAR_DISCO PARAMETROS_MKDISK P_MKDISK
 /* % = es lo mismo que %prec  , y este significa que no tienen precedencia ni asociatividad :v  */
 
 
@@ -49,17 +49,27 @@ MENU_COMANDOS:  ID '}' {fmt.Print("JEJE")}
 			 |  ELIMINAR_DISCO
    	         ;
 
-CREAR_DISCO: MKDISK '-'SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-' NAME  FLECHA EXTENSION_DSK  { CrearDisco($5 , $9 , $13 , "M" )}
-           | MKDISK '-'SIZE FLECHA NUMERO '-' PATH FLECHA RUTA '-' NAME  FLECHA EXTENSION_DSK '-' UNIT FLECHA TAM { CrearDisco($5 , $9 , $13 , $17 ) }
-		   ;
-ELIMINAR_DISCO: RMDISK '-' PATH FLECHA RUTA { EliminarDisco($5) } 
-			  ; 
+CREAR_DISCO: MKDISK PARAMETROS_MKDISK { CrearDisco(Size_ , Path_ , Name_, Unit_ )}; 
+
+PARAMETROS_MKDISK: PARAMETROS_MKDISK  P_MKDISK 
+				 | P_MKDISK
+				 ; 
+P_MKDISK:'-'SIZE FLECHA NUMERO { Size_ = $4 }
+		|'-' PATH FLECHA RUTA  { Path_ = $4 }
+		|'-' NAME  FLECHA EXTENSION_DSK { Name_ = $4}
+		|'-' UNIT FLECHA TAM { Unit_ = $4 }
+		;
+
 
  TAM: K {$$ = $1}
     | M {$$ = $1}
 	;
 
-KI: RMDISK{ prob($1) }
+ELIMINAR_DISCO: RMDISK '-' PATH FLECHA RUTA { EliminarDisco($5) } 
+			  ; 
+
+
+KI: RMDISK{  }
   ; 
 
 /* TERMINA LA SECCION DE LA  GRAMATICA Y COMIENZA LA DE LAS FUNCIONES */
@@ -70,9 +80,12 @@ func pausar_(){
 	bufio.NewReader(os.Stdin).ReadBytes('\n')
 }
 
-func prob(string rm_disk_eliminar ){
-  fmt.Print(" eliminando el disco... ")
-}
+
+
+
+
+
+
 
 func leerArchivoDeEntrada(ruta string){
 	fmt.Println("							.... Analizando un archivo ...")
@@ -151,5 +164,11 @@ func AnalizarComando() {
 }
 
 
-
+func leerLineComando(puntero_lector *bufio.Reader) (string, bool) {
+	salida, err := puntero_lector.ReadString('\n')
+	if err != nil {
+		return "", false
+	}
+	return salida, true
+}
 
