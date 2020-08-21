@@ -1,7 +1,7 @@
 package An
 
 // VARIABLES GLOBLALES
-// PARA CREAR DISCO
+
 var Name_ string = ""
 var Path_ string = ""
 var Size_ string = ""

@@ -92,7 +92,7 @@ func CrearDisco(numero string, ruta string, nombre string, K_o_M string) {
 	if err != nil {
 		log.Fatal("fallo creando el archivo de salida")
 	} else {
-		fmt.Println("Disco creado Correctamente")
+		fmt.Print("\n\nDisco creado Correctamente:")
 	}
 	otro := int64(0) // asignando el cero
 	direccion_otro := &otro
@@ -110,9 +110,10 @@ func CrearDisco(numero string, ruta string, nombre string, K_o_M string) {
 	fichero.Seek(0, 0) // POS AL INICIO DEL ARCHIVO
 	// SEREALIZACION DEL STRUCT , escribir al inicio del archivo el struct
 	FechaFormatoTime := time.Now()
-	mbr := TipoMbr{tamanio: 0}
-	copy(mbr.fecha[:], FechaFormatoTime.String())
+	mbr := TipoMbr{Tamanio: size}
+	copy(mbr.Fecha[:], FechaFormatoTime.String())
 	dirMemory_mbr := &mbr
+	fmt.Printf("FECHA: %s\nTamanio: %v\n", mbr.Fecha, mbr.Tamanio)
 
 	var bin3_ bytes.Buffer
 	binary.Write(&bin3_, binary.BigEndian, dirMemory_mbr)
@@ -166,7 +167,7 @@ func CrearDirectorio_si_no_exist(dir__ string) {
 
 // LeerBinariamente es para leer archivos binarios
 func LeerBinariamente(direccion_archivo_binario string) {
-	archivoDisco, err := os.Open(direccion_archivo_binario)
+	archivoDisco, err := os.Open(QuitarComillas(direccion_archivo_binario))
 	defer archivoDisco.Close()
 	if err != nil {
 		log.Fatal(err)
@@ -180,6 +181,13 @@ func LeerBinariamente(direccion_archivo_binario string) {
 		log.Fatal("binary.Read failed", err)
 	}
 	fmt.Println(mrbAuxiliar) // ACA YA TENGO EL MBR QUE ESTABA EN EL AUX
+	//  v – formats the value in a default format
+	//  d – formats decimal integers
+	//  g – formats the floating-point numbers
+	//  b – formats base 222 numbers
+	//  o – formats base 888 numbers
+	//  t – formats true or false values
+	//  s – formats string values
 
 }
 
@@ -191,33 +199,3 @@ func leerBytePorByte(archivoDisco *os.File, tamanio int) []byte {
 	}
 	return bytes
 }
-
-type TipoMbr struct {
-	tamanio       int64
-	fecha         [19]byte
-	diskSignature int64
-	particiones   [4]Particion // DE TIPO PRIMARIA
-}
-
-type Particion struct {
-	status byte
-	fit    byte // son char de GOLANG
-	inicio int64
-	size   byte
-	nombre [16]byte
-	tipo   byte
-	// PUEDO TENER UN VECTOR DINAMICO DE EXTENDED_B_R limitado solo por el tamaño de mi archivo
-}
-
-type Extended_B_R struct {
-	status byte
-	fit    byte // son char de GOLANG
-	inicio int64
-	size   byte
-	nombre [16]byte
-	next   int64
-}
-
-/*
-	copy(MBRAuxiliar.FCreacionMBR[:], Fecha.String())
-*/
