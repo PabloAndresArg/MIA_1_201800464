@@ -787,7 +787,7 @@ yydefault:
 	case 24:
 		yyDollar = yyS[yypt-2 : yypt+1]
 //line sint.y:80
-		{
+		{ /*LeerBinariamente_el_disco("/home/pablo/Escritorio/disco.dsk")*/
 		}
 	case 27:
 		yyDollar = yyS[yypt-4 : yypt+1]

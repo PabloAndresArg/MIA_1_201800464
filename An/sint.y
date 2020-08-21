@@ -77,7 +77,7 @@ TAM2: K {$$ = $1}
 	| B {$$ = $1}
 	;
 
-ADMINISTRAR_PARTICIONES:FDISK PARAMETROS_FDISK { };
+ADMINISTRAR_PARTICIONES: FDISK PARAMETROS_FDISK { /*LeerBinariamente_el_disco("/home/pablo/Escritorio/disco.dsk")*/ };
 PARAMETROS_FDISK: PARAMETROS_FDISK  P_FDISK 
 				 | P_FDISK
 				 ; 

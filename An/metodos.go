@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unsafe"
 )
 
 // LAS FUNCIONES DE ESTE ARCHIVO ESTAN COMPARTIDAS PORQUE PERTENECEN AL MISMO PACKAGE , siempre deben de iniciar con MAYUSCULA el nombre del metodo para ser exportado
@@ -108,11 +109,13 @@ func CrearDisco(numero string, ruta string, nombre string, K_o_M string) {
 	*/
 	fichero.Seek(0, 0) // POS AL INICIO DEL ARCHIVO
 	// SEREALIZACION DEL STRUCT , escribir al inicio del archivo el struct
-	disco := tipoMbr{tamanio: 0, fecha: time.Now()}
-	dirMemory_disco := &disco
+	FechaFormatoTime := time.Now()
+	mbr := TipoMbr{tamanio: 0}
+	copy(mbr.fecha[:], FechaFormatoTime.String())
+	dirMemory_mbr := &mbr
 
 	var bin3_ bytes.Buffer
-	binary.Write(&bin3_, binary.BigEndian, dirMemory_disco)
+	binary.Write(&bin3_, binary.BigEndian, dirMemory_mbr)
 	escribirBinariamente(fichero, bin3_.Bytes())
 
 	// limpiar variables
@@ -161,11 +164,39 @@ func CrearDirectorio_si_no_exist(dir__ string) {
 
 }
 
-type tipoMbr struct {
+// LeerBinariamente es para leer archivos binarios
+func LeerBinariamente(direccion_archivo_binario string) {
+	archivoDisco, err := os.Open(direccion_archivo_binario)
+	defer archivoDisco.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+	mrbAuxiliar := TipoMbr{}
+	tamanioMbr := int(unsafe.Sizeof(mrbAuxiliar)) // este mbrAuxiliar aunque este vacio ya tiene el tamanio por defecto por eso aca se usa
+	datosEnBytes := leerBytePorByte(archivoDisco, tamanioMbr)
+	buff := bytes.NewBuffer(datosEnBytes)                   // lo convierto a buffer porque eso pedia la funcion
+	err = binary.Read(buff, binary.BigEndian, &mrbAuxiliar) //se decodifica y se guarda en el mbrAuxiliar , asi que despues de aca ya tengo el original
+	if err != nil {
+		log.Fatal("binary.Read failed", err)
+	}
+	fmt.Println(mrbAuxiliar) // ACA YA TENGO EL MBR QUE ESTABA EN EL AUX
+
+}
+
+func leerBytePorByte(archivoDisco *os.File, tamanio int) []byte {
+	bytes := make([]byte, tamanio) // hago un arreglo dinamico de bytes
+	_, err := archivoDisco.Read(bytes)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return bytes
+}
+
+type TipoMbr struct {
 	tamanio       int64
-	fecha         time.Time
+	fecha         [19]byte
 	diskSignature int64
-	particiones   [4]Particion
+	particiones   [4]Particion // DE TIPO PRIMARIA
 }
 
 type Particion struct {
@@ -175,6 +206,7 @@ type Particion struct {
 	size   byte
 	nombre [16]byte
 	tipo   byte
+	// PUEDO TENER UN VECTOR DINAMICO DE EXTENDED_B_R limitado solo por el tamaño de mi archivo
 }
 
 type Extended_B_R struct {
@@ -185,3 +217,7 @@ type Extended_B_R struct {
 	nombre [16]byte
 	next   int64
 }
+
+/*
+	copy(MBRAuxiliar.FCreacionMBR[:], Fecha.String())
+*/
