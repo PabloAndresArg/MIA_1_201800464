@@ -131,7 +131,7 @@ func pausar_(){
 func leerArchivoDeEntrada(ruta string){
 	fmt.Println("							.... Analizando un archivo ...")
 	fmt.Println("")
-    ARCHIVO, error := os.Open(ruta)
+    ARCHIVO, error := os.Open(QuitarComillas(ruta))
 	algo_salio_mal:= false
 	if error != nil {
 		fmt.Println("ERROR REPORTADO")

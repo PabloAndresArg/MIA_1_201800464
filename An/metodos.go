@@ -11,7 +11,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"unsafe"
 )
 
 // LAS FUNCIONES DE ESTE ARCHIVO ESTAN COMPARTIDAS PORQUE PERTENECEN AL MISMO PACKAGE , siempre deben de iniciar con MAYUSCULA el nombre del metodo para ser exportado
@@ -113,7 +112,7 @@ func CrearDisco(numero string, ruta string, nombre string, K_o_M string) {
 	mbr := TipoMbr{Tamanio: size}
 	copy(mbr.Fecha[:], FechaFormatoTime.String())
 	dirMemory_mbr := &mbr
-	fmt.Printf("FECHA: %s\nTamanio: %v\n", mbr.Fecha, mbr.Tamanio)
+	fmt.Printf("\nFECHA: %s\nTamanio: %v\n", mbr.Fecha, mbr.Tamanio)
 
 	var bin3_ bytes.Buffer
 	binary.Write(&bin3_, binary.BigEndian, dirMemory_mbr)
@@ -176,7 +175,8 @@ func LeerBinariamente(direccion_archivo_binario string) {
 		log.Fatal(err)
 	}
 	mrbAuxiliar := TipoMbr{}
-	tamanioMbr := int(unsafe.Sizeof(mrbAuxiliar)) // este mbrAuxiliar aunque este vacio ya tiene el tamanio por defecto por eso aca se usa
+	tamanioMbr := binary.Size(mrbAuxiliar) // este mbrAuxiliar aunque este vacio ya tiene el tamanio por defecto por eso aca se usa
+	//binary.Size(estructura1) // PROBAR CON ESTE PORQUE ES MAS EXACTO YA QUE MI STRUCT TIENE ATRIBUTOS int64
 	datosEnBytes := leerBytePorByte(archivoDisco, tamanioMbr)
 	buff := bytes.NewBuffer(datosEnBytes)                   // lo convierto a buffer porque eso pedia la funcion
 	err = binary.Read(buff, binary.BigEndian, &mrbAuxiliar) //se decodifica y se guarda en el mbrAuxiliar , asi que despues de aca ya tengo el original
