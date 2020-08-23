@@ -4,7 +4,7 @@ package An
 // TipoMbr es un mbr: tabla de particiones y que tiene info del archivo , es lo primero que se guarda dentro de un disco(en este caso archivo por ser simulacion )
 type TipoMbr struct {
 	Tamanio       int64
-	Fecha         [11]byte
+	Fecha         [19]byte
 	DiskSignature int64
 	Particiones   [4]Particion // DE TIPO PRIMARIA
 }

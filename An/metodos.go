@@ -167,6 +167,9 @@ func CrearDirectorio_si_no_exist(dir__ string) {
 
 // LeerBinariamente es para leer archivos binarios
 func LeerBinariamente(direccion_archivo_binario string) {
+	// atributos obligatorios : NAME , PATH  SIZE
+	// OPCIONALES  unit , type , fit , delete , add
+
 	archivoDisco, err := os.Open(QuitarComillas(direccion_archivo_binario))
 	defer archivoDisco.Close()
 	if err != nil {
