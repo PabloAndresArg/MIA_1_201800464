@@ -7,6 +7,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"strconv"
 	"strings"
@@ -93,16 +94,16 @@ func CrearDisco(numero string, ruta string, nombre string, K_o_M string) {
 	} else {
 		fmt.Print("\n\nDisco creado Correctamente:")
 	}
-	otro := int64(0) // asignando el cero
-	direccion_otro := &otro
+	var cero int8 = 0 // asignando el cero
+	direccion_cero := &cero
 	var binario_ bytes.Buffer
-	binary.Write(&binario_, binary.BigEndian, direccion_otro) // SE ESCRIBE UN CERO AL INICIO DEL ARCHIVO
+	binary.Write(&binario_, binary.BigEndian, direccion_cero) // SE ESCRIBE UN CERO AL INICIO DEL ARCHIVO
 	escribirBinariamente(fichero, binario_.Bytes())
 	fichero.Seek(size-1, 0) // posicionarse en la pos 0
-
-	var bin2_ bytes.Buffer // se escribe un cero al final del archivo
-	binary.Write(&bin2_, binary.BigEndian, direccion_otro)
+	var bin2_ bytes.Buffer  // se escribe un cero al final del archivo
+	binary.Write(&bin2_, binary.BigEndian, direccion_cero)
 	escribirBinariamente(fichero, bin2_.Bytes())
+
 	/*
 		METIENDO EL STRUCT AL DISCO
 	*/
@@ -201,4 +202,7 @@ func leerBytePorByte(archivoDisco *os.File, tamanio int) []byte {
 		log.Fatal(err)
 	}
 	return bytes
+}
+func dameUnNumeroRandom() int64 { // para el signature del mbr
+	return int64(rand.Intn(7*7*7-1) + (10 / 10))
 }
