@@ -77,8 +77,8 @@ TAM2: K {$$ = $1}
     | M {$$ = $1}
 	| B {$$ = $1}
 	;
-
-ADMINISTRAR_PARTICIONES: FDISK PARAMETROS_FDISK { fmt.Println("Creando una particion: "); LeerBinariamente("/home/pablo/Escritorio/discoPequeno.dsk") };
+/*MetodosParticiones(rutaPath string , nombreName string  , sizeTamanio string , fit string , delete string , add string)*/
+ADMINISTRAR_PARTICIONES: FDISK PARAMETROS_FDISK { MetodosParticiones(Path_ , Name_ , Size_ , FIT_ , OPCION_DELETE_ , add_ , tipo_particion_)};
 PARAMETROS_FDISK: PARAMETROS_FDISK  P_FDISK 
 				 | P_FDISK
 				 ; 
@@ -117,7 +117,9 @@ CADENA_O_ID: RUTA { $$ = QuitarComillas($1) }
 %%
 
 func pausar_(){
-	fmt.Println("--Presiona enter para continuar--")
+	fmt.Println("---------------------------------")
+	fmt.Println("--Presiona Enter para continuar--")
+	fmt.Println("---------------------------------")
 	bufio.NewReader(os.Stdin).ReadBytes('\n')
 }
 
@@ -129,6 +131,7 @@ func pausar_(){
 
 
 func leerArchivoDeEntrada(ruta string){
+	fmt.Println("");fmt.Println("")
 	fmt.Println("							.... Analizando un archivo ...")
 	fmt.Println("")
     ARCHIVO, error := os.Open(QuitarComillas(ruta))

@@ -163,11 +163,15 @@ const yyInitialStackSize = 16
 //line sint.y:117
 
 func pausar_() {
-	fmt.Println("--Presiona enter para continuar--")
+	fmt.Println("---------------------------------")
+	fmt.Println("--Presiona Enter para continuar--")
+	fmt.Println("---------------------------------")
 	bufio.NewReader(os.Stdin).ReadBytes('\n')
 }
 
 func leerArchivoDeEntrada(ruta string) {
+	fmt.Println("")
+	fmt.Println("")
 	fmt.Println("							.... Analizando un archivo ...")
 	fmt.Println("")
 	ARCHIVO, error := os.Open(QuitarComillas(ruta))
@@ -794,8 +798,7 @@ yydefault:
 		yyDollar = yyS[yypt-2 : yypt+1]
 //line sint.y:81
 		{
-			fmt.Println("Creando una particion: ")
-			LeerBinariamente("/home/pablo/Escritorio/discoPequeno.dsk")
+			MetodosParticiones(Path_, Name_, Size_, FIT_, OPCION_DELETE_, add_, tipo_particion_)
 		}
 	case 28:
 		yyDollar = yyS[yypt-4 : yypt+1]

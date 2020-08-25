@@ -6,8 +6,9 @@ import (
 	"bufio"
 	"go/token"
 	"io"
-	"modernc.org/golex/lex"
 	"unicode"
+
+	"modernc.org/golex/lex"
 )
 
 func nuevo_lexico__(Fuente_ io.Reader, destino_ io.Writer, fName string) *lexer {

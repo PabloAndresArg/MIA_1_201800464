@@ -12,6 +12,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/TwinProduction/go-color"
 )
 
 // LAS FUNCIONES DE ESTE ARCHIVO ESTAN COMPARTIDAS PORQUE PERTENECEN AL MISMO PACKAGE , siempre deben de iniciar con MAYUSCULA el nombre del metodo para ser exportado
@@ -92,7 +94,8 @@ func CrearDisco(numero string, ruta string, nombre string, K_o_M string) {
 	if err != nil {
 		log.Fatal("fallo creando el archivo de salida")
 	} else {
-		fmt.Print("\n\nDisco creado Correctamente:")
+		fmt.Println("---------------------------------")
+		println(color.Yellow + " Disco creado Correctamente: " + color.Reset)
 	}
 	var cero int8 = 0 // asignando el cero
 	direccion_cero := &cero
@@ -105,20 +108,32 @@ func CrearDisco(numero string, ruta string, nombre string, K_o_M string) {
 	escribirBinariamente(fichero, bin2_.Bytes())
 
 	/*
-		METIENDO EL STRUCT AL DISCO
+
+
+
+		METIENDO EL STRUCT AL DISCO , 	// SEREALIZACION DEL STRUCT , escribir al inicio del archivo el struct
+
+
+
+
 	*/
 	fichero.Seek(0, 0) // POS AL INICIO DEL ARCHIVO
-	// SEREALIZACION DEL STRUCT , escribir al inicio del archivo el struct
+
 	FechaFormatoTime := time.Now()
-	mbr := TipoMbr{Tamanio: size}
+	mbr := TipoMbr{Tamanio: size, DiskSignature: dameUnNumeroRandom()}
 	copy(mbr.Fecha[:], FechaFormatoTime.String())
-	dirMemory_mbr := &mbr
-	fmt.Printf("\nFECHA: %s\nTamanio: %v\n", mbr.Fecha, mbr.Tamanio)
+	for i := 0; i < 4; i++ {
+		mbr.Particiones[i] = Particion{Status: 'n', Size: 0} // PARA MI N ES QUE NO HAY , Y es de yes que si hay xd
+	}
 
 	var bin3_ bytes.Buffer
-	binary.Write(&bin3_, binary.BigEndian, dirMemory_mbr)
+	binary.Write(&bin3_, binary.BigEndian, &mbr)
 	escribirBinariamente(fichero, bin3_.Bytes())
 
+	fmt.Printf("\nFECHA: %s\nTamanio: %v\n", mbr.Fecha, mbr.Tamanio)
+	fmt.Printf("Signature: %d\n", mbr.DiskSignature)
+	fmt.Printf("hay pariciones(n/y): %c\n", mbr.Particiones[0].Status)
+	fmt.Println("---------------------------------")
 	// limpiar variables
 	Name_ = ""
 	Path_ = ""
@@ -169,15 +184,13 @@ func CrearDirectorio_si_no_exist(dir__ string) {
 func LeerBinariamente(direccion_archivo_binario string) {
 	// atributos obligatorios : NAME , PATH  SIZE
 	// OPCIONALES  unit , type , fit , delete , add
-
-	archivoDisco, err := os.Open(QuitarComillas(direccion_archivo_binario))
+	archivoDisco, err := os.OpenFile(QuitarComillas(direccion_archivo_binario), os.O_RDWR, 0644) // TIEENE PERMISOS DE ESCRITURA Y DE LECTURA PERRO :V
 	defer archivoDisco.Close()
 	if err != nil {
 		log.Fatal(err)
 	}
 	mrbAuxiliar := TipoMbr{}
 	tamanioMbr := binary.Size(mrbAuxiliar) // este mbrAuxiliar aunque este vacio ya tiene el tamanio por defecto por eso aca se usa
-	//binary.Size(estructura1) // PROBAR CON ESTE PORQUE ES MAS EXACTO YA QUE MI STRUCT TIENE ATRIBUTOS int64
 	datosEnBytes := leerBytePorByte(archivoDisco, tamanioMbr)
 	buff := bytes.NewBuffer(datosEnBytes)                   // lo convierto a buffer porque eso pedia la funcion
 	err = binary.Read(buff, binary.BigEndian, &mrbAuxiliar) //se decodifica y se guarda en el mbrAuxiliar , asi que despues de aca ya tengo el original
@@ -192,7 +205,8 @@ func LeerBinariamente(direccion_archivo_binario string) {
 	//  o – formats base 888 numbers
 	//  t – formats true or false values
 	//  s – formats string values
-
+	//  c- caracteres
+	/*												ESCRIBIR LA PARTICION 						*/
 }
 
 func leerBytePorByte(archivoDisco *os.File, tamanio int) []byte {
@@ -203,6 +217,55 @@ func leerBytePorByte(archivoDisco *os.File, tamanio int) []byte {
 	}
 	return bytes
 }
-func dameUnNumeroRandom() int64 { // para el signature del mbr
-	return int64(rand.Intn(7*7*7-1) + (10 / 10))
+func dameUnNumeroRandom() int64 { // para el signature del mbr , tener una lista para asegurarme que no se  repitan los ids
+	num := int64(rand.Intn((100)-1) + (10 / 10))
+	for esRepetido(num) {
+		num = int64(rand.Intn((100)-1) + (10 / 10))
+	}
+	return num
+}
+
+// MetodosParticiones es para crear o eliminar particiones
+func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, fit string, delete string, add string, tipo__ string) {
+	// atributos obligatorios : NAME , PATH  SIZE
+	// OPCIONALES  unit , type , fit , delete , add
+	if len(rutaPath) != 0 && len(nombreName) != 0 && len(sizeTamanio) != 0 { // si vienen los obligatorios
+		archivoDisco, err := os.OpenFile(QuitarComillas(rutaPath), os.O_RDWR, 0644) // TIEENE PERMISOS DE ESCRITURA Y DE LECTURA PERRO :V
+		defer archivoDisco.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+		mrbAuxiliar := TipoMbr{}
+		tamanioMbr := binary.Size(mrbAuxiliar) // este mbrAuxiliar aunque este vacio ya tiene el tamanio por defecto por eso aca se usa
+		datosEnBytes := leerBytePorByte(archivoDisco, tamanioMbr)
+		buff := bytes.NewBuffer(datosEnBytes)                   // lo convierto a buffer porque eso pedia la funcion
+		err = binary.Read(buff, binary.BigEndian, &mrbAuxiliar) //se decodifica y se guarda en el mbrAuxiliar , asi que despues de aca ya tengo el original
+		if err != nil {
+			log.Fatal("binary.Read failed", err)
+		}
+		/*
+
+			CREANDO LA PARTICION Y VOLVIENDO A ESCRIBIR EN EL ARCHIVO
+
+			hacer un switch para ver si voy a crear , eliminar o agrandar particiones
+
+		*/
+		if mrbAuxiliar.hayUnaParticionDisponible() {
+			size, _ := strconv.ParseInt(sizeTamanio, 10, 64)
+			if mrbAuxiliar.hayEspacioSuficiente(size) {
+
+			} else {
+				println(color.Red + "Espacio insuficiente" + color.Reset)
+			}
+		} else {
+			println(color.Yellow + "Lo siento no es posible porque ya tiene 4 particiones en este disco" + color.Reset)
+		}
+		mrbAuxiliar.crearParticion()
+
+	} else {
+		println(color.Red + "ERROR FALTO UN PARAMETRO OBLIGATORIO..!" + color.Reset)
+	}
+
+	tipo_particion_ = "p"
+	FIT_ = "wf"
 }
