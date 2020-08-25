@@ -78,7 +78,7 @@ TAM2: K {$$ = $1}
 	| B {$$ = $1}
 	;
 /*MetodosParticiones(rutaPath string , nombreName string  , sizeTamanio string , fit string , delete string , add string)*/
-ADMINISTRAR_PARTICIONES: FDISK PARAMETROS_FDISK { MetodosParticiones(Path_ , Name_ , Size_ , FIT_ , OPCION_DELETE_ , add_ , tipo_particion_)};
+ADMINISTRAR_PARTICIONES: FDISK PARAMETROS_FDISK { MetodosParticiones(Path_ , Name_ , Size_ , FIT_ , OPCION_DELETE_ , add_ , tipo_particion_ , Unit_k_)};
 PARAMETROS_FDISK: PARAMETROS_FDISK  P_FDISK 
 				 | P_FDISK
 				 ; 

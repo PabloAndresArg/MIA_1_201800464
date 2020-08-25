@@ -226,7 +226,7 @@ func dameUnNumeroRandom() int64 { // para el signature del mbr , tener una lista
 }
 
 // MetodosParticiones es para crear o eliminar particiones
-func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, fit string, delete string, add string, tipo__ string) {
+func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, fit string, delete string, add string, tipo__ string, unit string) {
 	// atributos obligatorios : NAME , PATH  SIZE
 	// OPCIONALES  unit , type , fit , delete , add
 	if len(rutaPath) != 0 && len(nombreName) != 0 && len(sizeTamanio) != 0 { // si vienen los obligatorios
@@ -250,22 +250,67 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 			hacer un switch para ver si voy a crear , eliminar o agrandar particiones
 
 		*/
-		if mrbAuxiliar.hayUnaParticionDisponible() {
-			size, _ := strconv.ParseInt(sizeTamanio, 10, 64)
-			if mrbAuxiliar.hayEspacioSuficiente(size) {
+		if len(delete) == 0 && len(add) == 0 {
+			if mrbAuxiliar.hayUnaParticionDisponible() {
+				size, _ := strconv.ParseInt(sizeTamanio, 10, 64)
+				size = getSizeConUnidad(size, unit)
+				if mrbAuxiliar.hayEspacioSuficiente(size) {
+					////fit string , size int64, nombre string, tipo byte
+					tipoParticionByte := getTipoEnBytes(tipo__) // TENGO QUE VOLVER A MI TIPO UN BIYE  pero primero ver si viene algo o es el default
+					switch tipoParticionByte {
+					case 'p':
+						mrbAuxiliar.crearParticion(fit, size, nombreName, tipoParticionByte) // ES POSIBLE CREAR LA PARTICION
+					case 'e':
+						if !(mrbAuxiliar.yaExisteUnaExtendida()) { // si no existe una extendida pues la puede crear
+							mrbAuxiliar.crearParticion(fit, size, nombreName, tipoParticionByte) // ES POSIBLE CREAR LA PARTICION
+						}
+					case 'l':
+						if mrbAuxiliar.yaExisteUnaExtendida() { // si EXISTE es posible crear una logica
+							println(color.Gray + "CREANDO PARTICION LOGICA" + color.Reset)
+						} else {
+							println(color.Red + "No puedes Crear una Particion Logica sin antes tener una extendida" + color.Reset)
+						}
+					default:
+						println("Error en el tipo de particion")
+					}
+					// SIN IMPORTAR LE CASO HAY UN CAMBIO EN EL MBR POR ESO LO TENGO QUE VOLVER A ESCRIBIR EN MI DISCO
 
+				} else {
+					println(color.Red + "Espacio insuficiente" + color.Reset)
+				}
 			} else {
-				println(color.Red + "Espacio insuficiente" + color.Reset)
+				println(color.Yellow + "Lo siento no es posible porque ya tiene 4 particiones en este disco" + color.Reset)
 			}
-		} else {
-			println(color.Yellow + "Lo siento no es posible porque ya tiene 4 particiones en este disco" + color.Reset)
+		} else if len(delete) != 0 && len(add) == 0 { // vengo a borrar una particion
+
+		} else if len(add) != 0 && len(delete) == 0 { // vengo a dar mas espacio a una particion
+
 		}
-		mrbAuxiliar.crearParticion()
 
 	} else {
 		println(color.Red + "ERROR FALTO UN PARAMETRO OBLIGATORIO..!" + color.Reset)
 	}
 
+	limpiarVariableFdisk()
+}
+
+func limpiarVariableFdisk() {
+	Unit_k_ = "k"
 	tipo_particion_ = "p"
 	FIT_ = "wf"
+	OPCION_DELETE_ = ""
+	add_ = ""
+}
+
+func getSizeConUnidad(size int64, unit string) int64 {
+	switch strings.ToLower(unit) {
+	case "b":
+		return size
+	case "k":
+		return (size * 1024)
+	case "m":
+		return (size * 1024 * 1024)
+	default:
+		return (size * 1024)
+	}
 }

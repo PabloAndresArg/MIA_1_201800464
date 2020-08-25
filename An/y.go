@@ -798,7 +798,7 @@ yydefault:
 		yyDollar = yyS[yypt-2 : yypt+1]
 //line sint.y:81
 		{
-			MetodosParticiones(Path_, Name_, Size_, FIT_, OPCION_DELETE_, add_, tipo_particion_)
+			MetodosParticiones(Path_, Name_, Size_, FIT_, OPCION_DELETE_, add_, tipo_particion_, Unit_k_)
 		}
 	case 28:
 		yyDollar = yyS[yypt-4 : yypt+1]
