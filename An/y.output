@@ -155,7 +155,7 @@ state 18
 state 19
 	PARAMETROS_FDISK:  P_FDISK.    (27)
 
-	.  reduce 27 (src line 83)
+	.  reduce 27 (src line 85)
 
 
 state 20
@@ -247,7 +247,7 @@ state 29
 state 30
 	PARAMETROS_FDISK:  PARAMETROS_FDISK P_FDISK.    (26)
 
-	.  reduce 26 (src line 82)
+	.  reduce 26 (src line 84)
 
 
 state 31
@@ -506,37 +506,37 @@ state 65
 state 66
 	P_FDISK:  '-' SIZE FLECHA NUMERO.    (28)
 
-	.  reduce 28 (src line 85)
+	.  reduce 28 (src line 87)
 
 
 state 67
 	P_FDISK:  '-' PATH FLECHA RUTA.    (29)
 
-	.  reduce 29 (src line 86)
+	.  reduce 29 (src line 88)
 
 
 state 68
 	P_FDISK:  '-' NAME FLECHA CADENA_O_ID.    (30)
 
-	.  reduce 30 (src line 87)
+	.  reduce 30 (src line 89)
 
 
 state 69
 	CADENA_O_ID:  RUTA.    (44)
 
-	.  reduce 44 (src line 110)
+	.  reduce 44 (src line 112)
 
 
 state 70
 	CADENA_O_ID:  ID.    (45)
 
-	.  reduce 45 (src line 111)
+	.  reduce 45 (src line 113)
 
 
 state 71
 	P_FDISK:  '-' UNIT FLECHA TAM2.    (31)
 
-	.  reduce 31 (src line 88)
+	.  reduce 31 (src line 90)
 
 
 state 72
@@ -560,73 +560,73 @@ state 74
 state 75
 	P_FDISK:  '-' TYPE FLECHA TYPE_PARTICION.    (32)
 
-	.  reduce 32 (src line 89)
+	.  reduce 32 (src line 91)
 
 
 state 76
 	TYPE_PARTICION:  P.    (41)
 
-	.  reduce 41 (src line 104)
+	.  reduce 41 (src line 106)
 
 
 state 77
 	TYPE_PARTICION:  E.    (42)
 
-	.  reduce 42 (src line 105)
+	.  reduce 42 (src line 107)
 
 
 state 78
 	TYPE_PARTICION:  L.    (43)
 
-	.  reduce 43 (src line 106)
+	.  reduce 43 (src line 108)
 
 
 state 79
 	P_FDISK:  '-' FIT FLECHA OPCIONES_FIT.    (33)
 
-	.  reduce 33 (src line 90)
+	.  reduce 33 (src line 92)
 
 
 state 80
 	OPCIONES_FIT:  BF.    (38)
 
-	.  reduce 38 (src line 99)
+	.  reduce 38 (src line 101)
 
 
 state 81
 	OPCIONES_FIT:  FF.    (39)
 
-	.  reduce 39 (src line 100)
+	.  reduce 39 (src line 102)
 
 
 state 82
 	OPCIONES_FIT:  WF.    (40)
 
-	.  reduce 40 (src line 101)
+	.  reduce 40 (src line 103)
 
 
 state 83
 	P_FDISK:  '-' DELETE FLECHA OPCIONES_DELETE.    (34)
 
-	.  reduce 34 (src line 91)
+	.  reduce 34 (src line 93)
 
 
 state 84
 	OPCIONES_DELETE:  fast.    (36)
 
-	.  reduce 36 (src line 95)
+	.  reduce 36 (src line 97)
 
 
 state 85
 	OPCIONES_DELETE:  full.    (37)
 
-	.  reduce 37 (src line 96)
+	.  reduce 37 (src line 98)
 
 
 state 86
 	P_FDISK:  '-' ADD FLECHA NUMERO.    (35)
 
-	.  reduce 35 (src line 92)
+	.  reduce 35 (src line 94)
 
 
 state 87

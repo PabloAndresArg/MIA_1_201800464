@@ -34,7 +34,7 @@ type Ebr struct {
 	Inicio int64
 	Size   int64
 	Nombre [16]byte
-	Next   int64
+	Next   int64 // APUNTA AL BYTE QUE SIGUE :v y es -1 cuando ya no le sigue nada
 }
 
 // FILTRO 1
@@ -54,8 +54,14 @@ func (m TipoMbr) hayEspacioSuficiente(nuevoEspacio int64) bool { // retornar si 
 		tamanoOcupado += int64(m.Particiones[x].Size)
 	}
 	if m.Tamanio > (tamanoOcupado + nuevoEspacio) {
-		fmt.Println("\n" + fmt.Sprint("tamanio del disco: ", m.Tamanio) + fmt.Sprint(" tamanio antes:", tamanoOcupado) + fmt.Sprint(" espacio Adicionado: ", nuevoEspacio))
-		return true // si cabe una particion de ese tamanio
+		fmt.Println("\n" + fmt.Sprint("tamanio del disco:", m.Tamanio) + fmt.Sprint(" tamanio Ocupado:", tamanoOcupado) + fmt.Sprint("Espacio de la nueva particion: ", nuevoEspacio))
+		//TAMANIO DEL DISCO - (INICIO+SIZE) DE LA ULTIMA POSICION DE MI ARRAY DE PARTICIONES
+		// disponibleDisco - disponible = FRAGMENTACION    y considerar que tengo un byte menos a la hora de escribir hasta el final
+		if m.hayFragmentacion() { // TENER EN CUENTA QUE LA FRAGMENTACION SOLO APARECE ENTRE PARTICIONES , NO EN LOS EXTREMOS
+			println(color.Yellow + "Cuidado este disco posee fragmentacion" + color.Reset)
+		}
+
+		return true
 	}
 	return false
 }
@@ -70,7 +76,7 @@ func (m TipoMbr) yaExisteUnaExtendida() bool { // retornar si si pudo agregar la
 	return false
 }
 
-func (m TipoMbr) crearParticion(fit string, size int64, nombre string, tipo byte) { // retornar si si pudo agregar la particion o si no
+func (m TipoMbr) crearParticion(fit string, size int64, nombre string, tipo byte) TipoMbr { // retornar si si pudo agregar la particion o si no
 	for x := 0; x < len(m.Particiones); x++ { // NECESITO inicioParticion int64
 
 		if m.Particiones[x].Status == 'n' { // ingresa en la libre y le cambia el status , PRIMER AJUSTE
@@ -79,20 +85,49 @@ func (m TipoMbr) crearParticion(fit string, size int64, nombre string, tipo byte
 			m.Particiones[x].Fit = getFit(fit)
 			m.Particiones[x].Size = size
 			copy(m.Particiones[x].Nombre[:], nombre)
-			// ahora lo mas dificil
-			m.getDatosPrint(uint8(x))
-			println(color.Green + "PARTICION Creada Con Exito" + color.Reset)
-			break
+			m.Particiones[x].Inicio = m.getInicio(uint8(x))
+			m.Particiones[x].imprimirDatosParticion()
+			println(color.Yellow + "PARTICION PRIMARIA CREADA CON EXITO" + color.Reset)
+			return m
+			//break
 		}
 	}
+	return m
 }
-func (m TipoMbr) getDatosPrint(indice uint8) {
-	fmt.Printf("Status: %c\n", m.Particiones[indice].Status)
-	fmt.Printf("Tipo: %c\n", m.Particiones[indice].Tipo)
-	fmt.Printf("Fit: %c\n", m.Particiones[indice].Fit)
-	fmt.Printf("inicio: %d\n", m.Particiones[indice].Inicio)
-	fmt.Printf("size: %d\n", m.Particiones[indice].Size)
-	fmt.Printf("Nombre: %s\n", m.Particiones[indice].Nombre)
+func (m *TipoMbr) crearParticionExtendida(fit string, size int64, nombre string, tipo byte) uint8 { // retornar si si pudo agregar la particion o si no
+	for x := 0; x < len(m.Particiones); x++ { // NECESITO inicioParticion int64
+
+		if m.Particiones[x].Status == 'n' { // ingresa en la libre y le cambia el status , PRIMER AJUSTE
+			m.Particiones[x].Status = 'y'
+			m.Particiones[x].Tipo = tipo
+			m.Particiones[x].Fit = getFit(fit)
+			m.Particiones[x].Size = size
+			copy(m.Particiones[x].Nombre[:], nombre)
+			m.Particiones[x].Inicio = m.getInicio(uint8(x))
+			m.Particiones[x].imprimirDatosParticion()
+			println(color.Yellow + "PARTICION EXTENDIDA CREADA CON EXITO" + color.Reset)
+			return uint8(x) // retorno la posicion para poder saber que pos del arreglo tiene y obtener el byte donde escribite un ebr
+			//break
+		}
+	}
+	return 0
+}
+func (p Particion) imprimirDatosParticion() {
+	fmt.Printf("Nombre: %s\n", p.Nombre)
+	fmt.Printf("Status: %c\n", p.Status)
+	fmt.Printf("Tipo: %c\n", p.Tipo)
+	fmt.Printf("Fit: %c\n", p.Fit)
+	fmt.Printf("inicio: %d\n", p.Inicio)
+	fmt.Printf("size: %d\n", p.Size)
+}
+func (m TipoMbr) getInicio(indice uint8) int64 { // si donde esta disponible es la posicion 0 que pasa ?
+
+	switch indice {
+	case 0:
+		return int64(binary.Size(m) + 1)
+	default: // siempre abra una particion antes porque sino hubiera entrado en la libre
+		return int64((m.Particiones[indice-1].Inicio + m.Particiones[indice-1].Size) + 1)
+	}
 }
 
 func getTipoEnBytes(tipo string) byte {
@@ -118,4 +153,35 @@ func getFit(fit string) byte {
 		return byte('w') // worst fit
 
 	}
+}
+
+func (m TipoMbr) hayFragmentacion() bool {
+	// ARREGLODINAMICO
+	aux := make([]Particion, 0, 1) // TENER EN CUENTA QUE CUANDO YA NO CABE ALGO LA CAPACIDAD SE DUPLCA
+	for x := 0; x < len(m.Particiones); x++ {
+		if m.Particiones[x].Status == 'y' { // en uso
+			aux = append(aux, m.Particiones[x]) // INSERTA AL FINAL
+		}
+	}
+	// ya tendres todas las particiones utilizadas en el aux de forma continua
+	for b := 0; b < (len(aux) - 1); b++ {
+		if (aux[b].Inicio + aux[b].Size + 1) != aux[b+1].Inicio {
+			return true // si hay fragmentacion
+		}
+	}
+	return false
+}
+
+func (m TipoMbr) imprimirDatosMBR() { // retornar si si pudo agregar la particion o si no
+	println(color.Green + "***************** MBR ***********************" + color.Reset)
+	fmt.Printf("\nFECHA: %s\nTamanio: %v\n", m.Fecha, m.Tamanio)
+	fmt.Printf("Signature: %d\n", m.DiskSignature)
+	for x := 0; x < 4; x++ {
+		if m.Particiones[x].Status == 'y' { // activas
+			println(color.Green + fmt.Sprint("---------------- Particion[", x) + "]----------------" + color.Reset)
+			m.Particiones[x].imprimirDatosParticion()
+			println(color.Green + "---------------------------------------------" + color.Reset)
+		}
+	}
+	println(color.Green + "*********************************************" + color.Reset)
 }

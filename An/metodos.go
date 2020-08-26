@@ -3,6 +3,7 @@
 package An
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/binary"
 	"fmt"
@@ -181,9 +182,7 @@ func CrearDirectorio_si_no_exist(dir__ string) {
 }
 
 // LeerBinariamente es para leer archivos binarios
-func LeerBinariamente(direccion_archivo_binario string) {
-	// atributos obligatorios : NAME , PATH  SIZE
-	// OPCIONALES  unit , type , fit , delete , add
+func LeerBinariamenteMimbr(direccion_archivo_binario string) {
 	archivoDisco, err := os.OpenFile(QuitarComillas(direccion_archivo_binario), os.O_RDWR, 0644) // TIEENE PERMISOS DE ESCRITURA Y DE LECTURA PERRO :V
 	defer archivoDisco.Close()
 	if err != nil {
@@ -197,7 +196,7 @@ func LeerBinariamente(direccion_archivo_binario string) {
 	if err != nil {
 		log.Fatal("binary.Read failed", err)
 	}
-	fmt.Println(mrbAuxiliar) // ACA YA TENGO EL MBR QUE ESTABA EN EL AUX
+	mrbAuxiliar.imprimirDatosMBR()
 	//  v – formats the value in a default format
 	//  d – formats decimal integers
 	//  g – formats the floating-point numbers
@@ -259,10 +258,13 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 					tipoParticionByte := getTipoEnBytes(tipo__) // TENGO QUE VOLVER A MI TIPO UN BIYE  pero primero ver si viene algo o es el default
 					switch tipoParticionByte {
 					case 'p':
-						mrbAuxiliar.crearParticion(fit, size, nombreName, tipoParticionByte) // ES POSIBLE CREAR LA PARTICION
+						mrbAuxiliar = mrbAuxiliar.crearParticion(fit, size, nombreName, tipoParticionByte) // ES POSIBLE CREAR LA PARTICION
+						mrbAuxiliar.imprimirDatosMBR()
 					case 'e':
 						if !(mrbAuxiliar.yaExisteUnaExtendida()) { // si no existe una extendida pues la puede crear
-							mrbAuxiliar.crearParticion(fit, size, nombreName, tipoParticionByte) // ES POSIBLE CREAR LA PARTICION
+							pos := mrbAuxiliar.crearParticionExtendida(fit, size, nombreName, tipoParticionByte)
+							mrbAuxiliar.Particiones[pos].imprimirDatosParticion()
+							mrbAuxiliar.imprimirDatosMBR()
 						}
 					case 'l':
 						if mrbAuxiliar.yaExisteUnaExtendida() { // si EXISTE es posible crear una logica
@@ -275,6 +277,11 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 					}
 					// SIN IMPORTAR LE CASO HAY UN CAMBIO EN EL MBR POR ESO LO TENGO QUE VOLVER A ESCRIBIR EN MI DISCO
 
+					archivoDisco.Seek(0, 0) // al inicio del archivo para sobreescribir mi disco
+					var escritor bytes.Buffer
+					binary.Write(&escritor, binary.BigEndian, &mrbAuxiliar)
+					escribirBinariamente(archivoDisco, escritor.Bytes())
+					//LeerBinariamenteMimbr(rutaPath)
 				} else {
 					println(color.Red + "Espacio insuficiente" + color.Reset)
 				}
@@ -313,4 +320,11 @@ func getSizeConUnidad(size int64, unit string) int64 {
 	default:
 		return (size * 1024)
 	}
+}
+
+func pausar_() {
+	fmt.Println("---------------------------------")
+	println(color.Blue + "--Presiona Enter para continuar--" + color.Reset)
+	fmt.Println("---------------------------------")
+	bufio.NewReader(os.Stdin).ReadBytes('\n')
 }

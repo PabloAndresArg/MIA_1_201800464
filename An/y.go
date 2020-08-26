@@ -160,19 +160,14 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line sint.y:117
-
-func pausar_() {
-	fmt.Println("---------------------------------")
-	fmt.Println("--Presiona Enter para continuar--")
-	fmt.Println("---------------------------------")
-	bufio.NewReader(os.Stdin).ReadBytes('\n')
-}
+//line sint.y:119
 
 func leerArchivoDeEntrada(ruta string) {
 	fmt.Println("")
 	fmt.Println("")
-	fmt.Println("							.... Analizando un archivo ...")
+	fmt.Println("							||||||||||||||||||||||||||||||||||")
+	fmt.Println("							|||||| Analizando un archivo |||||")
+	fmt.Println("							||||||||||||||||||||||||||||||||||")
 	fmt.Println("")
 	ARCHIVO, error := os.Open(QuitarComillas(ruta))
 	algo_salio_mal := false
@@ -802,109 +797,109 @@ yydefault:
 		}
 	case 28:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:85
+//line sint.y:87
 		{
 			Size_ = yyDollar[4].str
 		}
 	case 29:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:86
+//line sint.y:88
 		{
 			Path_ = yyDollar[4].str
 		}
 	case 30:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:87
+//line sint.y:89
 		{
 			Name_ = yyDollar[4].NoTerminal
 		}
 	case 31:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:88
+//line sint.y:90
 		{
 			Unit_k_ = yyDollar[4].NoTerminal
 		}
 	case 32:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:89
+//line sint.y:91
 		{
 			tipo_particion_ = yyDollar[4].NoTerminal
 		}
 	case 33:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:90
+//line sint.y:92
 		{
 			FIT_ = yyDollar[4].NoTerminal
 		}
 	case 34:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:91
+//line sint.y:93
 		{
 			OPCION_DELETE_ = yyDollar[4].NoTerminal
 		}
 	case 35:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:92
+//line sint.y:94
 		{
 			add_ = yyDollar[4].str
 		}
 	case 36:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:95
+//line sint.y:97
 		{
 			yyVAL.NoTerminal = yyDollar[1].str
 		}
 	case 37:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:96
+//line sint.y:98
 		{
 			yyVAL.NoTerminal = yyDollar[1].str
 		}
 	case 38:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:99
+//line sint.y:101
 		{
 			yyVAL.NoTerminal = yyDollar[1].str
 		}
 	case 39:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:100
+//line sint.y:102
 		{
 			yyVAL.NoTerminal = yyDollar[1].str
 		}
 	case 40:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:101
+//line sint.y:103
 		{
 			yyVAL.NoTerminal = yyDollar[1].str
 		}
 	case 41:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:104
+//line sint.y:106
 		{
 			yyVAL.NoTerminal = yyDollar[1].str
 		}
 	case 42:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:105
+//line sint.y:107
 		{
 			yyVAL.NoTerminal = yyDollar[1].str
 		}
 	case 43:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:106
+//line sint.y:108
 		{
 			yyVAL.NoTerminal = yyDollar[1].str
 		}
 	case 44:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:110
+//line sint.y:112
 		{
 			yyVAL.NoTerminal = QuitarComillas(yyDollar[1].str)
 		}
 	case 45:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:111
+//line sint.y:113
 		{
 			yyVAL.NoTerminal = QuitarComillas(yyDollar[1].str)
 		}
