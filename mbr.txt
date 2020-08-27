@@ -1,0 +1,96 @@
+Digraph tablaMbr{
+ charset = latin1;
+tbl[
+shape = plaintext
+label =<<table border = '4' cellborder = '3' color = 'black' cellspacing = '4' bgcolor = "bisque4"><tr>
+<td color = "grey" colspan = '2'> TABLA MBR </td> </tr>
+<tr>
+<td color = "grey">Size</td>
+<td color = "grey">2097152</td>
+</tr>
+<tr>
+<td color = "grey">Signature</td>
+<td color = "grey">24</td>
+</tr>
+<tr>
+<td color = "grey">Fecha</td>
+<td color = "grey">2020-08-26 19:49:18</td>
+</tr>
+</table>
+>];
+}
+= "grey" colspan = '2'>Particion 1</td>
+</tr>
+<tr>
+<td color = "grey">STATUS</td>
+<td color = "grey">y</td>
+</tr>
+<tr>
+<td color = "grey">INICIO</td>
+<td color = "grey">176</td>
+</tr>
+<tr>
+<td color = "grey">SIZE</td>
+<td color = "grey">10240</td>
+</tr>
+<tr>
+<td color = "grey">FIT</td>
+<td color = "grey">w</td>
+</tr>
+<tr>
+<td color = "grey" colspan = '2'>Particion 2</td>
+</tr>
+<tr>
+<td color = "grey">STATUS</td>
+<td color = "grey">y</td>
+</tr>
+<tr>
+<td color = "grey">INICIO</td>
+<td color = "grey">10417</td>
+</tr>
+<tr>
+<td color = "grey">SIZE</td>
+<td color = "grey">500</td>
+</tr>
+<tr>
+<td color = "grey">FIT</td>
+<td color = "grey">b</td>
+</tr>
+<tr>
+<td color = "grey" colspan = '2'>Particion 3</td>
+</tr>
+<tr>
+<td color = "grey">STATUS</td>
+<td color = "grey">y</td>
+</tr>
+<tr>
+<td color = "grey">INICIO</td>
+<td color = "grey">10918</td>
+</tr>
+<tr>
+<td color = "grey">SIZE</td>
+<td color = "grey">777</td>
+</tr>
+<tr>
+<td color = "grey">FIT</td>
+<td color = "grey">w</td>
+</tr>
+</table>
+>];
+}
+</tr>
+<tr>
+<td color = "grey">INICIO</td>
+<td color = "grey">10918</td>
+</tr>
+<tr>
+<td color = "grey">SIZE</td>
+<td color = "grey">777</td>
+</tr>
+<tr>
+<td color = "grey">FIT</td>
+<td color = "grey">w</td>
+</tr>
+</table>
+>];
+}

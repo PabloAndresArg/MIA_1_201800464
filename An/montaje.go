@@ -95,7 +95,7 @@ func verificarSiExisteParticion(direccion_archivo_binario string, nombreBuscar s
 }
 
 func mostrarMounts() {
-	fmt.Println("***************DISCOS MONTADOS****************")
+	fmt.Println("***************PARTICIONES MONTADOS****************")
 	b := false
 	for u_u := 0; u_u < len(DiscosMontados_); u_u++ {
 		b = true
@@ -119,6 +119,15 @@ func yaRegistreElPathEnElMount(path string) bool {
 func getDiscoMontadoPorPath(path string) *disco {
 	for x := 0; x < len(DiscosMontados_); x++ {
 		if DiscosMontados_[x].Path == path {
+			return &DiscosMontados_[x]
+		}
+	}
+	discoVacio := disco{Letra: "NOENCONTRADO"}
+	return &discoVacio // en teoria nunca va pasar
+}
+func getDiscoMontadoPorLetraID(letraID string) *disco {
+	for x := 0; x < len(DiscosMontados_); x++ {
+		if DiscosMontados_[x].Letra == letraID {
 			return &DiscosMontados_[x]
 		}
 	}
