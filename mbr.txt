@@ -1,95 +1,85 @@
 Digraph tablaMbr{
- charset = latin1;
 tbl[
 shape = plaintext
 label =<<table border = '4' cellborder = '3' color = 'black' cellspacing = '4' bgcolor = "bisque4"><tr>
-<td color = "grey" colspan = '2'> TABLA MBR </td> </tr>
+<td color = "grey" colspan = '2'> REPORTE MBR </td> </tr>
 <tr>
 <td color = "grey">Size</td>
-<td color = "grey">2097152</td>
+<td color = "grey">"2097152"</td>
 </tr>
 <tr>
 <td color = "grey">Signature</td>
-<td color = "grey">24</td>
+<td color = "grey">"24"</td>
 </tr>
 <tr>
 <td color = "grey">Fecha</td>
 <td color = "grey">2020-08-26 19:49:18</td>
 </tr>
-</table>
->];
-}
-= "grey" colspan = '2'>Particion 1</td>
-</tr>
+<tr>
+<td color = "grey" colspan = '2'> Particion0</td> </tr>
 <tr>
 <td color = "grey">STATUS</td>
 <td color = "grey">y</td>
 </tr>
 <tr>
+<td color = "grey">TIPO</td>
+<td color = "grey">P</td>
+</tr>
+<tr>
 <td color = "grey">INICIO</td>
-<td color = "grey">176</td>
+<td color = "grey">"176"</td>
 </tr>
 <tr>
 <td color = "grey">SIZE</td>
-<td color = "grey">10240</td>
+<td color = "grey">"10240"</td>
 </tr>
 <tr>
 <td color = "grey">FIT</td>
-<td color = "grey">w</td>
+<td color = "grey">W</td>
 </tr>
 <tr>
-<td color = "grey" colspan = '2'>Particion 2</td>
-</tr>
+<td color = "grey" colspan = '2'> Particion1</td> </tr>
 <tr>
 <td color = "grey">STATUS</td>
 <td color = "grey">y</td>
 </tr>
 <tr>
+<td color = "grey">TIPO</td>
+<td color = "grey">P</td>
+</tr>
+<tr>
 <td color = "grey">INICIO</td>
-<td color = "grey">10417</td>
+<td color = "grey">"10417"</td>
 </tr>
 <tr>
 <td color = "grey">SIZE</td>
-<td color = "grey">500</td>
+<td color = "grey">"500"</td>
 </tr>
 <tr>
 <td color = "grey">FIT</td>
-<td color = "grey">b</td>
+<td color = "grey">B</td>
 </tr>
 <tr>
-<td color = "grey" colspan = '2'>Particion 3</td>
-</tr>
+<td color = "grey" colspan = '2'> Particion2</td> </tr>
 <tr>
 <td color = "grey">STATUS</td>
 <td color = "grey">y</td>
 </tr>
 <tr>
-<td color = "grey">INICIO</td>
-<td color = "grey">10918</td>
-</tr>
-<tr>
-<td color = "grey">SIZE</td>
-<td color = "grey">777</td>
-</tr>
-<tr>
-<td color = "grey">FIT</td>
-<td color = "grey">w</td>
-</tr>
-</table>
->];
-}
+<td color = "grey">TIPO</td>
+<td color = "grey">E</td>
 </tr>
 <tr>
 <td color = "grey">INICIO</td>
-<td color = "grey">10918</td>
+<td color = "grey">"10918"</td>
 </tr>
 <tr>
 <td color = "grey">SIZE</td>
-<td color = "grey">777</td>
+<td color = "grey">"777"</td>
 </tr>
 <tr>
 <td color = "grey">FIT</td>
-<td color = "grey">w</td>
+<td color = "grey">W</td>
 </tr>
 </table>
 >];

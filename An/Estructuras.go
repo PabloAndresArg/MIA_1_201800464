@@ -122,6 +122,18 @@ func (p Particion) imprimirDatosParticion() {
 	fmt.Printf("inicio: %d\n", p.Inicio)
 	fmt.Printf("size: %d\n", p.Size)
 }
+func (p Particion) getFitToString() string {
+	switch p.Fit {
+	case 'w':
+		return "W"
+	case 'b':
+		return "B"
+	case 'f':
+		return "F"
+	default:
+		return " "
+	}
+}
 func (m TipoMbr) getInicio(indice uint8) int64 { // si donde esta disponible es la posicion 0 que pasa ?
 
 	switch indice {
