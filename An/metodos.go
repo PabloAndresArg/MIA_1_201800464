@@ -123,6 +123,7 @@ func CrearDisco(numero string, ruta string, nombre string, K_o_M string) {
 	FechaFormatoTime := time.Now()
 	mbr := TipoMbr{Tamanio: size, DiskSignature: dameUnNumeroRandom()}
 	copy(mbr.Fecha[:], FechaFormatoTime.String())
+	
 	for i := 0; i < 4; i++ {
 		mbr.Particiones[i] = Particion{Status: 'n', Size: 0} // PARA MI N ES QUE NO HAY , Y es de yes que si hay xd
 	}

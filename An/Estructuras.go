@@ -24,7 +24,6 @@ type Particion struct {
 	Size   int64
 	Nombre [16]byte
 	Tipo   byte
-	// PUEDO TENER UN VECTOR DINAMICO DE EXTENDED_B_R limitado solo por el tamaño de mi archivo
 }
 
 //Ebr es un  EBR solo existen adentro de las particiones extendidas
@@ -227,4 +226,14 @@ func (m TipoMbr) buscarExistenciaEnParticiones(nombreBuscar string) bool { // re
 	}
 	// si adentro de las primarias no lo encontro busco en la extendida en las logicas , eso suena mas complejo
 	return false
+}
+
+func (p Particion) getNameHowString() string {
+	auxSalida := ""
+	for i := 0; i < 16; i++ {
+		if p.Nombre[i] != 0 {
+			auxSalida += string(p.Nombre[i])
+		}
+	}
+	return auxSalida
 }

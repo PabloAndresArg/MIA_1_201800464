@@ -96,7 +96,7 @@ func crearTxt(m TipoMbr) { // pasar tambien la ruta
 		if status == 'y' {
 
 			tipo := (m.Particiones[x].Tipo)
-			//nombreParticion := m.Particiones[x].Nombre[:16]
+			nombre := m.Particiones[x].getNameHowString()
 			w.WriteString("<tr>\n") // TITULO
 			w.WriteString("<td color = \"grey\" colspan = '2'> Particion" + strconv.Itoa(x) + "</td> ")
 			w.WriteString("</tr>\n") // FIN TITULO
@@ -106,11 +106,11 @@ func crearTxt(m TipoMbr) { // pasar tambien la ruta
 			w.WriteString("<td color = \"grey\">" + string(status) + "</td>\n")
 			w.WriteString("</tr>\n")
 
-			/*// NOMBRE
+			// NOMBRE
 			w.WriteString("<tr>\n")
 			w.WriteString("<td color = \"grey\">NOMBRE</td>\n")
-			w.WriteString("<td color = \"grey\">" + string(nombreParticion) + "</td>\n")
-			w.WriteString("</tr>\n")*/
+			w.WriteString("<td color = \"grey\">" + nombre + "</td>\n")
+			w.WriteString("</tr>\n")
 
 			// tipo
 			w.WriteString("<tr>\n")

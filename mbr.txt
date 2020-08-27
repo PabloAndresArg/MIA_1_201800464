@@ -5,7 +5,7 @@ label =<<table border = '4' cellborder = '3' color = 'black' cellspacing = '4' b
 <td color = "grey" colspan = '2'> REPORTE MBR </td> </tr>
 <tr>
 <td color = "grey">Size</td>
-<td color = "grey">"2097152"</td>
+<td color = "grey">"5242880"</td>
 </tr>
 <tr>
 <td color = "grey">Signature</td>
@@ -13,13 +13,17 @@ label =<<table border = '4' cellborder = '3' color = 'black' cellspacing = '4' b
 </tr>
 <tr>
 <td color = "grey">Fecha</td>
-<td color = "grey">2020-08-26 19:49:18</td>
+<td color = "grey">2020-08-27 15:17:26</td>
 </tr>
 <tr>
 <td color = "grey" colspan = '2'> Particion0</td> </tr>
 <tr>
 <td color = "grey">STATUS</td>
 <td color = "grey">y</td>
+</tr>
+<tr>
+<td color = "grey">NOMBRE</td>
+<td color = "grey">Part1</td>
 </tr>
 <tr>
 <td color = "grey">TIPO</td>
@@ -31,11 +35,11 @@ label =<<table border = '4' cellborder = '3' color = 'black' cellspacing = '4' b
 </tr>
 <tr>
 <td color = "grey">SIZE</td>
-<td color = "grey">"10240"</td>
+<td color = "grey">"20480"</td>
 </tr>
 <tr>
 <td color = "grey">FIT</td>
-<td color = "grey">W</td>
+<td color = "grey">B</td>
 </tr>
 <tr>
 <td color = "grey" colspan = '2'> Particion1</td> </tr>
@@ -44,16 +48,20 @@ label =<<table border = '4' cellborder = '3' color = 'black' cellspacing = '4' b
 <td color = "grey">y</td>
 </tr>
 <tr>
+<td color = "grey">NOMBRE</td>
+<td color = "grey">Part2</td>
+</tr>
+<tr>
 <td color = "grey">TIPO</td>
 <td color = "grey">P</td>
 </tr>
 <tr>
 <td color = "grey">INICIO</td>
-<td color = "grey">"10417"</td>
+<td color = "grey">"20657"</td>
 </tr>
 <tr>
 <td color = "grey">SIZE</td>
-<td color = "grey">"500"</td>
+<td color = "grey">"18432"</td>
 </tr>
 <tr>
 <td color = "grey">FIT</td>
@@ -66,16 +74,46 @@ label =<<table border = '4' cellborder = '3' color = 'black' cellspacing = '4' b
 <td color = "grey">y</td>
 </tr>
 <tr>
+<td color = "grey">NOMBRE</td>
+<td color = "grey">Part3</td>
+</tr>
+<tr>
 <td color = "grey">TIPO</td>
-<td color = "grey">E</td>
+<td color = "grey">P</td>
 </tr>
 <tr>
 <td color = "grey">INICIO</td>
-<td color = "grey">"10918"</td>
+<td color = "grey">"39090"</td>
 </tr>
 <tr>
 <td color = "grey">SIZE</td>
-<td color = "grey">"777"</td>
+<td color = "grey">"102400"</td>
+</tr>
+<tr>
+<td color = "grey">FIT</td>
+<td color = "grey">W</td>
+</tr>
+<tr>
+<td color = "grey" colspan = '2'> Particion3</td> </tr>
+<tr>
+<td color = "grey">STATUS</td>
+<td color = "grey">y</td>
+</tr>
+<tr>
+<td color = "grey">NOMBRE</td>
+<td color = "grey">Part4</td>
+</tr>
+<tr>
+<td color = "grey">TIPO</td>
+<td color = "grey">P</td>
+</tr>
+<tr>
+<td color = "grey">INICIO</td>
+<td color = "grey">"141491"</td>
+</tr>
+<tr>
+<td color = "grey">SIZE</td>
+<td color = "grey">"475136"</td>
 </tr>
 <tr>
 <td color = "grey">FIT</td>
