@@ -16,21 +16,6 @@ type TipoMbr struct {
 	Particiones   [4]Particion // DE TIPO PRIMARIA
 }
 
-// Montura me sirve para el comando mount
-type Montura struct {
-	// path , nombre , id
-	PathDisco     string
-	Nombre        [16]byte
-	id            string
-	letraDelDisco byte
-}
-
-type disco struct {
-	path                string
-	letra               byte
-	particionesMontadas [30]Montura
-}
-
 // Particion primaria, extendida o logica
 type Particion struct {
 	Status byte
@@ -212,8 +197,8 @@ func (m TipoMbr) imprimirDatosMBR() { // retornar si si pudo agregar la particio
 	println(color.Green + "*********************************************" + color.Reset)
 }
 
-func (mont Montura) imprimirMontura() {
-	print(color.Green + "ID: " + mont.id + " Path: " + mont.PathDisco + color.Reset)
+func (mont Montura) getImpresionMontura() {
+	print(color.Green + "ID: " + mont.Id + " Path: " + mont.PathDisco + color.Reset)
 	fmt.Printf(" Nombre: %s\n", mont.Nombre)
 }
 
@@ -223,7 +208,7 @@ func (m TipoMbr) buscarExistenciaEnParticiones(nombreBuscar string) bool { // re
 	for x := 0; x < len(m.Particiones); x++ {
 		if m.Particiones[x].Status == 'y' && (m.Particiones[x].Tipo == 'p' || m.Particiones[x].Tipo == 'P') { // esta libre
 			if string(m.Particiones[x].Nombre[:]) == string(aux[:]) {
-				fmt.Println(string(m.Particiones[x].Nombre[:]) + " == " + nombreBuscar)
+				//fmt.Println(string(m.Particiones[x].Nombre[:]) + " == " + nombreBuscar)
 				return true
 			}
 		}
@@ -231,5 +216,3 @@ func (m TipoMbr) buscarExistenciaEnParticiones(nombreBuscar string) bool { // re
 	// si adentro de las primarias no lo encontro busco en la extendida en las logicas , eso suena mas complejo
 	return false
 }
-
-

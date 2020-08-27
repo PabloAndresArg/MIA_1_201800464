@@ -65,6 +65,7 @@ comentario		  \#(.)*
 file_n 				[f][i][l][e]([0-9])+
 extension_dsk   	{id}(\.)dsk
 continuacio_de_linea  \\\*
+vd_ID_NUMERO       [v][d][a-zA-Z_][0-9]+
 %%
 	c = l.Rule0()
 
@@ -127,7 +128,12 @@ pause        yylval.str = string(l.TokenBytes(nil)); return PAUSE
 bf			 yylval.str = string(l.TokenBytes(nil)); return BF
 ff			 yylval.str = string(l.TokenBytes(nil)); return FF
 wf 		 	 yylval.str = string(l.TokenBytes(nil)); return WF // opcionales para el fit pero mmm quedaria mejor en la gramatica con comillas simples 
+nombre  	 yylval.str = string(l.TokenBytes(nil)); return CM_NOMBRE
+ruta yylval.str = string(l.TokenBytes(nil));return CM_RUTA 
+rep			 yylval.str = string(l.TokenBytes(nil)); return REP 
+{vd_ID_NUMERO} yylval.str = string(l.TokenBytes(nil)); return VD_ID_NUMERO
 {extension_dsk} yylval.str = string(l.TokenBytes(nil));return EXTENSION_DSK
+
 {id}         yylval.str = string(l.TokenBytes(nil)); return ID 
 {digit}      yylval.str = string(l.TokenBytes(nil)); return NUMERO // strconv.Atoi("1")
 
