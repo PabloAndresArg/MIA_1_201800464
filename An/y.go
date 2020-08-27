@@ -160,7 +160,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line sint.y:119
+//line sint.y:120
 
 func leerArchivoDeEntrada(ruta string) {
 	fmt.Println("")
@@ -290,18 +290,18 @@ var yyPgo = [...]int{
 
 var yyR1 = [...]int{
 	0, 1, 1, 1, 5, 5, 5, 5, 5, 3,
-	15, 15, 8, 6, 9, 9, 10, 10, 10, 10,
-	7, 7, 12, 12, 12, 11, 16, 16, 17, 17,
-	17, 17, 17, 17, 17, 17, 14, 14, 2, 2,
-	2, 13, 13, 13, 4, 4,
+	3, 15, 15, 8, 6, 9, 9, 10, 10, 10,
+	10, 7, 7, 12, 12, 12, 11, 16, 16, 17,
+	17, 17, 17, 17, 17, 17, 17, 14, 14, 2,
+	2, 2, 13, 13, 13, 4, 4,
 }
 
 var yyR2 = [...]int{
 	0, 0, 5, 1, 1, 1, 1, 1, 1, 3,
-	4, 4, 5, 2, 2, 1, 4, 4, 4, 4,
-	1, 1, 1, 1, 1, 2, 2, 1, 4, 4,
-	4, 4, 4, 4, 4, 4, 1, 1, 1, 1,
-	1, 1, 1, 1, 1, 1,
+	1, 4, 4, 5, 2, 2, 1, 4, 4, 4,
+	4, 1, 1, 1, 1, 1, 2, 2, 1, 4,
+	4, 4, 4, 4, 4, 4, 4, 1, 1, 1,
+	1, 1, 1, 1, 1, 1, 1,
 }
 
 var yyChk = [...]int{
@@ -318,14 +318,14 @@ var yyChk = [...]int{
 
 var yyDef = [...]int{
 	1, -2, 0, 3, 4, 5, 6, 7, 8, 0,
-	0, 0, 0, 0, 13, 15, 0, 0, 25, 27,
-	0, 0, 0, 0, 14, 0, 0, 0, 0, 0,
-	26, 0, 0, 0, 0, 0, 0, 0, 0, 9,
+	0, 0, 10, 0, 14, 16, 0, 0, 26, 28,
+	0, 0, 0, 0, 15, 0, 0, 0, 0, 0,
+	27, 0, 0, 0, 0, 0, 0, 0, 0, 9,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 2, 16,
-	17, 18, 19, 20, 21, 12, 28, 29, 30, 44,
-	45, 31, 22, 23, 24, 32, 41, 42, 43, 33,
-	38, 39, 40, 34, 36, 37, 35, 10, 11,
+	0, 0, 0, 0, 0, 0, 0, 0, 2, 17,
+	18, 19, 20, 21, 22, 13, 29, 30, 31, 45,
+	46, 32, 23, 24, 25, 33, 42, 43, 44, 34,
+	39, 40, 41, 35, 37, 38, 36, 11, 12,
 }
 
 var yyTok1 = [...]int{
@@ -708,62 +708,61 @@ yydefault:
 		yyDollar = yyS[yypt-3 : yypt+1]
 //line sint.y:51
 		{
-			fmt.Println("INSTRUCCION")
-			fmt.Println("MONTAR")
+			crearMontaje(QuitarComillas(Path_), QuitarComillas(Name_))
 		}
 	case 10:
-		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:53
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line sint.y:52
 		{
-			Path_ = yyDollar[4].str
+			mostrarMounts()
 		}
 	case 11:
 		yyDollar = yyS[yypt-4 : yypt+1]
 //line sint.y:54
 		{
-			Name_ = yyDollar[4].NoTerminal
+			Path_ = yyDollar[4].str
 		}
 	case 12:
+		yyDollar = yyS[yypt-4 : yypt+1]
+//line sint.y:55
+		{
+			Name_ = yyDollar[4].NoTerminal
+		}
+	case 13:
 		yyDollar = yyS[yypt-5 : yypt+1]
-//line sint.y:57
+//line sint.y:58
 		{
 			EliminarDisco(yyDollar[5].str)
 		}
-	case 13:
+	case 14:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line sint.y:59
+//line sint.y:60
 		{
 			CrearDisco(Size_, Path_, Name_, Unit_m_)
-		}
-	case 16:
-		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:64
-		{
-			Size_ = yyDollar[4].str
 		}
 	case 17:
 		yyDollar = yyS[yypt-4 : yypt+1]
 //line sint.y:65
 		{
-			Path_ = yyDollar[4].str
+			Size_ = yyDollar[4].str
 		}
 	case 18:
 		yyDollar = yyS[yypt-4 : yypt+1]
 //line sint.y:66
 		{
-			Name_ = yyDollar[4].str
+			Path_ = yyDollar[4].str
 		}
 	case 19:
 		yyDollar = yyS[yypt-4 : yypt+1]
 //line sint.y:67
 		{
-			Unit_m_ = yyDollar[4].NoTerminal
+			Name_ = yyDollar[4].str
 		}
 	case 20:
-		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:72
+		yyDollar = yyS[yypt-4 : yypt+1]
+//line sint.y:68
 		{
-			yyVAL.NoTerminal = yyDollar[1].str
+			Unit_m_ = yyDollar[4].NoTerminal
 		}
 	case 21:
 		yyDollar = yyS[yypt-1 : yypt+1]
@@ -773,7 +772,7 @@ yydefault:
 		}
 	case 22:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:76
+//line sint.y:74
 		{
 			yyVAL.NoTerminal = yyDollar[1].str
 		}
@@ -790,64 +789,64 @@ yydefault:
 			yyVAL.NoTerminal = yyDollar[1].str
 		}
 	case 25:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line sint.y:79
+		{
+			yyVAL.NoTerminal = yyDollar[1].str
+		}
+	case 26:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line sint.y:81
+//line sint.y:82
 		{
 			MetodosParticiones(Path_, Name_, Size_, FIT_, OPCION_DELETE_, add_, tipo_particion_, Unit_k_)
-		}
-	case 28:
-		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:87
-		{
-			Size_ = yyDollar[4].str
 		}
 	case 29:
 		yyDollar = yyS[yypt-4 : yypt+1]
 //line sint.y:88
 		{
-			Path_ = yyDollar[4].str
+			Size_ = yyDollar[4].str
 		}
 	case 30:
 		yyDollar = yyS[yypt-4 : yypt+1]
 //line sint.y:89
 		{
-			Name_ = yyDollar[4].NoTerminal
+			Path_ = yyDollar[4].str
 		}
 	case 31:
 		yyDollar = yyS[yypt-4 : yypt+1]
 //line sint.y:90
 		{
-			Unit_k_ = yyDollar[4].NoTerminal
+			Name_ = yyDollar[4].NoTerminal
 		}
 	case 32:
 		yyDollar = yyS[yypt-4 : yypt+1]
 //line sint.y:91
 		{
-			tipo_particion_ = yyDollar[4].NoTerminal
+			Unit_k_ = yyDollar[4].NoTerminal
 		}
 	case 33:
 		yyDollar = yyS[yypt-4 : yypt+1]
 //line sint.y:92
 		{
-			FIT_ = yyDollar[4].NoTerminal
+			tipo_particion_ = yyDollar[4].NoTerminal
 		}
 	case 34:
 		yyDollar = yyS[yypt-4 : yypt+1]
 //line sint.y:93
 		{
-			OPCION_DELETE_ = yyDollar[4].NoTerminal
+			FIT_ = yyDollar[4].NoTerminal
 		}
 	case 35:
 		yyDollar = yyS[yypt-4 : yypt+1]
 //line sint.y:94
 		{
-			add_ = yyDollar[4].str
+			OPCION_DELETE_ = yyDollar[4].NoTerminal
 		}
 	case 36:
-		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:97
+		yyDollar = yyS[yypt-4 : yypt+1]
+//line sint.y:95
 		{
-			yyVAL.NoTerminal = yyDollar[1].str
+			add_ = yyDollar[4].str
 		}
 	case 37:
 		yyDollar = yyS[yypt-1 : yypt+1]
@@ -857,7 +856,7 @@ yydefault:
 		}
 	case 38:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:101
+//line sint.y:99
 		{
 			yyVAL.NoTerminal = yyDollar[1].str
 		}
@@ -875,7 +874,7 @@ yydefault:
 		}
 	case 41:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:106
+//line sint.y:104
 		{
 			yyVAL.NoTerminal = yyDollar[1].str
 		}
@@ -893,13 +892,19 @@ yydefault:
 		}
 	case 44:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:112
+//line sint.y:109
 		{
-			yyVAL.NoTerminal = QuitarComillas(yyDollar[1].str)
+			yyVAL.NoTerminal = yyDollar[1].str
 		}
 	case 45:
 		yyDollar = yyS[yypt-1 : yypt+1]
 //line sint.y:113
+		{
+			yyVAL.NoTerminal = QuitarComillas(yyDollar[1].str)
+		}
+	case 46:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line sint.y:114
 		{
 			yyVAL.NoTerminal = QuitarComillas(yyDollar[1].str)
 		}

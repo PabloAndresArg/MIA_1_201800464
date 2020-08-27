@@ -48,8 +48,9 @@ MENU_COMANDOS:  CREAR_DISCO
 			 |  PAUSE {pausar_()}
    	         ;
 
-MONTAR: MOUNT PARAMETROS_MONTAR PARAMETROS_MONTAR { fmt.Println("INSTRUCCION"); fmt.Println("MONTAR")}
-      ;
+MONTAR: MOUNT PARAMETROS_MONTAR PARAMETROS_MONTAR {crearMontaje(QuitarComillas(Path_) ,QuitarComillas(Name_))}
+      | MOUNT { mostrarMounts() }
+	  ;
 PARAMETROS_MONTAR:'-' PATH FLECHA RUTA  { Path_ = $4 }
 		         |'-' NAME  FLECHA CADENA_O_ID { Name_ = $4}
 				 ;

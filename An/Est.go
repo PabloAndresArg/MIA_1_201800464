@@ -1,6 +1,13 @@
 package An
 
+import (
+	"fmt"
+
+	"github.com/TwinProduction/go-color"
+)
+
 var RegistroSignatures []int64 //Slice sin tamaño definido
+var DiscosMontados_ []Montura  //Slice sin tamaño definido
 // VARIABLES GLOBLALES
 
 var Name_ string = ""
@@ -32,4 +39,21 @@ func esRepetido(id int64) bool {
 	}
 	addRegistroSignature(id)
 	return false
+}
+
+func addMontura(mon Montura) {
+	DiscosMontados_ = append(DiscosMontados_, mon)
+}
+
+func mostrarMounts() {
+	fmt.Println("***************DISCOS MONTADOS****************")
+	b := false
+	for u_u := 0; u_u < len(DiscosMontados_); u_u++ {
+		b = true
+		DiscosMontados_[u_u].imprimirMontura()
+	}
+	if !(b) {
+		println(color.Yellow + "POR EL MOMENTO NO HAY PARTICIONES MONTADAS" + color.Reset)
+	}
+	fmt.Println("**********************************************")
 }

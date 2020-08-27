@@ -16,6 +16,14 @@ type TipoMbr struct {
 	Particiones   [4]Particion // DE TIPO PRIMARIA
 }
 
+// Montura me sirve para el comando mount
+type Montura struct {
+	// path , nombre , id , y arreglo dinamico de particiones
+	PathDisco string
+	Nombre    [16]byte
+	id        string
+}
+
 // Particion primaria, extendida o logica
 type Particion struct {
 	Status byte
@@ -54,7 +62,7 @@ func (m TipoMbr) hayEspacioSuficiente(nuevoEspacio int64) bool { // retornar si 
 		tamanoOcupado += int64(m.Particiones[x].Size)
 	}
 	if m.Tamanio > (tamanoOcupado + nuevoEspacio) {
-		fmt.Println("\n" + fmt.Sprint("tamanio del disco:", m.Tamanio) + fmt.Sprint(" tamanio Ocupado:", tamanoOcupado) + fmt.Sprint("Espacio de la nueva particion: ", nuevoEspacio))
+		fmt.Println("\n" + fmt.Sprint("tamanio del disco:", m.Tamanio) + fmt.Sprint(" tamanio Ocupado: ", tamanoOcupado) + fmt.Sprint(" Espacio de la nueva particion: ", nuevoEspacio))
 		//TAMANIO DEL DISCO - (INICIO+SIZE) DE LA ULTIMA POSICION DE MI ARRAY DE PARTICIONES
 		// disponibleDisco - disponible = FRAGMENTACION    y considerar que tengo un byte menos a la hora de escribir hasta el final
 		if m.hayFragmentacion() { // TENER EN CUENTA QUE LA FRAGMENTACION SOLO APARECE ENTRE PARTICIONES , NO EN LOS EXTREMOS
@@ -69,7 +77,9 @@ func (m TipoMbr) hayEspacioSuficiente(nuevoEspacio int64) bool { // retornar si 
 // FILTRO 3
 func (m TipoMbr) yaExisteUnaExtendida() bool { // retornar si si pudo agregar la particion o si no
 	for x := 0; x < len(m.Particiones); x++ {
+
 		if m.Particiones[x].Tipo == 'E' || m.Particiones[x].Tipo == 'e' { // esta libre
+
 			return true
 		}
 	}
@@ -154,6 +164,15 @@ func getFit(fit string) byte {
 
 	}
 }
+func (m TipoMbr) crearParticionLogica() {
+	if m.yaExisteUnaExtendida() {
+		for x := 0; x < len(m.Particiones); x++ {
+			if m.Particiones[x].Tipo == 'E' || m.Particiones[x].Tipo == 'e' { // esta libre
+				//
+			}
+		}
+	}
+}
 
 func (m TipoMbr) hayFragmentacion() bool {
 	// ARREGLODINAMICO
@@ -184,4 +203,9 @@ func (m TipoMbr) imprimirDatosMBR() { // retornar si si pudo agregar la particio
 		}
 	}
 	println(color.Green + "*********************************************" + color.Reset)
+}
+
+func (mont Montura) imprimirMontura() {
+	print(color.Green + "ID: " + mont.id + " Path: " + mont.PathDisco + color.Reset)
+	fmt.Printf(" Nombre: %s\n", mont.Nombre)
 }

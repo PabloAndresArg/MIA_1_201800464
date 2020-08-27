@@ -194,7 +194,7 @@ func LeerBinariamenteMimbr(direccion_archivo_binario string) {
 	buff := bytes.NewBuffer(datosEnBytes)                   // lo convierto a buffer porque eso pedia la funcion
 	err = binary.Read(buff, binary.BigEndian, &mrbAuxiliar) //se decodifica y se guarda en el mbrAuxiliar , asi que despues de aca ya tengo el original
 	if err != nil {
-		log.Fatal("binary.Read failed", err)
+		log.Fatal("error al leer", err)
 	}
 	mrbAuxiliar.imprimirDatosMBR()
 	//  v – formats the value in a default format
@@ -262,10 +262,17 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 						mrbAuxiliar.imprimirDatosMBR()
 					case 'e':
 						if !(mrbAuxiliar.yaExisteUnaExtendida()) { // si no existe una extendida pues la puede crear
-							pos := mrbAuxiliar.crearParticionExtendida(fit, size, nombreName, tipoParticionByte)
-							mrbAuxiliar.Particiones[pos].imprimirDatosParticion()
+							pos := mrbAuxiliar.crearParticionExtendida(fit, size, nombreName, tipoParticionByte) // le mande directo e
 							mrbAuxiliar.imprimirDatosMBR()
+							pos = pos + 0
+							/* TENGO QUE CREAR EL EBR DE INICIO */
+							desde := int64(mrbAuxiliar.Particiones[pos].Inicio)
+							ebr := Ebr{Inicio: desde, Status: 'n', Size: 0, Next: -1, Fit: 'w'} // el name esta vacio
+							escribirUnEBR(archivoDisco, desde, ebr)
+						} else {
+							println(color.Red + "Lo siento solo se puede tener una particion extendida por disco" + color.Reset)
 						}
+
 					case 'l':
 						if mrbAuxiliar.yaExisteUnaExtendida() { // si EXISTE es posible crear una logica
 							println(color.Gray + "CREANDO PARTICION LOGICA" + color.Reset)
@@ -275,8 +282,8 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 					default:
 						println("Error en el tipo de particion")
 					}
-					// SIN IMPORTAR LE CASO HAY UN CAMBIO EN EL MBR POR ESO LO TENGO QUE VOLVER A ESCRIBIR EN MI DISCO
 
+					/*escribiendo el MBR */
 					archivoDisco.Seek(0, 0) // al inicio del archivo para sobreescribir mi disco
 					var escritor bytes.Buffer
 					binary.Write(&escritor, binary.BigEndian, &mrbAuxiliar)
@@ -299,6 +306,13 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 	}
 
 	limpiarVariableFdisk()
+}
+
+func escribirUnEBR(archivoDisco *os.File, desde int64, objeto Ebr) {
+	archivoDisco.Seek(desde, 0)
+	var escritor bytes.Buffer
+	binary.Write(&escritor, binary.BigEndian, &objeto)
+	escribirBinariamente(archivoDisco, escritor.Bytes())
 }
 
 func limpiarVariableFdisk() {
@@ -327,4 +341,37 @@ func pausar_() {
 	println(color.Blue + "--Presiona Enter para continuar--" + color.Reset)
 	fmt.Println("---------------------------------")
 	bufio.NewReader(os.Stdin).ReadBytes('\n')
+}
+
+func crearMontaje(path string, nombre string) { // montaje
+	if len(path) != 0 && len(nombre) != 0 {
+		if _, err := os.Stat(path); !(os.IsNotExist(err)) {
+			fmt.Println("BUSCANDO SI EXISTE ESE NAME")
+			buscarParticion(path)
+		} else {
+			println(color.Red + "--No existe ese disco--" + color.Reset)
+		}
+	} else {
+		fmt.Println("falto especificar un parametro obligatorio")
+	}
+
+	Path_ = ""
+	Name_ = ""
+}
+
+func buscarParticion(direccion_archivo_binario string) {
+	archivoDisco, err := os.OpenFile(QuitarComillas(direccion_archivo_binario), os.O_RDWR, 0644)
+	defer archivoDisco.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+	mrbAuxiliar := TipoMbr{}
+	tamanioMbr := binary.Size(mrbAuxiliar) // este mbrAuxiliar aunque este vacio ya tiene el tamanio por defecto por eso aca se usa
+	datosEnBytes := leerBytePorByte(archivoDisco, tamanioMbr)
+	buff := bytes.NewBuffer(datosEnBytes)                   // lo convierto a buffer porque eso pedia la funcion
+	err = binary.Read(buff, binary.BigEndian, &mrbAuxiliar) //se decodifica y se guarda en el mbrAuxiliar , asi que despues de aca ya tengo el original
+	if err != nil {
+		log.Fatal("binary.Read failed", err)
+	}
+	mrbAuxiliar.imprimirDatosMBR()
 }
