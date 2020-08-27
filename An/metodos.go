@@ -38,7 +38,7 @@ func QuitarSimboloNextLine(cadena string) string {
 
 // QuitarComillas lo que hace es quitar comillas xd
 func QuitarComillas(ruta string) string {
-
+	ruta = strings.TrimSpace(ruta)
 	salida := ""
 	if ruta[0] == '"' {
 		//fmt.Println("tiene comillas")
@@ -346,8 +346,7 @@ func pausar_() {
 func crearMontaje(path string, nombre string) { // montaje
 	if len(path) != 0 && len(nombre) != 0 {
 		if _, err := os.Stat(path); !(os.IsNotExist(err)) {
-			fmt.Println("BUSCANDO SI EXISTE ESE NAME")
-			buscarParticion(path)
+			verificarSiExisteParticion(path, nombre)
 		} else {
 			println(color.Red + "--No existe ese disco--" + color.Reset)
 		}
@@ -359,7 +358,7 @@ func crearMontaje(path string, nombre string) { // montaje
 	Name_ = ""
 }
 
-func buscarParticion(direccion_archivo_binario string) {
+func verificarSiExisteParticion(direccion_archivo_binario string, nombreBuscar string) {
 	archivoDisco, err := os.OpenFile(QuitarComillas(direccion_archivo_binario), os.O_RDWR, 0644)
 	defer archivoDisco.Close()
 	if err != nil {
@@ -373,5 +372,12 @@ func buscarParticion(direccion_archivo_binario string) {
 	if err != nil {
 		log.Fatal("binary.Read failed", err)
 	}
+	archivoDisco.Seek(0, 0)
+	respuesta := mrbAuxiliar.buscarExistenciaEnParticiones(nombreBuscar)
 	mrbAuxiliar.imprimirDatosMBR()
+	if respuesta {
+		fmt.Println("SE PUEDE MONTAR")
+	} else {
+		println(color.Red + "Error ese nombre no se encontro en ninguna particion de este disco" + color.Reset)
+	}
 }

@@ -18,10 +18,17 @@ type TipoMbr struct {
 
 // Montura me sirve para el comando mount
 type Montura struct {
-	// path , nombre , id , y arreglo dinamico de particiones
-	PathDisco string
-	Nombre    [16]byte
-	id        string
+	// path , nombre , id
+	PathDisco     string
+	Nombre        [16]byte
+	id            string
+	letraDelDisco byte
+}
+
+type disco struct {
+	path                string
+	letra               byte
+	particionesMontadas [30]Montura
 }
 
 // Particion primaria, extendida o logica
@@ -209,3 +216,20 @@ func (mont Montura) imprimirMontura() {
 	print(color.Green + "ID: " + mont.id + " Path: " + mont.PathDisco + color.Reset)
 	fmt.Printf(" Nombre: %s\n", mont.Nombre)
 }
+
+func (m TipoMbr) buscarExistenciaEnParticiones(nombreBuscar string) bool { // retornar si si pudo agregar la particion o si no
+	var aux [16]byte
+	copy(aux[:], nombreBuscar)
+	for x := 0; x < len(m.Particiones); x++ {
+		if m.Particiones[x].Status == 'y' && (m.Particiones[x].Tipo == 'p' || m.Particiones[x].Tipo == 'P') { // esta libre
+			if string(m.Particiones[x].Nombre[:]) == string(aux[:]) {
+				fmt.Println(string(m.Particiones[x].Nombre[:]) + " == " + nombreBuscar)
+				return true
+			}
+		}
+	}
+	// si adentro de las primarias no lo encontro busco en la extendida en las logicas , eso suena mas complejo
+	return false
+}
+
+

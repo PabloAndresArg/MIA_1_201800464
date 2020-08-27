@@ -7,7 +7,7 @@ import (
 )
 
 var RegistroSignatures []int64 //Slice sin tamaño definido
-var DiscosMontados_ []Montura  //Slice sin tamaño definido
+var DiscosMontados_ []disco    //Slice sin tamaño definido
 // VARIABLES GLOBLALES
 
 var Name_ string = ""
@@ -41,8 +41,8 @@ func esRepetido(id int64) bool {
 	return false
 }
 
-func addMontura(mon Montura) {
-	DiscosMontados_ = append(DiscosMontados_, mon)
+func addMonturaDisco(disk disco) {
+	DiscosMontados_ = append(DiscosMontados_, disk)
 }
 
 func mostrarMounts() {
@@ -50,10 +50,24 @@ func mostrarMounts() {
 	b := false
 	for u_u := 0; u_u < len(DiscosMontados_); u_u++ {
 		b = true
-		DiscosMontados_[u_u].imprimirMontura()
+		//DiscosMontados_[u_u].imprimirMontura() // ACA HACER UN FOR CON LAS MONTURAS DEL DISCO MONTADAS E MOSTRARLAS
 	}
 	if !(b) {
 		println(color.Yellow + "POR EL MOMENTO NO HAY PARTICIONES MONTADAS" + color.Reset)
 	}
 	fmt.Println("**********************************************")
 }
+
+func yaRegistreElPathEnElMount(path string) bool {
+
+	return false
+}
+
+/*
+	ALGORITMO PARA LAS PARTICIONES
+
+*/
+
+// SI EXISTE LA PARTICION , ENTONCES BUSCO EL PATH SI YA TENGO REGISTRADO EL PATH SOLO LO GUARDO EN MI disco particionesMontadas
+// si es un nuevo disco mi contador de letrass incrementa y pasa a a ser el b ,
+// si el path no esta registrado pero si existe entoneces LO AGREGO AL ARREGLO DE DISCOS DE DONDE SACO MIS PARTICIONES
