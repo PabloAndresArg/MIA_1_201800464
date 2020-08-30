@@ -13,7 +13,7 @@ label =<<table border = '4' cellborder = '3' color = 'black' cellspacing = '4' b
 </tr>
 <tr>
 <td color = "grey">Fecha</td>
-<td color = "grey">2020-08-27 15:17:26</td>
+<td color = "grey">2020-08-27 23:31:49</td>
 </tr>
 <tr>
 <td color = "grey" colspan = '2'> Particion0</td> </tr>
@@ -39,7 +39,7 @@ label =<<table border = '4' cellborder = '3' color = 'black' cellspacing = '4' b
 </tr>
 <tr>
 <td color = "grey">FIT</td>
-<td color = "grey">B</td>
+<td color = "grey">W</td>
 </tr>
 <tr>
 <td color = "grey" colspan = '2'> Particion1</td> </tr>
@@ -65,7 +65,7 @@ label =<<table border = '4' cellborder = '3' color = 'black' cellspacing = '4' b
 </tr>
 <tr>
 <td color = "grey">FIT</td>
-<td color = "grey">B</td>
+<td color = "grey">W</td>
 </tr>
 <tr>
 <td color = "grey" colspan = '2'> Particion2</td> </tr>
@@ -105,7 +105,7 @@ label =<<table border = '4' cellborder = '3' color = 'black' cellspacing = '4' b
 </tr>
 <tr>
 <td color = "grey">TIPO</td>
-<td color = "grey">P</td>
+<td color = "grey">E</td>
 </tr>
 <tr>
 <td color = "grey">INICIO</td>

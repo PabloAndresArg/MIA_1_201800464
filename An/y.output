@@ -230,15 +230,15 @@ state 26
 
 
 state 27
-	P_REPORTE:  '-'.CM_NOMBRE FLECHA ID 
+	P_REPORTE:  '-'.NAME FLECHA ID 
 	P_REPORTE:  '-'.PATH FLECHA RUTA 
 	P_REPORTE:  '-'.COMANDO_ID FLECHA VD_ID_NUMERO 
 	P_REPORTE:  '-'.CM_RUTA FLECHA ID 
 
 	CM_RUTA  shift 51
-	CM_NOMBRE  shift 48
 	COMANDO_ID  shift 50
 	PATH  shift 49
+	NAME  shift 48
 	.  error
 
 
@@ -379,7 +379,7 @@ state 47
 
 
 state 48
-	P_REPORTE:  '-' CM_NOMBRE.FLECHA ID 
+	P_REPORTE:  '-' NAME.FLECHA ID 
 
 	FLECHA  shift 68
 	.  error
@@ -536,7 +536,7 @@ state 67
 	CADENA_O_ID  goto 102
 
 state 68
-	P_REPORTE:  '-' CM_NOMBRE FLECHA.ID 
+	P_REPORTE:  '-' NAME FLECHA.ID 
 
 	ID  shift 103
 	.  error
@@ -750,7 +750,7 @@ state 102
 
 
 state 103
-	P_REPORTE:  '-' CM_NOMBRE FLECHA ID.    (51)
+	P_REPORTE:  '-' NAME FLECHA ID.    (51)
 
 	.  reduce 51 (src line 123)
 
@@ -773,7 +773,7 @@ state 106
 	.  reduce 54 (src line 126)
 
 
-67 terminals, 21 nonterminals
+66 terminals, 21 nonterminals
 55 grammar rules, 107/8000 states
 0 shift/reduce, 0 reduce/reduce conflicts reported
 70 working sets used
@@ -784,4 +784,4 @@ memory: parser 24/120000
 0 entries saved by goto default
 Optimizer space used: output 106/120000
 106 table entries, 0 zero
-maximum spread: 67, maximum offset: 67
+maximum spread: 66, maximum offset: 67

@@ -12,17 +12,20 @@ import (
 
 type Montura struct {
 	// path , nombre , id
-	PathDisco     string // no necesario pero por seguridad :v
+	PathDisco     string // me va servir para ir a escribir al mero disco cuando desmonte
 	Nombre        [16]byte
 	Id            string
 	LetraDelDisco string
+	// tal vez deberia de guardar el struct de la particion aca mmmmmmmmmmmmmmmmmmmmmm.. , SIIII Y cuando la desmonte la voy a escribir al disco  , debo GUARDAR LA POSICION PARA LA HORA QUE HAGA EL DESMONTAJE
+	// pos en struct del mbr
+	// particion struct
 }
 
 type disco struct {
-	Path                string // EL PATH ES PARA IR A TRAER EL ARCHIVO Y LEERLO
+	Path                string // EL PATH ES PARA IR A TRAER EL ARCHIVO Y LEERLO , aca creo que no es necesario  porque tengo la letra
 	Letra               string // POR LA MANERA EN LA QUE LA ESTOY TRABAJANDO FIJO NECESITO SABER LA LETRA
 	ParticionesMontadas []Montura
-	CantidadPartciones  int64
+	CantidadPartciones  int64 // para el id
 }
 
 func (d *disco) agregarParticionMontada(path string, nombre string, id string) {
