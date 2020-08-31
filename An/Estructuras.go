@@ -36,6 +36,15 @@ type Ebr struct {
 	Next   int64 // APUNTA AL BYTE QUE SIGUE :v y es -1 cuando ya no le sigue nada
 }
 
+func (e Ebr) imprimirDatosEbr() {
+	fmt.Printf("Status: %c\n", e.Status)
+	fmt.Printf("Nombre: %s\n", e.Nombre)
+	fmt.Printf("Fit: %c\n", e.Fit)
+	fmt.Printf("inicio: %d\n", e.Inicio)
+	fmt.Printf("size: %d\n", e.Size)
+	fmt.Printf("ebr siguiente: %d\n", e.Next)
+}
+
 // FILTRO 1
 func (m TipoMbr) hayUnaParticionDisponible() bool { // retornar si si pudo agregar la particion o si no
 	for x := 0; x < len(m.Particiones); x++ {
@@ -75,6 +84,18 @@ func (m TipoMbr) yaExisteUnaExtendida() bool { // retornar si si pudo agregar la
 		}
 	}
 	return false
+}
+
+func (m TipoMbr) getExtendida() Particion { // retornar si si pudo agregar la particion o si no
+	for x := 0; x < len(m.Particiones); x++ {
+
+		if m.Particiones[x].Tipo == 'E' || m.Particiones[x].Tipo == 'e' { // esta libre
+
+			return m.Particiones[x]
+		}
+	}
+	erro := Particion{}
+	return erro
 }
 
 func (m TipoMbr) crearParticion(fit string, size int64, nombre string, tipo byte) TipoMbr { // retornar si si pudo agregar la particion o si no
@@ -296,9 +317,6 @@ func (m TipoMbr) GetParticionYposicion(nombreBuscar string) (Particion, uint8) {
 
 			if string(m.Particiones[x].Nombre[:]) == string(aux[:]) {
 				return m.Particiones[x], uint8(x)
-			} else {
-
-				// LESE HACER UN METODO PARA TRAER LOGICAS
 			}
 		}
 	}

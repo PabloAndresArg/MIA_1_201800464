@@ -266,11 +266,9 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 						if !(mrbAuxiliar.yaExisteUnaExtendida()) { // si no existe una extendida pues la puede crear
 							pos := mrbAuxiliar.crearParticionExtendida(fit, size, nombreName, tipoParticionByte) // le mande directo e
 							//mrbAuxiliar.imprimirDatosMBR()
-							pos = pos + 0
 							/* TENGO QUE CREAR EL EBR DE INICIO */
 							desde := int64(mrbAuxiliar.Particiones[pos].Inicio)
 							ebr := Ebr{Inicio: desde, Status: 'n', Size: 0, Next: -1, Fit: 'w'} // el name esta vacio
-							copy(ebr.Nombre[:], "EBRRRRRRRRRR")
 							escribirUnEBR(archivoDisco, desde, ebr)
 						} else {
 							println(color.Red + "Lo siento solo se puede tener una particion extendida por disco" + color.Reset)
@@ -278,6 +276,15 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 
 					case 'l':
 						if mrbAuxiliar.yaExisteUnaExtendida() { // si EXISTE es posible crear una logica
+							extendida := mrbAuxiliar.getExtendida() // NECESITO EL INICIO DE LA EXTENDIDA PARA POSICIONARME EN EL PRIMER EBR
+							ebrAux := Ebr{}
+							tamanioEBR := binary.Size(ebrAux) //tamanio de lo que ire a traer
+							ebr_en_bytes := leerBytePorByte(archivoDisco, tamanioEBR)
+							buff := bytes.NewBuffer(ebr_en_bytes)              // lo convierto a buffer porque eso pedia la funcion
+							err = binary.Read(buff, binary.BigEndian, &ebrAux) //ya tengo el original
+							fmt.Println(ebrAux)
+							ebrAux.imprimirDatosEbr()
+							fmt.Println(extendida)
 							println(color.Gray + "CREANDO PARTICION LOGICA" + color.Reset)
 						} else {
 							println(color.Red + "No puedes Crear una Particion Logica sin antes tener una extendida" + color.Reset)
