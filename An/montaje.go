@@ -16,9 +16,9 @@ type Montura struct {
 	Nombre        [16]byte
 	Id            string
 	LetraDelDisco string
-	// tal vez deberia de guardar el struct de la particion aca mmmmmmmmmmmmmmmmmmmmmm.. , SIIII Y cuando la desmonte la voy a escribir al disco  , debo GUARDAR LA POSICION PARA LA HORA QUE HAGA EL DESMONTAJE
-	// pos en struct del mbr
-	// particion struct
+	Parti         Particion
+	PosArray      uint8
+	//cuando la desmonte la voy a escribir al disco  , debo GUARDAR LA POSICION PARA LA HORA QUE HAGA EL DESMONTAJE
 }
 
 type disco struct {
@@ -28,9 +28,9 @@ type disco struct {
 	CantidadPartciones  int64 // para el id
 }
 
-func (d *disco) agregarParticionMontada(path string, nombre string, id string) {
+func (d *disco) agregarParticionMontada(path string, nombre string, id string, posArray uint8, partition Particion) {
 
-	mon := Montura{PathDisco: path, Id: id}
+	mon := Montura{PathDisco: path, Id: id, PosArray: posArray, Parti: partition}
 	copy(mon.Nombre[:], nombre)
 	d.ParticionesMontadas = append(d.ParticionesMontadas, mon)
 }
@@ -73,22 +73,24 @@ func verificarSiExisteParticion(direccion_archivo_binario string, nombreBuscar s
 	}
 	archivoDisco.Seek(0, 0)
 	respuesta := mrbAuxiliar.buscarExistenciaEnParticiones(nombreBuscar) // obtengo el mbr y reviso las particiones
+	//traigo la particion y el indice
 	//mrbAuxiliar.imprimirDatosMBR()                                       // solo para verificar si lo que retorno esta bien
 	if respuesta {
+		parti, posArray := mrbAuxiliar.GetParticionYposicion(nombreBuscar)
 		if yaRegistreElPathEnElMount(direccion_archivo_binario) {
 			// si ya lo registre solo retorno ese disco y le asigno su nuevos atributos
 			discoYaMontado := getDiscoMontadoPorPath(direccion_archivo_binario)
 			discoYaMontado.CantidadPartciones++
 			var idPartition string = "vd" + discoYaMontado.Letra
 			idPartition = fmt.Sprint(idPartition, discoYaMontado.CantidadPartciones)
-			discoYaMontado.agregarParticionMontada(direccion_archivo_binario, nombreBuscar, idPartition)
+			discoYaMontado.agregarParticionMontada(direccion_archivo_binario, nombreBuscar, idPartition, posArray, parti)
 			println(color.Yellow + "Particion Montada" + color.Reset)
 		} else {
 			discoNuevo := disco{Path: direccion_archivo_binario, Letra: getLetra(), CantidadPartciones: 0}
 			discoNuevo.CantidadPartciones++
 			var idPartition string = "vd" + discoNuevo.Letra
 			idPartition = fmt.Sprint(idPartition, discoNuevo.CantidadPartciones)
-			discoNuevo.agregarParticionMontada(direccion_archivo_binario, nombreBuscar, idPartition)
+			discoNuevo.agregarParticionMontada(direccion_archivo_binario, nombreBuscar, idPartition, posArray, parti)
 			addMonturaDisco(discoNuevo)
 			println(color.Yellow + "Particion Montada" + color.Reset)
 		}

@@ -123,7 +123,7 @@ func CrearDisco(numero string, ruta string, nombre string, K_o_M string) {
 	FechaFormatoTime := time.Now()
 	mbr := TipoMbr{Tamanio: size, DiskSignature: dameUnNumeroRandom()}
 	copy(mbr.Fecha[:], FechaFormatoTime.String())
-	
+
 	for i := 0; i < 4; i++ {
 		mbr.Particiones[i] = Particion{Status: 'n', Size: 0} // PARA MI N ES QUE NO HAY , Y es de yes que si hay xd
 	}
@@ -131,7 +131,7 @@ func CrearDisco(numero string, ruta string, nombre string, K_o_M string) {
 	var bin3_ bytes.Buffer
 	binary.Write(&bin3_, binary.BigEndian, &mbr)
 	escribirBinariamente(fichero, bin3_.Bytes())
-
+	fmt.Println("Nombre: " + nombre)
 	fmt.Printf("\nFECHA: %s\nTamanio: %v\n", mbr.Fecha, mbr.Tamanio)
 	fmt.Printf("Signature: %d\n", mbr.DiskSignature)
 	fmt.Printf("hay pariciones(n/y): %c\n", mbr.Particiones[0].Status)
@@ -260,11 +260,11 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 					switch tipoParticionByte {
 					case 'p':
 						mrbAuxiliar = mrbAuxiliar.crearParticion(fit, size, nombreName, tipoParticionByte) // ES POSIBLE CREAR LA PARTICION
-						mrbAuxiliar.imprimirDatosMBR()
+						//mrbAuxiliar.imprimirDatosMBR()
 					case 'e':
 						if !(mrbAuxiliar.yaExisteUnaExtendida()) { // si no existe una extendida pues la puede crear
 							pos := mrbAuxiliar.crearParticionExtendida(fit, size, nombreName, tipoParticionByte) // le mande directo e
-							mrbAuxiliar.imprimirDatosMBR()
+							//mrbAuxiliar.imprimirDatosMBR()
 							pos = pos + 0
 							/* TENGO QUE CREAR EL EBR DE INICIO */
 							desde := int64(mrbAuxiliar.Particiones[pos].Inicio)

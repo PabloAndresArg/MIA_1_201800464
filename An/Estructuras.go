@@ -237,3 +237,18 @@ func (p Particion) getNameHowString() string {
 	}
 	return auxSalida
 }
+
+// GetParticionYposicion me da la particion y la posicion del array a la que pertenece
+func (m TipoMbr) GetParticionYposicion(nombreBuscar string) (Particion, uint8) {
+	var aux [16]byte
+	copy(aux[:], nombreBuscar)
+	for x := 0; x < len(m.Particiones); x++ {
+		if m.Particiones[x].Status == 'y' && (m.Particiones[x].Tipo == 'p' || m.Particiones[x].Tipo == 'P') { // PRIMARIAS
+			if string(m.Particiones[x].Nombre[:]) == string(aux[:]) {
+				return m.Particiones[x], uint8(x)
+			} // HACER UN METODO PARA TRAER LOGICAS
+		}
+	}
+	nada := Particion{}
+	return nada, uint8(0)
+}

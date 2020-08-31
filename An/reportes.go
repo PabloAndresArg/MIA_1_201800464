@@ -15,9 +15,10 @@ import (
 
 func generarReporte() {
 	if len(Path_) != 0 && len(Name_) != 0 && len(Id_vdlentraNumero_) != 0 {
+		Path_ = QuitarComillas(Path_)
 		switch Name_ {
 		case "mbr":
-			grahpMBR(Id_vdlentraNumero_)
+			grahpMBR(Id_vdlentraNumero_, Path_)
 		default:
 			fmt.Println("ERRROR COMANDO INCORRECTO")
 		}
@@ -31,10 +32,51 @@ func limpiarVariablesRep() {
 	Commando_Ruta_ = ""
 }
 
-func grahpMBR(id string) {
+func separarRutaYnombreReporte(pathCompleto string) (string, string, string) { // ruta completa  , nombre , extension
+	// siempre vendra /home/
+	posFinRuta := 0
+	ruta := ""
+	nombre := ""
+	extension := ""
+	for x := len(pathCompleto) - 1; x >= 0; x-- {
+		if pathCompleto[x] == '/' {
+			posFinRuta = x
+			break
+		}
+	}
+	for i := posFinRuta + 1; i < len(pathCompleto); i++ {
+		nombre += string(pathCompleto[i])
+	}
+	for k := 0; k <= posFinRuta; k++ { // debo incluir su /
+		ruta += string(pathCompleto[k])
+	}
+	aux := ""
+	for t := 0; t < len(nombre); t++ {
+		if nombre[t] == '.' {
+			aux = extension
+			extension = ""
+		} else {
+			extension += string(nombre[t])
+		}
+	}
+	nombre = aux
+	return ruta, nombre, extension
+}
+
+func grahpMBR(id string, pathCompleto string) {
+	rut, nom, ext := separarRutaYnombreReporte(pathCompleto)
+	/*fmt.Println(rut)
+	fmt.Println(nom)
+	fmt.Println(ext)*/
+	verificarRuta(rut) // la crea si no existe
 	// NECESITO IR A ATRAER EL PATH , TENIENDO EN CUENTA QUE PUEDO BUSCAR EN MI LISTA id[2] me da la letra y ya tengo el disco que necesito
 	var letraID = string(id[2])
 	_disco_ := getDiscoMontadoPorLetraID(letraID)
+	if _disco_.Letra == "NOENCONTRADO" { // EN TEORIA NUNCA ENTRARIA ACA
+		println(color.Red + "ESE ID NO FUE ENCONTRADO DENTRO DEL DISCO" + color.Reset)
+		return
+	}
+
 	archivoDisco, err := os.OpenFile(QuitarComillas(_disco_.Path), os.O_RDWR, 0644)
 	defer archivoDisco.Close()
 	if err != nil {
@@ -50,12 +92,11 @@ func grahpMBR(id string) {
 		println(color.Red + "NO SE PUDO ENCONTRAR EL MBR " + color.Reset)
 		return
 	}
-	crearTxt(mrbAuxiliar)
-	generarImg()
+	crearTxt(mrbAuxiliar, rut+nom+".txt")
+	generarImg(rut+nom, ext)
 }
-func generarImg() {
-
-	consola := exec.Command("dot", "-Tjpg", "mbr.txt", "-o repMBR.jpg")
+func generarImg(fuente string, extension string) {
+	consola := exec.Command("dot", "-T"+extension, fuente+".txt", "-o "+fuente+"."+extension)
 	if errOr := consola.Run(); errOr != nil {
 		println(color.Red + "Error al ejecutar comando dot" + color.Reset)
 		return
@@ -64,8 +105,8 @@ func generarImg() {
 
 }
 
-func crearTxt(m TipoMbr) { // pasar tambien la ruta
-	w, err := os.Create("mbr.txt")
+func crearTxt(m TipoMbr, direccionDestino string) { // pasar tambien la ruta
+	w, err := os.Create(direccionDestino)
 	if err != nil {
 		println(color.Red + "Error al crear el archivo" + color.Reset)
 		return
