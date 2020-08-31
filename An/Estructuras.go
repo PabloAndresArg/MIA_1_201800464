@@ -228,6 +228,26 @@ func (m TipoMbr) buscarExistenciaEnParticiones(nombreBuscar string) bool { // re
 	return false
 }
 
+func (m TipoMbr) eliminarFast(nombreBuscar string) bool { // retorna si fue posible la ELIMINACION
+	var aux [16]byte
+	copy(aux[:], nombreBuscar)
+	for x := 0; x < len(m.Particiones); x++ {
+		if m.Particiones[x].Status == 'y' && (m.Particiones[x].Tipo == 'p' || m.Particiones[x].Tipo == 'P') { // esta libre
+			if string(m.Particiones[x].Nombre[:]) == string(aux[:]) {
+				m.Particiones[x].Status = 'n'
+				for r := 0; r < len(m.Particiones[x].Nombre); r++ {
+					m.Particiones[x].Nombre[r] = 0
+				}
+				m.Particiones[x].Inicio = 0
+				m.Particiones[x].Size = 0
+				return true
+			}
+		}
+	}
+	// si adentro de las primarias no lo encontro busco en la extendida en las logicas , eso suena mas complejo
+	return false
+}
+
 func (p Particion) getNameHowString() string {
 	auxSalida := ""
 	for i := 0; i < 16; i++ {
