@@ -56,6 +56,7 @@ func (l *lexer) Lex( yylval *yySymType) int {
 utfDigito  \x81 
 utfLetra \x80
 digit         [0-9]+|{utfDigito}+
+numNegativo		\-[0-9]+|\-{utfDigito}+
 id    {letter}({letter}|{digit})*
 letter        [a-zA-Z_]|{utfLetra}
 flecha 		   (\-\>) | (\-\>)
@@ -133,7 +134,8 @@ rep			 yylval.str = string(l.TokenBytes(nil)); return REP
 {vd_ID_NUMERO} yylval.str = string(l.TokenBytes(nil)); return VD_ID_NUMERO
 {extension_dsk} yylval.str = string(l.TokenBytes(nil));return EXTENSION_DSK
 
-{id}         yylval.str = string(l.TokenBytes(nil)); return ID 
+{id}         yylval.str = string(l.TokenBytes(nil)); return ID
+{numNegativo}         yylval.str = string(l.TokenBytes(nil)); return NUMERO_NEGATIVO 
 {digit}      yylval.str = string(l.TokenBytes(nil)); return NUMERO // strconv.Atoi("1")
 
 %%

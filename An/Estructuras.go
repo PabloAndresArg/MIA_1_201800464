@@ -222,13 +222,21 @@ func (m TipoMbr) buscarExistenciaEnParticiones(nombreBuscar string) bool { // re
 				//fmt.Println(string(m.Particiones[x].Nombre[:]) + " == " + nombreBuscar)
 				return true
 			}
+		} else if m.Particiones[x].Status == 'y' && (m.Particiones[x].Tipo == 'e' || m.Particiones[x].Tipo == 'E') {
+
+			if string(m.Particiones[x].Nombre[:]) == string(aux[:]) {
+				return true
+			} else {
+
+				// LESE HACER UN METODO PARA TRAER LOGICAS
+			}
 		}
 	}
 	// si adentro de las primarias no lo encontro busco en la extendida en las logicas , eso suena mas complejo
 	return false
 }
 
-func (m TipoMbr) eliminarFast(nombreBuscar string) bool { // retorna si fue posible la ELIMINACION
+func (m *TipoMbr) eliminarFast(nombreBuscar string) bool { // retorna si fue posible la ELIMINACION
 	var aux [16]byte
 	copy(aux[:], nombreBuscar)
 	for x := 0; x < len(m.Particiones); x++ {
@@ -242,6 +250,23 @@ func (m TipoMbr) eliminarFast(nombreBuscar string) bool { // retorna si fue posi
 				m.Particiones[x].Size = 0
 				return true
 			}
+		} else if m.Particiones[x].Status == 'y' && (m.Particiones[x].Tipo == 'E' || m.Particiones[x].Tipo == 'e') {
+
+			if string(m.Particiones[x].Nombre[:]) == string(aux[:]) {
+				m.Particiones[x].Status = 'n'
+				for r := 0; r < len(m.Particiones[x].Nombre); r++ {
+					m.Particiones[x].Nombre[r] = 0
+				}
+				m.Particiones[x].Inicio = 0
+				m.Particiones[x].Size = 0
+				return true
+			}
+			/*
+
+				ACA TENDRIA QUE IR A BUSCAR EN LA EXTENDIDA A VER QUE ONDA SI HAY O NO LOGICAS
+
+			*/
+
 		}
 	}
 	// si adentro de las primarias no lo encontro busco en la extendida en las logicas , eso suena mas complejo
@@ -266,7 +291,15 @@ func (m TipoMbr) GetParticionYposicion(nombreBuscar string) (Particion, uint8) {
 		if m.Particiones[x].Status == 'y' && (m.Particiones[x].Tipo == 'p' || m.Particiones[x].Tipo == 'P') { // PRIMARIAS
 			if string(m.Particiones[x].Nombre[:]) == string(aux[:]) {
 				return m.Particiones[x], uint8(x)
-			} // HACER UN METODO PARA TRAER LOGICAS
+			}
+		} else if m.Particiones[x].Status == 'y' && (m.Particiones[x].Tipo == 'e' || m.Particiones[x].Tipo == 'E') {
+
+			if string(m.Particiones[x].Nombre[:]) == string(aux[:]) {
+				return m.Particiones[x], uint8(x)
+			} else {
+
+				// LESE HACER UN METODO PARA TRAER LOGICAS
+			}
 		}
 	}
 	nada := Particion{}

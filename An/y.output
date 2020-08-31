@@ -185,6 +185,7 @@ state 22
 	P_FDISK:  '-'.FIT FLECHA OPCIONES_FIT 
 	P_FDISK:  '-'.DELETE FLECHA OPCIONES_DELETE 
 	P_FDISK:  '-'.ADD FLECHA NUMERO 
+	P_FDISK:  '-'.ADD FLECHA NUMERO_NEGATIVO 
 
 	PATH  shift 37
 	ADD  shift 43
@@ -215,18 +216,18 @@ state 24
 
 
 state 25
-	REPORTES:  REP PARAMETROS_REPORTES.    (48)
+	REPORTES:  REP PARAMETROS_REPORTES.    (49)
 	PARAMETROS_REPORTES:  PARAMETROS_REPORTES.P_REPORTE 
 
 	'-'  shift 27
-	.  reduce 48 (src line 118)
+	.  reduce 49 (src line 119)
 
 	P_REPORTE  goto 47
 
 state 26
-	PARAMETROS_REPORTES:  P_REPORTE.    (50)
+	PARAMETROS_REPORTES:  P_REPORTE.    (51)
 
-	.  reduce 50 (src line 121)
+	.  reduce 51 (src line 122)
 
 
 state 27
@@ -347,6 +348,7 @@ state 42
 
 state 43
 	P_FDISK:  '-' ADD.FLECHA NUMERO 
+	P_FDISK:  '-' ADD.FLECHA NUMERO_NEGATIVO 
 
 	FLECHA  shift 65
 	.  error
@@ -373,9 +375,9 @@ state 46
 
 
 state 47
-	PARAMETROS_REPORTES:  PARAMETROS_REPORTES P_REPORTE.    (49)
+	PARAMETROS_REPORTES:  PARAMETROS_REPORTES P_REPORTE.    (50)
 
-	.  reduce 49 (src line 120)
+	.  reduce 50 (src line 121)
 
 
 state 48
@@ -514,15 +516,17 @@ state 64
 
 state 65
 	P_FDISK:  '-' ADD FLECHA.NUMERO 
+	P_FDISK:  '-' ADD FLECHA.NUMERO_NEGATIVO 
 
 	NUMERO  shift 100
+	NUMERO_NEGATIVO  shift 101
 	.  error
 
 
 state 66
 	PARAMETROS_MONTAR:  '-' PATH FLECHA.RUTA 
 
-	RUTA  shift 101
+	RUTA  shift 102
 	.  error
 
 
@@ -533,33 +537,33 @@ state 67
 	RUTA  shift 83
 	.  error
 
-	CADENA_O_ID  goto 102
+	CADENA_O_ID  goto 103
 
 state 68
 	P_REPORTE:  '-' NAME FLECHA.ID 
 
-	ID  shift 103
+	ID  shift 104
 	.  error
 
 
 state 69
 	P_REPORTE:  '-' PATH FLECHA.RUTA 
 
-	RUTA  shift 104
+	RUTA  shift 105
 	.  error
 
 
 state 70
 	P_REPORTE:  '-' COMANDO_ID FLECHA.VD_ID_NUMERO 
 
-	VD_ID_NUMERO  shift 105
+	VD_ID_NUMERO  shift 106
 	.  error
 
 
 state 71
 	P_REPORTE:  '-' CM_RUTA FLECHA.ID 
 
-	ID  shift 106
+	ID  shift 107
 	.  error
 
 
@@ -630,15 +634,15 @@ state 82
 
 
 state 83
-	CADENA_O_ID:  RUTA.    (46)
+	CADENA_O_ID:  RUTA.    (47)
 
-	.  reduce 46 (src line 115)
+	.  reduce 47 (src line 116)
 
 
 state 84
-	CADENA_O_ID:  ID.    (47)
+	CADENA_O_ID:  ID.    (48)
 
-	.  reduce 47 (src line 116)
+	.  reduce 48 (src line 117)
 
 
 state 85
@@ -672,21 +676,21 @@ state 89
 
 
 state 90
-	TYPE_PARTICION:  P.    (43)
-
-	.  reduce 43 (src line 109)
-
-
-state 91
-	TYPE_PARTICION:  E.    (44)
+	TYPE_PARTICION:  P.    (44)
 
 	.  reduce 44 (src line 110)
 
 
-state 92
-	TYPE_PARTICION:  L.    (45)
+state 91
+	TYPE_PARTICION:  E.    (45)
 
 	.  reduce 45 (src line 111)
+
+
+state 92
+	TYPE_PARTICION:  L.    (46)
+
+	.  reduce 46 (src line 112)
 
 
 state 93
@@ -696,21 +700,21 @@ state 93
 
 
 state 94
-	OPCIONES_FIT:  BF.    (40)
-
-	.  reduce 40 (src line 104)
-
-
-state 95
-	OPCIONES_FIT:  FF.    (41)
+	OPCIONES_FIT:  BF.    (41)
 
 	.  reduce 41 (src line 105)
 
 
-state 96
-	OPCIONES_FIT:  WF.    (42)
+state 95
+	OPCIONES_FIT:  FF.    (42)
 
 	.  reduce 42 (src line 106)
+
+
+state 96
+	OPCIONES_FIT:  WF.    (43)
+
+	.  reduce 43 (src line 107)
 
 
 state 97
@@ -720,15 +724,15 @@ state 97
 
 
 state 98
-	OPCIONES_DELETE:  fast.    (38)
+	OPCIONES_DELETE:  fast.    (39)
 
-	.  reduce 38 (src line 100)
+	.  reduce 39 (src line 101)
 
 
 state 99
-	OPCIONES_DELETE:  full.    (39)
+	OPCIONES_DELETE:  full.    (40)
 
-	.  reduce 39 (src line 101)
+	.  reduce 40 (src line 102)
 
 
 state 100
@@ -738,50 +742,56 @@ state 100
 
 
 state 101
+	P_FDISK:  '-' ADD FLECHA NUMERO_NEGATIVO.    (38)
+
+	.  reduce 38 (src line 98)
+
+
+state 102
 	PARAMETROS_MONTAR:  '-' PATH FLECHA RUTA.    (12)
 
 	.  reduce 12 (src line 55)
 
 
-state 102
+state 103
 	PARAMETROS_MONTAR:  '-' NAME FLECHA CADENA_O_ID.    (13)
 
 	.  reduce 13 (src line 56)
 
 
-state 103
-	P_REPORTE:  '-' NAME FLECHA ID.    (51)
-
-	.  reduce 51 (src line 123)
-
-
 state 104
-	P_REPORTE:  '-' PATH FLECHA RUTA.    (52)
+	P_REPORTE:  '-' NAME FLECHA ID.    (52)
 
 	.  reduce 52 (src line 124)
 
 
 state 105
-	P_REPORTE:  '-' COMANDO_ID FLECHA VD_ID_NUMERO.    (53)
+	P_REPORTE:  '-' PATH FLECHA RUTA.    (53)
 
 	.  reduce 53 (src line 125)
 
 
 state 106
-	P_REPORTE:  '-' CM_RUTA FLECHA ID.    (54)
+	P_REPORTE:  '-' COMANDO_ID FLECHA VD_ID_NUMERO.    (54)
 
 	.  reduce 54 (src line 126)
 
 
-66 terminals, 21 nonterminals
-55 grammar rules, 107/8000 states
+state 107
+	P_REPORTE:  '-' CM_RUTA FLECHA ID.    (55)
+
+	.  reduce 55 (src line 127)
+
+
+67 terminals, 21 nonterminals
+56 grammar rules, 108/8000 states
 0 shift/reduce, 0 reduce/reduce conflicts reported
 70 working sets used
 memory: parser 24/120000
 0 extra closures
-87 shift entries, 1 exceptions
+88 shift entries, 1 exceptions
 25 goto entries
 0 entries saved by goto default
-Optimizer space used: output 106/120000
-106 table entries, 0 zero
-maximum spread: 66, maximum offset: 67
+Optimizer space used: output 107/120000
+107 table entries, 0 zero
+maximum spread: 67, maximum offset: 67

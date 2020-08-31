@@ -229,6 +229,7 @@ func dameUnNumeroRandom() int64 { // para el signature del mbr , tener una lista
 func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, fit string, delete string, add string, tipo__ string, unit string) {
 	// atributos obligatorios : NAME , PATH  SIZE
 	// OPCIONALES  unit , type , fit , delete , add
+	nombreName = QuitarComillas(nombreName)
 	if len(rutaPath) != 0 && len(nombreName) != 0 && len(sizeTamanio) != 0 { // si vienen los obligatorios
 		archivoDisco, err := os.OpenFile(QuitarComillas(rutaPath), os.O_RDWR, 0644) // TIEENE PERMISOS DE ESCRITURA Y DE LECTURA PERRO :V
 		defer archivoDisco.Close()
@@ -269,6 +270,7 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 							/* TENGO QUE CREAR EL EBR DE INICIO */
 							desde := int64(mrbAuxiliar.Particiones[pos].Inicio)
 							ebr := Ebr{Inicio: desde, Status: 'n', Size: 0, Next: -1, Fit: 'w'} // el name esta vacio
+							copy(ebr.Nombre[:], "EBRRRRRRRRRR")
 							escribirUnEBR(archivoDisco, desde, ebr)
 						} else {
 							println(color.Red + "Lo siento solo se puede tener una particion extendida por disco" + color.Reset)
@@ -289,23 +291,111 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 					var escritor bytes.Buffer
 					binary.Write(&escritor, binary.BigEndian, &mrbAuxiliar)
 					escribirBinariamente(archivoDisco, escritor.Bytes())
-					//LeerBinariamenteMimbr(rutaPath)
+
 				} else {
 					println(color.Red + "Espacio insuficiente" + color.Reset)
 				}
 			} else {
 				println(color.Yellow + "Lo siento no es posible porque ya tiene 4 particiones en este disco" + color.Reset)
-			}
-		} else if len(delete) != 0 && len(add) == 0 { // vengo a borrar una particion
+			} /*
 
-		} else if len(add) != 0 && len(delete) == 0 { // vengo a dar mas espacio a una particion
+
+
+
+
+			 */
+		} else if len(delete) != 0 && len(add) == 0 { // vengo a borrar una particion
+			delete = strings.ToLower(delete)
+			switch delete {
+			case "fast":
+				println(color.Yellow + "¿ESTAS SEGURO DE QUERER ELIMINAR ESTA PARTICION EN MODO FAST?" + color.Reset)
+				fmt.Println("Presiona 1 para confirmar")
+				fmt.Println("Presiona 0 para no hacerlo")
+				lector := bufio.NewReader(os.Stdin)
+				entradaOP, _ := lector.ReadString('\n')
+				menu := strings.TrimRight(entradaOP, "\r\n") // quita el salto de linea de la parte derecha
+				switch menu {
+				case "0":
+					fmt.Println("ya no se elimino la particion :D")
+				case "1":
+					res := mrbAuxiliar.eliminarFast(nombreName)
+					if res {
+						archivoDisco.Seek(0, 0) // al inicio del archivo para sobreescribir mi disco
+						var escritor bytes.Buffer
+						binary.Write(&escritor, binary.BigEndian, &mrbAuxiliar)
+						escribirBinariamente(archivoDisco, escritor.Bytes())
+						println(color.Blue + "Particion eliminada" + color.Reset)
+
+					} else {
+						println(color.Red + "no se encontro la particion" + color.Reset)
+					}
+
+				default:
+					fmt.Println("opcion no encontrada..")
+				}
+
+			case "full":
+				println(color.Yellow + "¿ESTAS SEGURO DE QUERER ELIMINAR ESTA PARTICION EN MODO FULL?" + color.Reset)
+				fmt.Println("Presiona 1 para confirmar")
+				fmt.Println("Presiona 0 para no hacerlo")
+				lector := bufio.NewReader(os.Stdin)
+				entradaOP, _ := lector.ReadString('\n')
+				menu := strings.TrimRight(entradaOP, "\r\n") // quita el salto de linea de la parte derecha
+				switch menu {
+				case "0":
+					fmt.Println("ya no se elimino la particion :D")
+				case "1":
+					if mrbAuxiliar.buscarExistenciaEnParticiones(nombreName) {
+						particionDelete, _ := mrbAuxiliar.GetParticionYposicion(nombreName)
+						inicio := particionDelete.Inicio
+						fin := particionDelete.Size
+						res := mrbAuxiliar.eliminarFast(nombreName)
+						if res {
+							archivoDisco.Seek(0, 0) // al inicio del archivo para sobreescribir mi disco
+							var escritor bytes.Buffer
+							binary.Write(&escritor, binary.BigEndian, &mrbAuxiliar)
+							escribirBinariamente(archivoDisco, escritor.Bytes())
+							/*
+								LLENANDO LA PARTICION DE 0 para dejarla limpia
+							*/
+							archivoDisco.Seek(inicio, 0)
+							var ceros []byte
+							for r := 0; r <= int(fin); r++ {
+								ceros = append(ceros, 0)
+							}
+							var nuevoEscritor bytes.Buffer
+							binary.Write(&nuevoEscritor, binary.BigEndian, &ceros)
+							escribirBinariamente(archivoDisco, nuevoEscritor.Bytes())
+							println(color.Blue + "Particion eliminada" + color.Reset)
+						} else {
+							println(color.Red + "no se encontro la particion" + color.Reset)
+						}
+					} else {
+						println(color.Red + "no se encontro la particion con ese nombre , no se podra hacer la eliminacion FULL " + color.Reset)
+					}
+
+				default:
+					fmt.Println("opcion no encontrada..")
+				}
+
+			default:
+				println(color.Red + "parametro indefinido :v" + color.Reset)
+			}
+
+		} else if len(add) != 0 && len(delete) == 0 { // vengo a dar mas espacio a una particion  o disminuir
+			add = strings.TrimSpace(add)
+			if add[0] == '-' { // resta
+				fmt.Println("reduciendo Particion en " + add)
+			} else { // agranda
+				fmt.Println("Agrandando particion en " + add)
+			}
 
 		}
 
 	} else {
 		println(color.Red + "ERROR FALTO UN PARAMETRO OBLIGATORIO..!" + color.Reset)
 	}
-
+	//LeerBinariamenteMimbr(rutaPath)
 	limpiarVariableFdisk()
 }
 
@@ -314,6 +404,7 @@ func escribirUnEBR(archivoDisco *os.File, desde int64, objeto Ebr) {
 	var escritor bytes.Buffer
 	binary.Write(&escritor, binary.BigEndian, &objeto)
 	escribirBinariamente(archivoDisco, escritor.Bytes())
+	fmt.Println("EBR inicial creado.")
 }
 
 func limpiarVariableFdisk() {
