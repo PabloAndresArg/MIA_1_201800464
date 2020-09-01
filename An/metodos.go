@@ -245,11 +245,7 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 			log.Fatal("binary.Read failed", err)
 		}
 		/*
-
 			CREANDO LA PARTICION Y VOLVIENDO A ESCRIBIR EN EL ARCHIVO
-
-			hacer un switch para ver si voy a crear , eliminar o agrandar particiones
-
 		*/
 		if len(delete) == 0 && len(add) == 0 {
 			if mrbAuxiliar.hayUnaParticionDisponible() {
@@ -261,11 +257,11 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 					switch tipoParticionByte {
 					case 'p':
 						mrbAuxiliar = mrbAuxiliar.crearParticion(fit, size, nombreName, tipoParticionByte) // ES POSIBLE CREAR LA PARTICION
-						//mrbAuxiliar.imprimirDatosMBR()
+
 					case 'e':
 						if !(mrbAuxiliar.yaExisteUnaExtendida()) { // si no existe una extendida pues la puede crear
 							pos := mrbAuxiliar.crearParticionExtendida(fit, size, nombreName, tipoParticionByte) // le mande directo e
-							//mrbAuxiliar.imprimirDatosMBR()
+
 							/* TENGO QUE CREAR EL EBR DE INICIO */
 							desde := int64(mrbAuxiliar.Particiones[pos].Inicio)
 							ebr := Ebr{Inicio: desde, Status: 'n', Size: 0, Next: -1, Fit: 'w'} // el name esta vacio
@@ -277,15 +273,83 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 					case 'l':
 						if mrbAuxiliar.yaExisteUnaExtendida() { // si EXISTE es posible crear una logica
 							extendida := mrbAuxiliar.getExtendida() // NECESITO EL INICIO DE LA EXTENDIDA PARA POSICIONARME EN EL PRIMER EBR
-							ebrAux := Ebr{}
-							tamanioEBR := binary.Size(ebrAux) //tamanio de lo que ire a traer
-							ebr_en_bytes := leerBytePorByte(archivoDisco, tamanioEBR)
-							buff := bytes.NewBuffer(ebr_en_bytes)              // lo convierto a buffer porque eso pedia la funcion
-							err = binary.Read(buff, binary.BigEndian, &ebrAux) //ya tengo el original
-							fmt.Println(ebrAux)
-							ebrAux.imprimirDatosEbr()
-							fmt.Println(extendida)
-							println(color.Gray + "CREANDO PARTICION LOGICA" + color.Reset)
+							if size < extendida.Size {
+								archivoDisco.Seek(extendida.Inicio, 0)
+								ebrAux := Ebr{}
+								tamanioEBR := binary.Size(ebrAux) //tamanio de lo que ire a traer
+								ebr_en_bytes := leerBytePorByte(archivoDisco, tamanioEBR)
+								buff := bytes.NewBuffer(ebr_en_bytes)              // lo convierto a buffer porque eso pedia la funcion
+								err = binary.Read(buff, binary.BigEndian, &ebrAux) //ya tengo el original
+								ocupado := int64(binary.Size(ebrAux))
+								fmt.Println("--------------- PRIMER EBR ----------------")
+								ebrAux.imprimirDatosEbr()
+								fmt.Println("-------------------------------------------")
+								if ebrAux.Status == 'n' {
+									if (ocupado + size) < extendida.Size {
+										ebrAux.Status = 'y'
+										ebrAux.Fit = getFit(fit)
+										ebrAux.Inicio = (extendida.Inicio + ocupado) // el ocupado por el momento tendria solo el tamanio del ebr
+										ebrAux.Size = size
+										copy(ebrAux.Nombre[:], nombreName)
+										ebrAux.Next = -1
+										escribirUnEBR(archivoDisco, extendida.Inicio, ebrAux)
+										println(color.Green + "PARTICION LOGICA CREADA CON EXITO" + color.Reset)
+										ebrAux.imprimirDatosEbr()
+										fmt.Println("")
+									} else {
+										println(color.Red + "NO CABE UNA LOGICA DE ESE SIZE" + color.Reset)
+									}
+
+								} else {
+									// tengo que recorrer los EBR
+									if ebrAux.Next == -1 {
+										ocupado += ebrAux.Size + int64(binary.Size(ebrAux))
+									} else {
+										ocupado = 0
+									}
+
+									for ebrAux.Next != -1 {
+										ocupado += ebrAux.Size + int64(binary.Size(ebrAux)) // por cada iteracion se va acumulando el espacio ocupad
+										if (ocupado + size) > extendida.Size {
+											println(color.Red + "NO CABE UNA LOGICA DE ESE SIZE" + color.Reset)
+											break
+										}
+										// LEER EBR POR EBR
+										posicionFinalEbr := int64(ebrAux.Inicio + ebrAux.Size)
+										archivoDisco.Seek(posicionFinalEbr+1, 0)
+										tamanioEBR := binary.Size(ebrAux) //tamanio de lo que ire a traer
+										ebr_en_bytes := leerBytePorByte(archivoDisco, tamanioEBR)
+										buff := bytes.NewBuffer(ebr_en_bytes)              // lo convierto a buffer porque eso pedia la funcion
+										err = binary.Read(buff, binary.BigEndian, &ebrAux) //ya tengo el original
+										fmt.Printf("EBR actual: %s\n", ebrAux.Nombre)
+										println(color.Green + "recorriendo ebr" + color.Reset)
+									}
+									// AL SALIR DEL FOR EN TEORIA TENDRIA EL EBR QUE TIENE COMO SIGUIENTE A -1
+									println(color.Yellow + "SALIO EL EBR" + color.Reset)
+									ebrAux.imprimirDatosEbr()
+									ebrAux.Next = ebrAux.Inicio + ebrAux.Size + 1
+									if (ocupado + size) < extendida.Size { // ahora este es el ultimo
+										ebrNuevo := Ebr{}
+										ebrNuevo.Status = 'y'
+										ebrNuevo.Fit = getFit(fit)
+										ebrNuevo.Inicio = ebrAux.Next + int64(binary.Size(ebrNuevo)) // el ocupado por el momento tendria solo el tamanio del ebr
+										ebrNuevo.Size = size
+										copy(ebrNuevo.Nombre[:], nombreName)
+										ebrNuevo.Next = -1
+										escribirUnEBR(archivoDisco, (ebrAux.Inicio - int64(binary.Size(ebrAux))), ebrAux) // REFRESCTO SU NEXT
+										escribirUnEBR(archivoDisco, ebrAux.Next, ebrNuevo)
+										println(color.Green + "PARTICION LOGICA CREADA CON EXITO" + color.Reset)
+										ebrNuevo.imprimirDatosEbr()
+									} else {
+										println(color.Red + "NO CABE UNA LOGICA DE ESE SIZE" + color.Reset)
+									}
+
+									// FIN CREACION DE PARTICION LOGICA
+								}
+
+							} else {
+								println(color.Red + "EL SIZE DE ESTA PARTICION SUPERA AL SIZE DE LA EXTENDIDA" + color.Reset)
+							}
 						} else {
 							println(color.Red + "No puedes Crear una Particion Logica sin antes tener una extendida" + color.Reset)
 						}
@@ -411,7 +475,6 @@ func escribirUnEBR(archivoDisco *os.File, desde int64, objeto Ebr) {
 	var escritor bytes.Buffer
 	binary.Write(&escritor, binary.BigEndian, &objeto)
 	escribirBinariamente(archivoDisco, escritor.Bytes())
-	fmt.Println("EBR inicial creado.")
 }
 
 func limpiarVariableFdisk() {
