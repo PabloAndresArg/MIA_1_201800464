@@ -1,8 +1,10 @@
 package An
 
 import (
+	"bytes"
 	"encoding/binary"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/TwinProduction/go-color"
@@ -43,6 +45,14 @@ func (e Ebr) imprimirDatosEbr() {
 	fmt.Printf("inicio: %d\n", e.Inicio)
 	fmt.Printf("size: %d\n", e.Size)
 	fmt.Printf("ebr siguiente: %d\n", e.Next)
+}
+func (e *Ebr) deleteFastMenosElNext() {
+	e.Status = 'n'
+	for x := 0; x < len(e.Nombre); x++ {
+		e.Nombre[x] = 0
+	}
+	e.Fit = ' '
+	e.Size = 0
 }
 
 // FILTRO 1
@@ -261,7 +271,7 @@ func (m TipoMbr) buscarExistenciaEnParticiones(nombreBuscar string) bool { // re
 	return false
 }
 
-func (m *TipoMbr) eliminarFast(nombreBuscar string) bool { // retorna si fue posible la ELIMINACION
+func (m *TipoMbr) eliminarFast(nombreBuscar string, archivoDisco *os.File) bool { // retorna si fue posible la ELIMINACION
 	var aux [16]byte
 	copy(aux[:], nombreBuscar)
 	for x := 0; x < len(m.Particiones); x++ {
@@ -285,6 +295,53 @@ func (m *TipoMbr) eliminarFast(nombreBuscar string) bool { // retorna si fue pos
 				m.Particiones[x].Inicio = 0
 				m.Particiones[x].Size = 0
 				return true
+			} else {
+				archivoDisco.Seek(m.Particiones[x].Inicio, 0)
+				ebrAux := Ebr{}
+				tamanioEBR := binary.Size(ebrAux) //tamanio de lo que ire a traer
+				ebr_en_bytes := leerBytePorByte(archivoDisco, tamanioEBR)
+				buff := bytes.NewBuffer(ebr_en_bytes)               // lo convierto a buffer porque eso pedia la funcion
+				err := binary.Read(buff, binary.BigEndian, &ebrAux) //ya tengo el original
+				if err != nil {
+					fmt.Println("error en lectura ebr ")
+				}
+				if string(ebrAux.Nombre[:]) == string(aux[:]) { // el primer EBR NO PUEDE SER ELIMINADO
+					println(color.Red + "EL PRIMER EBR NO SE PUEDE ELIMINAR , por tanto se marcara como que no la encontro" + color.Reset)
+				} else if ebrAux.Next == -1 {
+					continue
+				} else {
+					// toca recorrer en busca de la logica
+					auxAnterior := Ebr{}
+					for string(ebrAux.Nombre[:]) != string(aux[:]) && ebrAux.Next != -1 {
+						auxAnterior = ebrAux
+						// LEER EBR POR EBR
+
+						archivoDisco.Seek(ebrAux.Next, 0)
+						tamanioEBR := binary.Size(ebrAux) //tamanio de lo que ire a traer
+						ebr_en_bytes := leerBytePorByte(archivoDisco, tamanioEBR)
+						buff := bytes.NewBuffer(ebr_en_bytes)              // lo convierto a buffer porque eso pedia la funcion
+						err = binary.Read(buff, binary.BigEndian, &ebrAux) //ya tengo el original
+						fmt.Printf(color.Cyan+"EBR actual: %s\n", ebrAux.Nombre)
+					}
+					// LA PREGUNTA ES ¿EL QUE SALIO ES EL QUE ?
+					println("SALIO EL EBR" + color.Reset)
+					if ebrAux.Next == -1 && string(ebrAux.Nombre[:]) == string(aux[:]) { // si es el ultimo solo hago esto :v
+						auxAnterior.Next = -1
+						escribirUnEBR(archivoDisco, (auxAnterior.Inicio - int64(binary.Size(auxAnterior))), auxAnterior) // REFRESCTO SU NEXT , CON SOLO ESTO BASTA
+						ebrAux.deleteFastMenosElNext()
+						escribirUnEBR(archivoDisco, (ebrAux.Inicio - int64(binary.Size(ebrAux))), ebrAux) // LA PONGO EN INHABILITADA
+						return true
+					} else if string(ebrAux.Nombre[:]) == string(aux[:]) {
+						auxAnterior.Next = ebrAux.Next
+						escribirUnEBR(archivoDisco, (auxAnterior.Inicio - int64(binary.Size(auxAnterior))), auxAnterior) // REFRESCTO SU NEXT
+						ebrAux.deleteFastMenosElNext()
+						escribirUnEBR(archivoDisco, (ebrAux.Inicio - int64(binary.Size(ebrAux))), ebrAux) // LA PONGO EN INHABILITADA
+						fmt.Println("ENLAZO A LAS DE EN MEDIO ")
+						return true
+					}
+
+				}
+
 			}
 			/*
 

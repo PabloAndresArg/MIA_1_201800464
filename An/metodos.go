@@ -391,7 +391,7 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 				case "0":
 					fmt.Println("ya no se elimino la particion :D")
 				case "1":
-					res := mrbAuxiliar.eliminarFast(nombreName)
+					res := mrbAuxiliar.eliminarFast(nombreName, archivoDisco)
 					if res {
 						archivoDisco.Seek(0, 0) // al inicio del archivo para sobreescribir mi disco
 						var escritor bytes.Buffer
@@ -419,10 +419,10 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 					fmt.Println("ya no se elimino la particion :D")
 				case "1":
 					if mrbAuxiliar.buscarExistenciaEnParticiones(nombreName) {
-						particionDelete, _ := mrbAuxiliar.GetParticionYposicion(nombreName)
+						particionDelete, _ := mrbAuxiliar.GetParticionYposicion(nombreName) // TENGO SU PARTICION ASI QUE PUEDO ACTUAR CON LO DEL TIPO S
 						inicio := particionDelete.Inicio
 						fin := particionDelete.Size
-						res := mrbAuxiliar.eliminarFast(nombreName)
+						res := mrbAuxiliar.eliminarFast(nombreName, archivoDisco)
 						if res {
 							archivoDisco.Seek(0, 0) // al inicio del archivo para sobreescribir mi disco
 							var escritor bytes.Buffer
