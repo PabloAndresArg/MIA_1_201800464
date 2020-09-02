@@ -53,6 +53,7 @@ func (e *Ebr) deleteFastMenosElNext() {
 	}
 	e.Fit = ' '
 	e.Size = 0
+	e.Inicio = 0
 }
 
 // FILTRO 1
@@ -343,11 +344,6 @@ func (m *TipoMbr) eliminarFast(nombreBuscar string, archivoDisco *os.File) bool 
 				}
 
 			}
-			/*
-
-				ACA TENDRIA QUE IR A BUSCAR EN LA EXTENDIDA A VER QUE ONDA SI HAY O NO LOGICAS
-
-			*/
 
 		}
 	}
@@ -383,4 +379,81 @@ func (m TipoMbr) GetParticionYposicion(nombreBuscar string) (Particion, uint8) {
 	}
 	nada := Particion{}
 	return nada, uint8(0)
+}
+
+func (m *TipoMbr) eliminarFullLogica(nombreBuscar string, archivoDisco *os.File) bool { // retorna si fue posible la ELIMINACION
+	var aux [16]byte
+	copy(aux[:], nombreBuscar)
+	for x := 0; x < len(m.Particiones); x++ {
+		if m.Particiones[x].Status == 'y' && (m.Particiones[x].Tipo == 'E' || m.Particiones[x].Tipo == 'e') {
+			archivoDisco.Seek(m.Particiones[x].Inicio, 0)
+			ebrAux := Ebr{}
+			tamanioEBR := binary.Size(ebrAux) //tamanio de lo que ire a traer
+			ebr_en_bytes := leerBytePorByte(archivoDisco, tamanioEBR)
+			buff := bytes.NewBuffer(ebr_en_bytes)               // lo convierto a buffer porque eso pedia la funcion
+			err := binary.Read(buff, binary.BigEndian, &ebrAux) //ya tengo el original
+			if err != nil {
+				fmt.Println("error en lectura ebr ")
+			}
+			if string(ebrAux.Nombre[:]) == string(aux[:]) { // el primer EBR NO PUEDE SER ELIMINADO
+				println(color.Red + "EL PRIMER EBR NO SE PUEDE ELIMINAR , por tanto se marcara como que no la encontro" + color.Reset)
+			} else if ebrAux.Next == -1 {
+				continue
+			} else {
+				// toca recorrer en busca de la logica
+				auxAnterior := Ebr{}
+				for string(ebrAux.Nombre[:]) != string(aux[:]) && ebrAux.Next != -1 {
+					auxAnterior = ebrAux
+					// LEER EBR POR EBR
+					archivoDisco.Seek(ebrAux.Next, 0)
+					tamanioEBR := binary.Size(ebrAux) //tamanio de lo que ire a traer
+					ebr_en_bytes := leerBytePorByte(archivoDisco, tamanioEBR)
+					buff := bytes.NewBuffer(ebr_en_bytes)              // lo convierto a buffer porque eso pedia la funcion
+					err = binary.Read(buff, binary.BigEndian, &ebrAux) //ya tengo el original
+					fmt.Printf(color.Cyan+"EBR actual: %s\n", ebrAux.Nombre)
+				}
+				// 															LA PREGUNTA ES ¿EL QUE SALIO ES EL QUE ?
+				println("SALIO EL EBR" + color.Reset)
+				if ebrAux.Next == -1 && string(ebrAux.Nombre[:]) == string(aux[:]) { // 										si es el ultimo solo hago esto :v
+					auxAnterior.Next = -1
+					escribirUnEBR(archivoDisco, (auxAnterior.Inicio - int64(binary.Size(auxAnterior))), auxAnterior) // 	REFRESCTO SU NEXT , CON SOLO ESTO BASTA
+					inicio := ebrAux.Inicio
+					fin := ebrAux.Size
+					ebrAux.deleteFastMenosElNext()
+					escribirUnEBR(archivoDisco, (ebrAux.Inicio - int64(binary.Size(ebrAux))), ebrAux) // 					LA PONGO EN INHABILITADA
+
+					archivoDisco.Seek(inicio, 0)
+					var ceros []byte
+					for r := 0; r < int(fin); r++ {
+						ceros = append(ceros, 0)
+					}
+					var nuevoEscritor bytes.Buffer
+					binary.Write(&nuevoEscritor, binary.BigEndian, &ceros)
+					escribirBinariamente(archivoDisco, nuevoEscritor.Bytes())
+					println(color.Blue + "Particion eliminada" + color.Reset)
+					return true
+				} else if string(ebrAux.Nombre[:]) == string(aux[:]) {
+					auxAnterior.Next = ebrAux.Next
+					escribirUnEBR(archivoDisco, (auxAnterior.Inicio - int64(binary.Size(auxAnterior))), auxAnterior) // 	REFRESCTO SU NEXT
+					inicio := ebrAux.Inicio
+					fin := ebrAux.Size
+					ebrAux.deleteFastMenosElNext()
+					escribirUnEBR(archivoDisco, (ebrAux.Inicio - int64(binary.Size(ebrAux))), ebrAux) // LA PONGO EN INHABILITADA
+					archivoDisco.Seek(inicio, 0)
+					var ceros []byte
+					for r := 0; r < int(fin); r++ {
+						ceros = append(ceros, 0)
+					}
+					var nuevoEscritor bytes.Buffer
+					binary.Write(&nuevoEscritor, binary.BigEndian, &ceros)
+					escribirBinariamente(archivoDisco, nuevoEscritor.Bytes())
+					println(color.Blue + "Particion eliminada" + color.Reset)
+					return true
+				}
+
+			}
+
+		}
+	}
+	return false
 }

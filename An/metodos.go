@@ -433,7 +433,7 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 							*/
 							archivoDisco.Seek(inicio, 0)
 							var ceros []byte
-							for r := 0; r <= int(fin); r++ {
+							for r := 0; r < int(fin); r++ {
 								ceros = append(ceros, 0)
 							}
 							var nuevoEscritor bytes.Buffer
@@ -444,7 +444,13 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 							println(color.Red + "no se encontro la particion" + color.Reset)
 						}
 					} else {
-						println(color.Red + "no se encontro la particion con ese nombre , no se podra hacer la eliminacion FULL " + color.Reset)
+						// TONS PUEDE QUE SEA LOGICA , YA SI NO ES LOGICA SI TIRO EL ERROR A LO MASHO :v
+						res := mrbAuxiliar.eliminarFast(nombreName, archivoDisco)
+						if res {
+
+						} else {
+							println(color.Red + "no se encontro la particion con ese nombre , no se podra hacer la eliminacion FULL " + color.Reset)
+						}
 					}
 
 				default:
