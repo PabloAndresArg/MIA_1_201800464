@@ -108,8 +108,10 @@ func (m TipoMbr) crearParticion(fit string, size int64, nombre string, tipo byte
 			m.Particiones[x].Size = size
 			copy(m.Particiones[x].Nombre[:], nombre)
 			m.Particiones[x].Inicio = m.getInicio(uint8(x))
-			m.Particiones[x].imprimirDatosParticion()
+			fmt.Println("---------------------------------")
 			println(color.Yellow + "PARTICION PRIMARIA CREADA CON EXITO" + color.Reset)
+			m.Particiones[x].imprimirDatosParticion()
+			fmt.Println("---------------------------------")
 			return m
 			//break
 		}
@@ -126,8 +128,10 @@ func (m *TipoMbr) crearParticionExtendida(fit string, size int64, nombre string,
 			m.Particiones[x].Size = size
 			copy(m.Particiones[x].Nombre[:], nombre)
 			m.Particiones[x].Inicio = m.getInicio(uint8(x))
-			m.Particiones[x].imprimirDatosParticion()
+			fmt.Println("---------------------------------")
 			println(color.Yellow + "PARTICION EXTENDIDA CREADA CON EXITO" + color.Reset)
+			m.Particiones[x].imprimirDatosParticion()
+			fmt.Println("---------------------------------")
 			return uint8(x) // retorno la posicion para poder saber que pos del arreglo tiene y obtener el byte donde escribite un ebr
 			//break
 		}
