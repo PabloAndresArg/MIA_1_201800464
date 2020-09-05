@@ -92,17 +92,27 @@ func grahpMBR(id string, pathCompleto string) {
 		println(color.Red + "NO SE PUDO ENCONTRAR EL MBR " + color.Reset)
 		return
 	}
+
 	crearTxt(mrbAuxiliar, rut+nom+".txt")
 	generarImg(rut+nom, ext)
+
 }
 func generarImg(fuente string, extension string) {
-	consola := exec.Command("dot", "-T"+extension, fuente+".txt", "-o "+fuente+"."+extension)
-	if errOr := consola.Run(); errOr != nil {
-		println(color.Red + "Error al ejecutar comando dot" + color.Reset)
+	pos1 := "-T" + extension
+	pos2 := fuente + ".txt"
+	pos3 := fuente + "." + extension
+	// dot -Tjpg /home/pablo/Escritorio/REP/ReporteMbr.txt -o /home/pablo/Escritorio/REP/ReporteMbr.jpg
+	consola := exec.Command("dot", pos1, pos2, "-o", pos3)
+	var out bytes.Buffer
+	var stderr bytes.Buffer
+	consola.Stdout = &out
+	consola.Stderr = &stderr
+	err := consola.Run()
+	if err != nil {
+		fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
 		return
 	}
 	println(color.Blue + "REPORTE GENERADO" + color.Reset)
-
 }
 
 func crearTxt(m TipoMbr, direccionDestino string) { // pasar tambien la ruta

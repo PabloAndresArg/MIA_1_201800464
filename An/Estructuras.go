@@ -249,7 +249,7 @@ func (mont Montura) getImpresionMontura() {
 	fmt.Printf(" Nombre: %s\n", mont.Nombre)
 }
 
-func (m TipoMbr) buscarExistenciaEnParticiones(nombreBuscar string) bool { // retornar si si pudo agregar la particion o si no
+func (m TipoMbr) buscarExistenciaEnParticiones(nombreBuscar string) bool { // retornar si si pudo agregar la particion o si no SOLO PARA PRINCIPALES
 	var aux [16]byte
 	copy(aux[:], nombreBuscar)
 	for x := 0; x < len(m.Particiones); x++ {
@@ -456,4 +456,84 @@ func (m *TipoMbr) eliminarFullLogica(nombreBuscar string, archivoDisco *os.File)
 		}
 	}
 	return false
+}
+
+func (m *TipoMbr) getLOGICA(nombreBuscar string, archivoDisco *os.File) (Ebr, bool) { // retorno EL EBR y TRUE si lo encontre
+	var aux [16]byte
+	copy(aux[:], nombreBuscar)
+	for x := 0; x < len(m.Particiones); x++ {
+		if m.Particiones[x].Status == 'y' && (m.Particiones[x].Tipo == 'E' || m.Particiones[x].Tipo == 'e') {
+			archivoDisco.Seek(m.Particiones[x].Inicio, 0)
+			ebrAux := Ebr{}
+			tamanioEBR := binary.Size(ebrAux) //tamanio de lo que ire a traer
+			ebr_en_bytes := leerBytePorByte(archivoDisco, tamanioEBR)
+			buff := bytes.NewBuffer(ebr_en_bytes)               // lo convierto a buffer porque eso pedia la funcion
+			err := binary.Read(buff, binary.BigEndian, &ebrAux) //ya tengo el original
+			if err != nil {
+				fmt.Println("error en lectura ebr ")
+			}
+			if string(ebrAux.Nombre[:]) == string(aux[:]) && ebrAux.Status == 'y' {
+				return ebrAux, true
+			} else if ebrAux.Next == -1 {
+				return ebrAux, false // solo hay un ebr y pues no encontro nada
+			} else {
+				for string(ebrAux.Nombre[:]) != string(aux[:]) && ebrAux.Next != -1 {
+					archivoDisco.Seek(ebrAux.Next, 0)
+					tamanioEBR := binary.Size(ebrAux)
+					ebr_en_bytes := leerBytePorByte(archivoDisco, tamanioEBR)
+					buff := bytes.NewBuffer(ebr_en_bytes)
+					err = binary.Read(buff, binary.BigEndian, &ebrAux)
+					fmt.Printf(color.Cyan+"EBR actual: %s\n", ebrAux.Nombre) // QUITAR
+				}
+				println("SALIO EL EBR" + color.Reset)
+				if string(ebrAux.Nombre[:]) == string(aux[:]) && ebrAux.Status == 'y' { // 										si es el ultimo solo hago esto :v
+					return ebrAux, true
+				}
+
+			}
+
+		}
+	}
+	fmt.Println("no encontro nada en las logicas")
+	no := Ebr{}
+	return no, false
+}
+
+func (m *TipoMbr) getUltimoEbrDeLasLogicas(archivoDisco *os.File) (Ebr, bool) { // retorno EL EBR y TRUE si lo encontre
+
+	for x := 0; x < len(m.Particiones); x++ {
+		if m.Particiones[x].Status == 'y' && (m.Particiones[x].Tipo == 'E' || m.Particiones[x].Tipo == 'e') {
+			archivoDisco.Seek(m.Particiones[x].Inicio, 0)
+			ebrAux := Ebr{}
+			tamanioEBR := binary.Size(ebrAux) //tamanio de lo que ire a traer
+			ebr_en_bytes := leerBytePorByte(archivoDisco, tamanioEBR)
+			buff := bytes.NewBuffer(ebr_en_bytes)               // lo convierto a buffer porque eso pedia la funcion
+			err := binary.Read(buff, binary.BigEndian, &ebrAux) //ya tengo el original
+			if err != nil {
+				fmt.Println("error en lectura ebr ")
+			}
+			if ebrAux.Status == 'y' && ebrAux.Next == -1 {
+				return ebrAux, true // SI ES EL ULTIMO , PUM RETORNA :D
+			} else if ebrAux.Next == -1 {
+				return ebrAux, false // solo hay un ebr y Pero no esta en uso
+			} else {
+				for ebrAux.Next != -1 {
+					archivoDisco.Seek(ebrAux.Next, 0)
+					tamanioEBR := binary.Size(ebrAux)
+					ebr_en_bytes := leerBytePorByte(archivoDisco, tamanioEBR)
+					buff := bytes.NewBuffer(ebr_en_bytes)
+					err = binary.Read(buff, binary.BigEndian, &ebrAux)
+					fmt.Printf(color.Cyan+"EBR actual: %s\n", ebrAux.Nombre) // QUITAR
+				}
+
+				if ebrAux.Status == 'y' && ebrAux.Next == -1 { //	si es el ultimo solo hago esto :v
+					fmt.Printf("El ultimo EBR es: %s\n"+color.Reset, ebrAux.Nombre)
+					return ebrAux, true
+				}
+			}
+		}
+	}
+	fmt.Println("no hay ningun EBR en uso")
+	no := Ebr{}
+	return no, false
 }

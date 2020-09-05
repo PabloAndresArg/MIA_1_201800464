@@ -19,6 +19,8 @@ type Montura struct {
 	Parti         Particion
 	PosArray      uint8
 	//cuando la desmonte la voy a escribir al disco  , debo GUARDAR LA POSICION PARA LA HORA QUE HAGA EL DESMONTAJE
+	PartiLogica Ebr
+	InitEBR     int64
 }
 
 type disco struct {

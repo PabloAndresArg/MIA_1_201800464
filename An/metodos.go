@@ -229,7 +229,10 @@ func dameUnNumeroRandom() int64 { // para el signature del mbr , tener una lista
 func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, fit string, delete string, add string, tipo__ string, unit string) {
 	// atributos obligatorios : NAME , PATH  SIZE
 	// OPCIONALES  unit , type , fit , delete , add
-	nombreName = QuitarComillas(nombreName)
+	if len(nombreName) != 0 {
+		nombreName = QuitarComillas(nombreName)
+	}
+
 	if len(rutaPath) != 0 && len(nombreName) != 0 && len(sizeTamanio) != 0 { // si vienen los obligatorios
 		archivoDisco, err := os.OpenFile(QuitarComillas(rutaPath), os.O_RDWR, 0644) // TIEENE PERMISOS DE ESCRITURA Y DE LECTURA PERRO :V
 		defer archivoDisco.Close()
@@ -464,9 +467,92 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 		} else if len(add) != 0 && len(delete) == 0 { // vengo a dar mas espacio a una particion  o disminuir
 			add = strings.TrimSpace(add)
 			if add[0] == '-' { // resta
-				fmt.Println("reduciendo Particion en " + add)
+				add, _ := strconv.ParseInt(add, 10, 64) // lo devuelvo como un entero
+				add = getSizeConUnidad(add, unit)
+				// ya tengo mi tamaño en bytes
+
+				// PARA REDUCIR SOLO TENGO QUE VER SI LO QUE LE QUITARE NO ES MENOR A 0 , PRIMERO IR A BUSCAR SI EXISTE LA PARTICION
+				if mrbAuxiliar.buscarExistenciaEnParticiones(nombreName) { // es das PRINCIPALES
+					// ENTONCES NECESITO ESA PRIMARIA O EXT y LE RESTO Y SI ES MAYOR A CERO ESTA PERMITIDO
+					parti, pos := mrbAuxiliar.GetParticionYposicion(nombreName)
+					if parti.Tipo == 'E' || parti.Tipo == 'e' {
+						// ACA FUNCIONARIA UN POCO DIFERENTE EL REDUCIR PORQUE NO SE SI HAY ALGUN EBR OCUPANDO ESE ESPACIO , IGUAL SERIA DE HACERLO CON UN RANGO
+						ebrEncont, band := mrbAuxiliar.getUltimoEbrDeLasLogicas(archivoDisco)
+						if band {
+							limite := ebrEncont.Inicio + ebrEncont.Size // EL VALOR NUEVO TIENE QUE SER MAYOR AL DEL limite
+							if parti.Inicio+parti.Size+add >= limite {  // tons si , size realtivo 												 TOMAR EN CUENTA STRUCST PARA ESPACIO DISPONIBLE
+								mrbAuxiliar.Particiones[pos].Size = parti.Size + add // EN REALIDAD ES UNA RESTA
+								fmt.Println("---------------------------------")
+								fmt.Println("la particion actualmente es de: " + fmt.Sprint(parti.Size) + " bytes")
+								mrbAuxiliar.Particiones[pos].Size = parti.Size + add // EN REALIDAD ES UNA RESTA
+								escribirMBR(archivoDisco, mrbAuxiliar)
+								println(color.Yellow + "REDUCIENDO LA PARTICION EXTENDIDA: " + nombreName + " en " + fmt.Sprint(add) + " bytes" + color.Reset)
+								fmt.Println("ahora esta paricion tiene: " + fmt.Sprint(mrbAuxiliar.Particiones[pos].Size) + " bytes")
+								fmt.Println("---------------------------------")
+							} else {
+								println(color.Red + "No puedo reducir la extendida porque estaria perdiendo LOGICAS" + color.Reset)
+							}
+
+						} else {
+							// pues si no hay ultimo ni modo le permito reducir xd
+							if parti.Size+add <= (int64(binary.Size(tamanioMbr)) + 1) { // TENGO QUE TENER ESPACIO PARA AUNQUE SEA UN EBR SINO NO TENDRIA SENTIDO Y AL MENOS UNA PARTICION DE 1 BYTE
+								println(color.Red + "ERROR ESPACIO NEGATIVO o INSUFICIENTE PARA ALMACENAR UN EBR con una particion minima " + color.Reset)
+							} else {
+								mrbAuxiliar.Particiones[pos].Size = parti.Size + add // EN REALIDAD ES UNA RESTA
+								fmt.Println("---------------------------------")
+								fmt.Println("la particion actualmente es de: " + fmt.Sprint(parti.Size) + " bytes")
+								mrbAuxiliar.Particiones[pos].Size = parti.Size + add // EN REALIDAD ES UNA RESTA
+								escribirMBR(archivoDisco, mrbAuxiliar)
+								println(color.Yellow + "REDUCIENDO LA PARTICION EXTENDIDA: " + nombreName + " en " + fmt.Sprint(add) + " bytes" + color.Reset)
+								fmt.Println("ahora esta paricion tiene: " + fmt.Sprint(mrbAuxiliar.Particiones[pos].Size) + " bytes")
+								fmt.Println("---------------------------------")
+							}
+						}
+					} else {
+						if parti.Size+add <= 0 { // LA RESTA ES UNA SUMA CON SIGNO DE PRECEDENCIA :V
+							println(color.Red + "ERROR LA PARTICION SE QUEDA SIN ESPACIO O CON ESPACIO NEGATIVO" + color.Reset)
+						} else {
+
+							fmt.Println("---------------------------------")
+							fmt.Println("la particion actualmente es de: " + fmt.Sprint(parti.Size) + " bytes")
+							mrbAuxiliar.Particiones[pos].Size = parti.Size + add // EN REALIDAD ES UNA RESTA
+							escribirMBR(archivoDisco, mrbAuxiliar)
+							println(color.Yellow + "REDUCIENDO LA PARTICION PRIMARIA: " + nombreName + " en " + fmt.Sprint(add) + " bytes" + color.Reset)
+							fmt.Println("ahora esta paricion tiene: " + fmt.Sprint(mrbAuxiliar.Particiones[pos].Size) + " bytes")
+							fmt.Println("---------------------------------")
+						}
+
+					}
+
+				} else { // DEBO BUSCAR EN LAS LOGICAS  SINO ESTAN ES QUE NO EXISTE ESA PARTICION EN EL DISCO
+					if mrbAuxiliar.yaExisteUnaExtendida() {
+						ebrEncontrado, bandera := mrbAuxiliar.getLOGICA(nombreName, archivoDisco)
+						if bandera {
+							if ebrEncontrado.Size+add > 0 { // LA RESTA ES PERMITIDA
+								fmt.Println("---------------------------------")
+								fmt.Println("la particion actualmente es de: " + fmt.Sprint(ebrEncontrado.Size) + " bytes")
+								ebrEncontrado.Size = ebrEncontrado.Size + add
+								escribirUnEBR(archivoDisco, (ebrEncontrado.Inicio - int64(binary.Size(ebrEncontrado))), ebrEncontrado) // SIEMPRE ES RELATIVO A SU INICIO
+								println(color.Yellow + "REDUCIENDO LA PARTICION LOGICA: " + nombreName + " en " + fmt.Sprint(add) + " bytes" + color.Reset)
+								fmt.Println("ahora esta paricion tiene: " + fmt.Sprint(ebrEncontrado.Size) + " bytes")
+								fmt.Println("---------------------------------")
+							} else {
+								println(color.Red + "ERROR LA PARTICION SE QUEDA SIN ESPACIO O CON ESPACIO NEGATIVO" + color.Reset)
+							}
+						} else {
+							print(color.Red + "Esa particion no esta en este disco.. (l) " + color.Reset)
+						}
+					} else {
+						print(color.Red + "Esa particion no esta en este disco" + color.Reset)
+					}
+				}
+
 			} else { // agranda
-				fmt.Println("Agrandando particion en " + add)
+				print(color.Yellow + "AGRANDANDO LA PARTICION " + nombreName + " en ")
+				fmt.Print(add)
+				println(" bytes" + color.Reset)
+				add, _ := strconv.ParseInt(add, 10, 64) // lo devuelvo como un entero
+				add = getSizeConUnidad(add, unit)
 			}
 
 		}
@@ -484,8 +570,16 @@ func escribirUnEBR(archivoDisco *os.File, desde int64, objeto Ebr) {
 	binary.Write(&escritor, binary.BigEndian, &objeto)
 	escribirBinariamente(archivoDisco, escritor.Bytes())
 }
+func escribirMBR(archivoDisco *os.File, objeto TipoMbr) {
+	archivoDisco.Seek(0, 0)
+	var escritor bytes.Buffer
+	binary.Write(&escritor, binary.BigEndian, &objeto)
+	escribirBinariamente(archivoDisco, escritor.Bytes())
+}
 
 func limpiarVariableFdisk() {
+	Name_ = ""
+	Path_ = ""
 	Unit_k_ = "k"
 	tipo_particion_ = "p"
 	FIT_ = "wf"
