@@ -72,8 +72,8 @@ func (m TipoMbr) hayEspacioSuficiente(nuevoEspacio int64) bool { // retornar si 
 	for x := 0; x < len(m.Particiones); x++ {       // solo considero primarias
 		tamanoOcupado += int64(m.Particiones[x].Size)
 	}
-	if m.Tamanio > (tamanoOcupado + nuevoEspacio) {
-		fmt.Println("\n" + fmt.Sprint("tamanio del disco:", m.Tamanio) + fmt.Sprint(" tamanio Ocupado: ", tamanoOcupado) + fmt.Sprint(" Espacio de la nueva particion: ", nuevoEspacio))
+	if m.Tamanio >= (tamanoOcupado + nuevoEspacio + 1) {
+		//fmt.Println("\n" + fmt.Sprint("tamanio del disco:", m.Tamanio) + fmt.Sprint(" tamanio Ocupado: ", tamanoOcupado) + fmt.Sprint(" Espacio de la nueva particion: ", nuevoEspacio))
 		//TAMANIO DEL DISCO - (INICIO+SIZE) DE LA ULTIMA POSICION DE MI ARRAY DE PARTICIONES
 		// disponibleDisco - disponible = FRAGMENTACION    y considerar que tengo un byte menos a la hora de escribir hasta el final
 		if m.hayFragmentacion() { // TENER EN CUENTA QUE LA FRAGMENTACION SOLO APARECE ENTRE PARTICIONES , NO EN LOS EXTREMOS
@@ -523,11 +523,11 @@ func (m *TipoMbr) getUltimoEbrDeLasLogicas(archivoDisco *os.File) (Ebr, bool) { 
 					ebr_en_bytes := leerBytePorByte(archivoDisco, tamanioEBR)
 					buff := bytes.NewBuffer(ebr_en_bytes)
 					err = binary.Read(buff, binary.BigEndian, &ebrAux)
-					fmt.Printf(color.Cyan+"EBR actual: %s\n", ebrAux.Nombre) // QUITAR
+					//fmt.Printf(color.Cyan+"EBR actual: %s\n", ebrAux.Nombre) // QUITAR
 				}
 
 				if ebrAux.Status == 'y' && ebrAux.Next == -1 { //	si es el ultimo solo hago esto :v
-					fmt.Printf("El ultimo EBR es: %s\n"+color.Reset, ebrAux.Nombre)
+					fmt.Printf(color.Cyan+"El ultimo EBR es: %s\n"+color.Reset, ebrAux.Nombre)
 					return ebrAux, true
 				}
 			}
@@ -536,4 +536,63 @@ func (m *TipoMbr) getUltimoEbrDeLasLogicas(archivoDisco *os.File) (Ebr, bool) { 
 	fmt.Println("no hay ningun EBR en uso")
 	no := Ebr{}
 	return no, false
+}
+func (m *TipoMbr) getTamanioOcupadoDeLosEbrs(archivoDisco *os.File) int64 { // retorno EL EBR y TRUE si lo encontre
+	ocupado := int64(0)
+	for x := 0; x < len(m.Particiones); x++ {
+		if m.Particiones[x].Status == 'y' && (m.Particiones[x].Tipo == 'E' || m.Particiones[x].Tipo == 'e') {
+			archivoDisco.Seek(m.Particiones[x].Inicio, 0)
+			ebrAux := Ebr{}
+			tamanioEBR := binary.Size(ebrAux) //tamanio de lo que ire a traer
+			ebr_en_bytes := leerBytePorByte(archivoDisco, tamanioEBR)
+			buff := bytes.NewBuffer(ebr_en_bytes)               // lo convierto a buffer porque eso pedia la funcion
+			err := binary.Read(buff, binary.BigEndian, &ebrAux) //ya tengo el original
+
+			if err != nil {
+				fmt.Println("error en lectura ebr ")
+			}
+			if ebrAux.Next == -1 {
+				ocupado = int64(binary.Size(ebrAux))
+			} else {
+				cuantosHay := int64(0)
+				ocupado = int64(binary.Size(ebrAux)) // CONTANDO EL PRIMERO
+				cuantosHay++
+				sizes := ebrAux.Size
+				for ebrAux.Next != -1 {
+					archivoDisco.Seek(ebrAux.Next, 0)
+					tamanioEBR := binary.Size(ebrAux)
+					ebr_en_bytes := leerBytePorByte(archivoDisco, tamanioEBR)
+					buff := bytes.NewBuffer(ebr_en_bytes)
+					err = binary.Read(buff, binary.BigEndian, &ebrAux)
+					//fmt.Printf(color.Cyan+"EBR actual: %s\n", ebrAux.Nombre) // QUITAR
+					ocupado = ocupado + int64(binary.Size(ebrAux))
+					sizes += ebrAux.Size
+					cuantosHay++
+				}
+				fmt.Println(color.Cyan + "HAY " + fmt.Sprint(cuantosHay) + " EBRs en esta particion Extendida el peso es de " + fmt.Sprint(int64(binary.Size(ebrAux))) + " bytes C/U")
+				fmt.Println("OCUPAN EN TOTAL: " + fmt.Sprint(ocupado+sizes+cuantosHay-1) + " se considera que el espacio disponible es el size - tamEbrs - sizes de particiones logicas" + color.Reset)
+				ocupado += sizes + cuantosHay - 1
+			}
+		}
+	}
+	return ocupado
+}
+
+// Rango es para ver cuanto ocupan las particiones y de donde a donde estan
+type Rango struct { // si mi nuevo tamaño o nuevo limite superior es mayor o igual a alguno de estos estoy sobrepasandome encima de una particion
+	LimiteInferior int64 // punto de inicio
+	LimiteSuperior int64 // punto final inicio + size
+}
+
+func (m TipoMbr) getRangosParticiones(nombreBuscar string) []Rango {
+	var aux [16]byte
+	copy(aux[:], nombreBuscar)
+	var rangos []Rango
+	for x := 0; x < len(m.Particiones); x++ {
+		if m.Particiones[x].Status == 'y' && string(m.Particiones[x].Nombre[:]) != string(aux[:]) { // diferente de la particion que quiero agrandar
+			r := Rango{LimiteInferior: m.Particiones[x].Inicio, LimiteSuperior: m.Particiones[x].Inicio + m.Particiones[x].Size}
+			rangos = append(rangos, r)
+		}
+	}
+	return rangos
 }
