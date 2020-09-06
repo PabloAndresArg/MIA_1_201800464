@@ -242,7 +242,7 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 		buff := bytes.NewBuffer(datosEnBytes)                   // lo convierto a buffer porque eso pedia la funcion
 		err = binary.Read(buff, binary.BigEndian, &mrbAuxiliar) //se decodifica y se guarda en el mbrAuxiliar , asi que despues de aca ya tengo el original
 		if err != nil {
-			log.Fatal("binary.Read failed", err)
+			log.Fatal("error de lectura", err)
 		}
 		/*
 			CREANDO LA PARTICION Y VOLVIENDO A ESCRIBIR EN EL ARCHIVO
@@ -308,7 +308,7 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 									} else {
 										ocupado = 0
 									}
-									fmt.Printf(color.Yellow+"EBR actual: %s\n", ebrAux.Nombre)
+									//fmt.Printf(color.Yellow+"EBR actual: %s\n", ebrAux.Nombre)
 									for ebrAux.Next != -1 {
 										ocupado += ebrAux.Size + int64(binary.Size(ebrAux)) // por cada iteracion se va acumulando el espacio ocupad
 										if (ocupado + size + 1) > extendida.Size {
@@ -322,10 +322,10 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 										ebr_en_bytes := leerBytePorByte(archivoDisco, tamanioEBR)
 										buff := bytes.NewBuffer(ebr_en_bytes)              // lo convierto a buffer porque eso pedia la funcion
 										err = binary.Read(buff, binary.BigEndian, &ebrAux) //ya tengo el original
-										fmt.Printf(color.Yellow+"EBR actual: %s\n", ebrAux.Nombre)
+										//fmt.Printf(color.Yellow+"EBR actual: %s\n", ebrAux.Nombre)
 									}
 									// AL SALIR DEL FOR EN TEORIA TENDRIA EL EBR QUE TIENE COMO SIGUIENTE A -1
-									println("SALIO EL EBR" + color.Reset)
+									//	println("SALIO EL EBR" + color.Reset)
 									//ebrAux.imprimirDatosEbr()
 									ebrAux.Next = ebrAux.Inicio + ebrAux.Size + 1
 									if (ocupado + size + 1) < extendida.Size { // ahora este es el ultimo

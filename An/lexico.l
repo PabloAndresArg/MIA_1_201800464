@@ -63,7 +63,8 @@ flecha 		   (\-\>) | (\-\>)
 ruta			(((\/)({letter})({letter}|{digit}|\.|(\/))+)|{cadenaLiteral})
 cadenaLiteral     (\"[^"]*\")
 comentario		  \#(.)*
-file_n 				[f][i][l][e]([0-9])+
+file_n 				[-][f][i][l][e]([0-9])+
+id_n 				[-][i][d]([0-9])+
 extension_dsk   	{id}(\.)dsk
 continuacio_de_linea  \\\*
 vd_ID_NUMERO       [v][d][a-zA-Z_][0-9]+
@@ -75,6 +76,7 @@ vd_ID_NUMERO       [v][d][a-zA-Z_][0-9]+
 {comentario} yylval.str = string(l.TokenBytes(nil)); 
 {flecha}  	 yylval.str = string(l.TokenBytes(nil)); return FLECHA //  yylval ES MI OBJETO %union que esta en el sint.y
 {ruta}		 yylval.str = string(l.TokenBytes(nil)); return RUTA  // NO ES LO MISMO literal pero  los atributos del union los tiene el yyval , el yyval puede tener el nombre que queramos solo lo deje asi por lo que decia le manual xd 
+unmount      yylval.str = string(l.TokenBytes(nil)); return UNMOUNT
 mount 		 yylval.str = string(l.TokenBytes(nil)); return MOUNT
 path 		 yylval.str = string(l.TokenBytes(nil)); return PATH 
 rmdisk 		 yylval.str = string(l.TokenBytes(nil)); return RMDISK
@@ -90,7 +92,6 @@ delete 		 yylval.str = string(l.TokenBytes(nil)); return DELETE
 add          yylval.str = string(l.TokenBytes(nil)); return ADD
 fast		 yylval.str = string(l.TokenBytes(nil)); return fast // TAMBIEN SE PUEDE EN MINUSCULAS	
 full		 yylval.str = string(l.TokenBytes(nil)); return full
-unmount		 yylval.str = string(l.TokenBytes(nil)); return UNMOUNT
 mkfs		 yylval.str = string(l.TokenBytes(nil)); return MKFS
 id 		     yylval.str = string(l.TokenBytes(nil)); return COMANDO_ID
 usr 		 yylval.str = string(l.TokenBytes(nil)); return USR
@@ -111,6 +112,7 @@ edit	     yylval.str = string(l.TokenBytes(nil)); return EDIT
 ren 		 yylval.str = string(l.TokenBytes(nil)); return REN // pag 20 
 mkdir		 yylval.str = string(l.TokenBytes(nil)); return MKDIR
 {file_n} 	 yylval.str = string(l.TokenBytes(nil)); return FILE_N
+{id_n}		 yylval.str = string(l.TokenBytes(nil)); return ID_N
 R 			 yylval.str = string(l.TokenBytes(nil)); return R // OPCIONALES DENTRO DE LA GRAMATICA 
 P			 yylval.str = string(l.TokenBytes(nil)); return P 
 e 			 yylval.str = string(l.TokenBytes(nil)); return E

@@ -643,6 +643,7 @@ func (m TipoMbr) getRangosParticionesLogicas(archivoDisco *os.File, nombreBuscar
 			archivoDisco.Seek(m.Particiones[x].Inicio, 0)
 			ebrAux := Ebr{}
 			tamanioEBR := binary.Size(ebrAux) //tamanio de lo que ire a traer
+			fmt.Println("TAMANIO_EBR: " + fmt.Sprint(tamanioEBR))
 			ebr_en_bytes := leerBytePorByte(archivoDisco, tamanioEBR)
 			buff := bytes.NewBuffer(ebr_en_bytes)               // lo convierto a buffer porque eso pedia la funcion
 			err := binary.Read(buff, binary.BigEndian, &ebrAux) //ya tengo el original

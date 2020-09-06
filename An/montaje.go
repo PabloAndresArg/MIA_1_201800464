@@ -20,6 +20,7 @@ type Montura struct {
 	PosArray      uint8
 	//cuando la desmonte la voy a escribir al disco  , debo GUARDAR LA POSICION PARA LA HORA QUE HAGA EL DESMONTAJE
 	PartiLogica Ebr
+	Tipo        byte
 }
 
 type disco struct {
@@ -31,12 +32,12 @@ type disco struct {
 
 func (d *disco) agregarParticionMontada(path string, nombre string, id string, posArray uint8, partition Particion) { // ACA DEBO ENVIAR UN EBR TAMBIEN
 
-	mon := Montura{PathDisco: path, Id: id, PosArray: posArray, Parti: partition}
+	mon := Montura{PathDisco: path, Id: id, PosArray: posArray, Parti: partition, Tipo: 'p'}
 	copy(mon.Nombre[:], nombre)
 	d.ParticionesMontadas = append(d.ParticionesMontadas, mon)
 }
 func (d *disco) agregarParticionMontadaLOGICA(path string, nombre string, id string, ebrMontura Ebr) { // ACA DEBO ENVIAR UN EBR TAMBIEN
-	mon := Montura{PathDisco: path, Id: id, PartiLogica: ebrMontura}
+	mon := Montura{PathDisco: path, Id: id, PartiLogica: ebrMontura, Tipo: 'l'}
 	copy(mon.Nombre[:], nombre)
 	d.ParticionesMontadas = append(d.ParticionesMontadas, mon)
 }
@@ -101,7 +102,7 @@ func verificarSiExisteParticion(direccion_archivo_binario string, nombreBuscar s
 			println(color.Yellow + "Particion Montada" + color.Reset)
 		}
 	} else {
-		// ACAAAAAAAAAAAAAAAAAAAAAAAAA PUEDO HACER ALGO PARA LEER LAS LOGICAS , SI NO ESTA EN LAS LOGICAS SI F no esta :'v
+		// PUEDO HACER ALGO PARA LEER LAS LOGICAS , SI NO ESTA EN LAS LOGICAS SI F no esta :'v
 		ebrParticionLogica, res := mrbAuxiliar.getLOGICA(nombreBuscar, archivoDisco)
 		if res {
 			// AHORA TENGO QUE VER SI YA REGISTRE EL DISCO
