@@ -20,7 +20,6 @@ type Montura struct {
 	PosArray      uint8
 	//cuando la desmonte la voy a escribir al disco  , debo GUARDAR LA POSICION PARA LA HORA QUE HAGA EL DESMONTAJE
 	PartiLogica Ebr
-	InitEBR     int64
 }
 
 type disco struct {
@@ -30,9 +29,14 @@ type disco struct {
 	CantidadPartciones  int64 // para el id
 }
 
-func (d *disco) agregarParticionMontada(path string, nombre string, id string, posArray uint8, partition Particion) {
+func (d *disco) agregarParticionMontada(path string, nombre string, id string, posArray uint8, partition Particion) { // ACA DEBO ENVIAR UN EBR TAMBIEN
 
 	mon := Montura{PathDisco: path, Id: id, PosArray: posArray, Parti: partition}
+	copy(mon.Nombre[:], nombre)
+	d.ParticionesMontadas = append(d.ParticionesMontadas, mon)
+}
+func (d *disco) agregarParticionMontadaLOGICA(path string, nombre string, id string, ebrMontura Ebr) { // ACA DEBO ENVIAR UN EBR TAMBIEN
+	mon := Montura{PathDisco: path, Id: id, PartiLogica: ebrMontura}
 	copy(mon.Nombre[:], nombre)
 	d.ParticionesMontadas = append(d.ParticionesMontadas, mon)
 }
@@ -97,7 +101,30 @@ func verificarSiExisteParticion(direccion_archivo_binario string, nombreBuscar s
 			println(color.Yellow + "Particion Montada" + color.Reset)
 		}
 	} else {
-		println(color.Red + "Error ese nombre no se encontro en ninguna particion de este disco" + color.Reset)
+		// ACAAAAAAAAAAAAAAAAAAAAAAAAA PUEDO HACER ALGO PARA LEER LAS LOGICAS , SI NO ESTA EN LAS LOGICAS SI F no esta :'v
+		ebrParticionLogica, res := mrbAuxiliar.getLOGICA(nombreBuscar, archivoDisco)
+		if res {
+			// AHORA TENGO QUE VER SI YA REGISTRE EL DISCO
+			if yaRegistreElPathEnElMount(direccion_archivo_binario) {
+				// si ya lo registre solo retorno ese disco y le asigno su nuevos atributos
+				discoYaMontado := getDiscoMontadoPorPath(direccion_archivo_binario)
+				discoYaMontado.CantidadPartciones++
+				var idPartition string = "vd" + discoYaMontado.Letra
+				idPartition = fmt.Sprint(idPartition, discoYaMontado.CantidadPartciones)
+				discoYaMontado.agregarParticionMontadaLOGICA(direccion_archivo_binario, nombreBuscar, idPartition, ebrParticionLogica)
+				println(color.Yellow + "Particion Montada" + color.Reset)
+			} else {
+				discoNuevo := disco{Path: direccion_archivo_binario, Letra: getLetra(), CantidadPartciones: 0}
+				discoNuevo.CantidadPartciones++
+				var idPartition string = "vd" + discoNuevo.Letra
+				idPartition = fmt.Sprint(idPartition, discoNuevo.CantidadPartciones)
+				discoNuevo.agregarParticionMontadaLOGICA(direccion_archivo_binario, nombreBuscar, idPartition, ebrParticionLogica)
+				addMonturaDisco(discoNuevo)
+				println(color.Yellow + "Particion Montada" + color.Reset)
+			}
+		} else {
+			println(color.Red + "Error ese nombre no se encontro en ninguna particion de este disco" + color.Reset)
+		}
 	}
 }
 
