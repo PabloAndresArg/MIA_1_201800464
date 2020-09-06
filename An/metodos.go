@@ -565,10 +565,10 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 							}
 						}
 						if ban {
-							println(color.Red + "No hay espacio suficiente a la derecha, estas ocupando espacio de otra particion" + color.Reset)
+							println(color.Red + "No hay espacio suficiente a la derecha, estarias ocupando espacio de otra particion" + color.Reset)
 						} else {
 							// SE PUEDE AGRANDAR LA PARTICION
-							if mrbAuxiliar.hayEspacioSuficiente(add) && nuevoLimiteSuperior < mrbAuxiliar.Tamanio {
+							if mrbAuxiliar.hayEspacioSuficienteAdd(add) && nuevoLimiteSuperior < mrbAuxiliar.Tamanio {
 								fmt.Println("---------------------------------")
 								fmt.Println("la particion actualmente es de: " + fmt.Sprint(mrbAuxiliar.Particiones[pos].Size) + " bytes")
 								mrbAuxiliar.Particiones[pos].Size = mrbAuxiliar.Particiones[pos].Size + add // corro a la derecha
@@ -600,6 +600,64 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 
 				} else { // DEBO BUSCAR EN LAS LOGICAS  SINO ESTAN ES QUE NO EXISTE ESA PARTICION EN EL DISCO
 					//..
+					if mrbAuxiliar.yaExisteUnaExtendida() {
+						ebrEncontrado, bandera := mrbAuxiliar.getLOGICA(nombreName, archivoDisco)
+						if bandera {
+							//-------------------- inicia la adicion a las logicas
+							rangos := mrbAuxiliar.getRangosParticionesLogicas(archivoDisco, nombreName)
+							if len(rangos) != 0 {
+								ban := false
+								nuevoLimite := ebrEncontrado.Inicio + ebrEncontrado.Size + add
+								for x := 0; x < len(rangos); x++ { // pregunto posiciones relativas :v
+									//fmt.Println(fmt.Sprint(nuevoLimite) + ">=" + fmt.Sprint((rangos[x].LimiteInferior - int64(binary.Size(ebrEncontrado)))) + " && " + fmt.Sprint(nuevoLimite) + "<=" + fmt.Sprint(rangos[x].LimiteSuperior))
+									if nuevoLimite >= (rangos[x].LimiteInferior-int64(binary.Size(ebrEncontrado))) && nuevoLimite <= rangos[x].LimiteSuperior { // QUIERE DECIR QUE ESTOY OCUPANDO ESPACIO QUE NO ES MIO
+										ban = true
+										break
+									}
+								}
+								if ban {
+									println(color.Red + "No hay espacio suficiente a la derecha, estarias ocupando espacio de otra particion o de otro ebr" + color.Reset)
+								} else {
+									nuevoLimite := ebrEncontrado.Inicio + ebrEncontrado.Size + add
+									limiteExtendida := mrbAuxiliar.getExtendida().Inicio + mrbAuxiliar.getExtendida().Size
+									if nuevoLimite <= limiteExtendida { // ES PERMITIDO PORQUE PASO LO ANTERIOR
+										fmt.Println("---------------------------------")
+										fmt.Println("la particion actualmente es de: " + fmt.Sprint(ebrEncontrado.Size) + " bytes")
+										ebrEncontrado.Size = ebrEncontrado.Size + add
+										escribirUnEBR(archivoDisco, (ebrEncontrado.Inicio - int64(binary.Size(ebrEncontrado))), ebrEncontrado) // SIEMPRE ES RELATIVO A SU INICIO
+										println(color.Blue + "INCREMENTANDO LA PARTICION LOGICA: " + nombreName + " en " + fmt.Sprint(add) + " bytes" + color.Reset)
+										fmt.Println("ahora esta paricion tiene: " + fmt.Sprint(ebrEncontrado.Size) + " bytes")
+										fmt.Println("---------------------------------")
+									} else {
+										println(color.Red + "Espacio insuficiente en LA EXTENDIDA" + color.Reset)
+									}
+
+								}
+
+							} else { // QUIERE DECIR QUE SOLO ESTA UN EBR , solo tengo que tener cuidado que no supere al contenedor en este caso LA EXTENDIDA
+								nuevoLimite := ebrEncontrado.Inicio + ebrEncontrado.Size + add
+								limiteExtendida := mrbAuxiliar.getExtendida().Inicio + mrbAuxiliar.getExtendida().Size
+								if nuevoLimite <= limiteExtendida { // ES PERMITIDO
+									fmt.Println("---------------------------------")
+									fmt.Println("la particion actualmente es de: " + fmt.Sprint(ebrEncontrado.Size) + " bytes")
+									ebrEncontrado.Size = ebrEncontrado.Size + add
+									escribirUnEBR(archivoDisco, (ebrEncontrado.Inicio - int64(binary.Size(ebrEncontrado))), ebrEncontrado) // SIEMPRE ES RELATIVO A SU INICIO
+									println(color.Blue + "INCREMENTANDO LA PARTICION LOGICA: " + nombreName + " en " + fmt.Sprint(add) + " bytes" + color.Reset)
+									fmt.Println("ahora esta paricion tiene: " + fmt.Sprint(ebrEncontrado.Size) + " bytes")
+									fmt.Println("---------------------------------")
+								} else {
+									println(color.Red + "Lo siento incrementaste demasiado a la logica , escribiria afuera de la extendida por tanto no lo permite " + color.Reset)
+								}
+
+							}
+
+							//----------------------- fin de la adicion
+						} else {
+							println(color.Red + "Esa particion no esta en este disco.. (l) " + color.Reset)
+						}
+					} else {
+						println(color.Red + "Esa particion no esta en este disco Ni si quiera hay una Extendida" + color.Reset)
+					}
 				}
 
 			}

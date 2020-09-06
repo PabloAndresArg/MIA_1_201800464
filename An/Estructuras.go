@@ -84,6 +84,21 @@ func (m TipoMbr) hayEspacioSuficiente(nuevoEspacio int64) bool { // retornar si 
 	}
 	return false
 }
+func (m TipoMbr) hayEspacioSuficienteAdd(nuevoEspacio int64) bool { // retornar si si pudo agregar la particion o si no
+	var tamanoOcupado int64 = int64(binary.Size(m)) // primero considero el tamanio del mbr
+	for x := 0; x < len(m.Particiones); x++ {       // solo considero primarias
+		tamanoOcupado += int64(m.Particiones[x].Size)
+	}
+	if m.Tamanio >= (tamanoOcupado + nuevoEspacio) {
+		//fmt.Println("\n" + fmt.Sprint("tamanio del disco:", m.Tamanio) + fmt.Sprint(" tamanio Ocupado: ", tamanoOcupado) + fmt.Sprint(" Espacio de la nueva particion: ", nuevoEspacio))
+		if m.hayFragmentacion() { // TENER EN CUENTA QUE LA FRAGMENTACION SOLO APARECE ENTRE PARTICIONES , NO EN LOS EXTREMOS
+			println(color.Yellow + "Cuidado este disco posee fragmentacion" + color.Reset)
+		}
+
+		return true
+	}
+	return false
+}
 
 // FILTRO 3
 func (m TipoMbr) yaExisteUnaExtendida() bool { // retornar si si pudo agregar la particion o si no
@@ -109,10 +124,27 @@ func (m TipoMbr) getExtendida() Particion { // retornar si si pudo agregar la pa
 	return erro
 }
 
+func (m TipoMbr) validacionPrimerAjusteHayTraslape(inicioSupuesto int64, sizeSupuesto int64) bool {
+	nuevoLimiteSuperior := inicioSupuesto + sizeSupuesto
+	rangos := m.getRangosParticiones("") // por el momento no hay nombre XD
+	if len(rangos) != 0 {
+		for x := 0; x < len(rangos); x++ { // pregunto posiciones relativas :v
+			//fmt.Println(fmt.Sprint(nuevoLimiteSuperior) + ">=" + fmt.Sprint(rangos[x].LimiteInferior) + " && " + fmt.Sprint(nuevoLimiteSuperior) + "<=" + fmt.Sprint(rangos[x].LimiteSuperior))
+			if nuevoLimiteSuperior >= rangos[x].LimiteInferior && nuevoLimiteSuperior <= rangos[x].LimiteSuperior { // QUIERE DECIR QUE ESTOY OCUPANDO ESPACIO QUE NO ES MIO
+				return true //println(color.Red + "No hay espacio suficiente a la derecha, estarias ocupando espacio de otra particion" + color.Reset)
+			}
+		}
+	} // si llego hasta aca es que si habia espacio en el disco entonces solo le digo que si se puede y la crea
+	return false
+}
+
 func (m TipoMbr) crearParticion(fit string, size int64, nombre string, tipo byte) TipoMbr { // retornar si si pudo agregar la particion o si no
 	for x := 0; x < len(m.Particiones); x++ { // NECESITO inicioParticion int64
 
-		if m.Particiones[x].Status == 'n' { // ingresa en la libre y le cambia el status , PRIMER AJUSTE
+		if m.Particiones[x].Status == 'n' { // ingresa en la libre y le cambia el status ,  FALTA LA VALIDACION DE PRIMER AJUSTE
+			if m.validacionPrimerAjusteHayTraslape(m.getInicio(uint8(x)), size) { // SI HAY TRASLAPE LO SALTA
+				continue
+			}
 			m.Particiones[x].Status = 'y'
 			m.Particiones[x].Tipo = tipo
 			m.Particiones[x].Fit = getFit(fit)
@@ -127,12 +159,16 @@ func (m TipoMbr) crearParticion(fit string, size int64, nombre string, tipo byte
 			//break
 		}
 	}
+	fmt.Println(color.Red + "No encontro el espacio necesario..." + color.Reset) // QUITAR
 	return m
 }
 func (m *TipoMbr) crearParticionExtendida(fit string, size int64, nombre string, tipo byte) uint8 { // retornar si si pudo agregar la particion o si no
 	for x := 0; x < len(m.Particiones); x++ { // NECESITO inicioParticion int64
 
-		if m.Particiones[x].Status == 'n' { // ingresa en la libre y le cambia el status , PRIMER AJUSTE
+		if m.Particiones[x].Status == 'n' { // ingresa en la libre y le cambia el status , PRIMER AJUSTE , VALIDAR TRASLAPE
+			if m.validacionPrimerAjusteHayTraslape(m.getInicio(uint8(x)), size) { // SI HAY TRASLAPE LO SALTA
+				continue
+			}
 			m.Particiones[x].Status = 'y'
 			m.Particiones[x].Tipo = tipo
 			m.Particiones[x].Fit = getFit(fit)
@@ -322,10 +358,10 @@ func (m *TipoMbr) eliminarFast(nombreBuscar string, archivoDisco *os.File) bool 
 						ebr_en_bytes := leerBytePorByte(archivoDisco, tamanioEBR)
 						buff := bytes.NewBuffer(ebr_en_bytes)              // lo convierto a buffer porque eso pedia la funcion
 						err = binary.Read(buff, binary.BigEndian, &ebrAux) //ya tengo el original
-						fmt.Printf(color.Cyan+"EBR actual: %s\n", ebrAux.Nombre)
+						//fmt.Printf(color.Cyan+"EBR actual: %s\n", ebrAux.Nombre)
 					}
 					// LA PREGUNTA ES ¿EL QUE SALIO ES EL QUE ?
-					println("SALIO EL EBR" + color.Reset)
+					//println("SALIO EL EBR" + color.Reset)
 					if ebrAux.Next == -1 && string(ebrAux.Nombre[:]) == string(aux[:]) { // si es el ultimo solo hago esto :v
 						auxAnterior.Next = -1
 						escribirUnEBR(archivoDisco, (auxAnterior.Inicio - int64(binary.Size(auxAnterior))), auxAnterior) // REFRESCTO SU NEXT , CON SOLO ESTO BASTA
@@ -410,10 +446,10 @@ func (m *TipoMbr) eliminarFullLogica(nombreBuscar string, archivoDisco *os.File)
 					ebr_en_bytes := leerBytePorByte(archivoDisco, tamanioEBR)
 					buff := bytes.NewBuffer(ebr_en_bytes)              // lo convierto a buffer porque eso pedia la funcion
 					err = binary.Read(buff, binary.BigEndian, &ebrAux) //ya tengo el original
-					fmt.Printf(color.Cyan+"EBR actual: %s\n", ebrAux.Nombre)
+					//fmt.Printf(color.Cyan+"EBR actual: %s\n", ebrAux.Nombre)
 				}
 				// 															LA PREGUNTA ES ¿EL QUE SALIO ES EL QUE ?
-				println("SALIO EL EBR" + color.Reset)
+				//println("SALIO EL EBR" + color.Reset)
 				if ebrAux.Next == -1 && string(ebrAux.Nombre[:]) == string(aux[:]) { // 										si es el ultimo solo hago esto :v
 					auxAnterior.Next = -1
 					escribirUnEBR(archivoDisco, (auxAnterior.Inicio - int64(binary.Size(auxAnterior))), auxAnterior) // 	REFRESCTO SU NEXT , CON SOLO ESTO BASTA
@@ -483,9 +519,9 @@ func (m *TipoMbr) getLOGICA(nombreBuscar string, archivoDisco *os.File) (Ebr, bo
 					ebr_en_bytes := leerBytePorByte(archivoDisco, tamanioEBR)
 					buff := bytes.NewBuffer(ebr_en_bytes)
 					err = binary.Read(buff, binary.BigEndian, &ebrAux)
-					fmt.Printf(color.Cyan+"EBR actual: %s\n", ebrAux.Nombre) // QUITAR
+					//fmt.Printf(color.Cyan+"EBR actual: %s\n", ebrAux.Nombre) // QUITAR
 				}
-				println("SALIO EL EBR" + color.Reset)
+				//println("SALIO EL EBR" + color.Reset)
 				if string(ebrAux.Nombre[:]) == string(aux[:]) && ebrAux.Status == 'y' { // 										si es el ultimo solo hago esto :v
 					return ebrAux, true
 				}
@@ -527,7 +563,7 @@ func (m *TipoMbr) getUltimoEbrDeLasLogicas(archivoDisco *os.File) (Ebr, bool) { 
 				}
 
 				if ebrAux.Status == 'y' && ebrAux.Next == -1 { //	si es el ultimo solo hago esto :v
-					fmt.Printf(color.Cyan+"El ultimo EBR es: %s\n"+color.Reset, ebrAux.Nombre)
+					fmt.Printf(color.Cyan+"El ultimo EBR es: %s\n"+color.Reset, ebrAux.Nombre) // QUITAR
 					return ebrAux, true
 				}
 			}
@@ -594,5 +630,50 @@ func (m TipoMbr) getRangosParticiones(nombreBuscar string) []Rango {
 			rangos = append(rangos, r)
 		}
 	}
+	return rangos
+}
+
+func (m TipoMbr) getRangosParticionesLogicas(archivoDisco *os.File, nombreBuscar string) []Rango {
+	var aux [16]byte
+	copy(aux[:], nombreBuscar)
+	var rangos []Rango
+
+	for x := 0; x < len(m.Particiones); x++ {
+		if m.Particiones[x].Status == 'y' && (m.Particiones[x].Tipo == 'E' || m.Particiones[x].Tipo == 'e') {
+			archivoDisco.Seek(m.Particiones[x].Inicio, 0)
+			ebrAux := Ebr{}
+			tamanioEBR := binary.Size(ebrAux) //tamanio de lo que ire a traer
+			ebr_en_bytes := leerBytePorByte(archivoDisco, tamanioEBR)
+			buff := bytes.NewBuffer(ebr_en_bytes)               // lo convierto a buffer porque eso pedia la funcion
+			err := binary.Read(buff, binary.BigEndian, &ebrAux) //ya tengo el original
+			if err != nil {
+				fmt.Println("error en lectura ebr ")
+			}
+			if ebrAux.Status == 'y' && ebrAux.Next == -1 && string(ebrAux.Nombre[:]) != string(aux[:]) {
+				r := Rango{LimiteInferior: ebrAux.Inicio, LimiteSuperior: ebrAux.Inicio + ebrAux.Size}
+				rangos = append(rangos, r)
+				//		fmt.Println(rangos) // QUITAR
+				return rangos
+			} else if ebrAux.Next == -1 {
+				return rangos // LEN 0 PORQUE NO HAY NINGUNO , AUNQUE NUNCA PASARIA POR LA CONDICION DE QUE LO BUSCO ANTES SI EXISTE
+			} else {
+				if ebrAux.Status == 'y' && string(ebrAux.Nombre[:]) != string(aux[:]) { // PARA QUE NO AGARRE ESA :V
+					r := Rango{LimiteInferior: ebrAux.Inicio, LimiteSuperior: ebrAux.Inicio + ebrAux.Size}
+					rangos = append(rangos, r)
+				}
+
+				for ebrAux.Next != -1 {
+					archivoDisco.Seek(ebrAux.Next, 0)
+					tamanioEBR := binary.Size(ebrAux)
+					ebr_en_bytes := leerBytePorByte(archivoDisco, tamanioEBR)
+					buff := bytes.NewBuffer(ebr_en_bytes)
+					err = binary.Read(buff, binary.BigEndian, &ebrAux)
+					r2 := Rango{LimiteInferior: ebrAux.Inicio, LimiteSuperior: ebrAux.Inicio + ebrAux.Size}
+					rangos = append(rangos, r2)
+				}
+			}
+		}
+	}
+	//	fmt.Println(rangos) // QUITAR
 	return rangos
 }
