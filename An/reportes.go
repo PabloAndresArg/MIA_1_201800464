@@ -93,7 +93,7 @@ func grahpMBR(id string, pathCompleto string) {
 			return
 		}
 
-		crearTxt(mrbAuxiliar, rut+nom+".txt")
+		crearTxt(mrbAuxiliar, rut+nom+".txt", archivoDisco)
 		generarImg(rut+nom, ext, rut)
 	} else {
 		fmt.Println("-----------------------")
@@ -123,7 +123,7 @@ func generarImg(fuente string, extension string, direccionCarpeta string) {
 
 }
 
-func crearTxt(m TipoMbr, direccionDestino string) { // pasar tambien la ruta
+func crearTxt(m TipoMbr, direccionDestino string, archivoDisco *os.File) { // pasar tambien la ruta
 	w, err := os.Create(direccionDestino)
 	if err != nil {
 		println(color.Red + "Error al crear el archivo" + color.Reset)
@@ -157,7 +157,7 @@ func crearTxt(m TipoMbr, direccionDestino string) { // pasar tambien la ruta
 			tipo := (m.Particiones[x].Tipo)
 			nombre := m.Particiones[x].getNameHowString()
 			w.WriteString("<tr>\n") // TITULO
-			w.WriteString("<td color = \"grey\" colspan = '2'> Particion" + strconv.Itoa(x) + "</td> ")
+			w.WriteString("<td color = \"grey\" colspan = '2'> Particion [" + strconv.Itoa(x) + "]</td> ")
 			w.WriteString("</tr>\n") // FIN TITULO
 			//status
 			w.WriteString("<tr>\n")
@@ -194,6 +194,37 @@ func crearTxt(m TipoMbr, direccionDestino string) { // pasar tambien la ruta
 			w.WriteString("</tr>\n")
 
 		}
+		// ---------------------------------------------------------------------------- PARA LOS EBRS
+		if m.Particiones[x].Status == 'y' && (m.Particiones[x].Tipo == 'E' || m.Particiones[x].Tipo == 'e') {
+			archivoDisco.Seek(m.Particiones[x].Inicio, 0)
+			ebrAux := Ebr{}
+			tamanioEBR := binary.Size(ebrAux) //tamanio de lo que ire a traer
+			ebr_en_bytes := leerBytePorByte(archivoDisco, tamanioEBR)
+			buff := bytes.NewBuffer(ebr_en_bytes)               // lo convierto a buffer porque eso pedia la funcion
+			err := binary.Read(buff, binary.BigEndian, &ebrAux) //ya tengo el original
+			if err != nil {
+				fmt.Println("error en lectura ebr ")
+			}
+			if ebrAux.Status == 'y' && ebrAux.Next == -1 {
+				w.WriteString(ebrAux.getCadenaHTML())
+			} else if ebrAux.Next == -1 {
+				g := ("<tr>\n")
+				g += ("<td bgcolor = \"#a1fc6a\">" + "SOLO EXISTE UN EBR VACIO APUNTANDO A -1" + "</td>\n")
+				g += ("</tr>\n")
+				w.WriteString(g)
+			} else {
+				w.WriteString(ebrAux.getCadenaHTML())
+				for ebrAux.Next != -1 {
+					archivoDisco.Seek(ebrAux.Next, 0)
+					tamanioEBR := binary.Size(ebrAux)
+					ebr_en_bytes := leerBytePorByte(archivoDisco, tamanioEBR)
+					buff := bytes.NewBuffer(ebr_en_bytes)
+					err = binary.Read(buff, binary.BigEndian, &ebrAux)
+					w.WriteString(ebrAux.getCadenaHTML())
+				}
+			}
+		}
+
 	}
 
 	w.WriteString("</table>\n")
@@ -236,7 +267,7 @@ func graphDisk(id string, pathCompleto string) {
 		generarImg(rut+nom, ext, rut)
 	} else {
 		fmt.Println("-----------------------")
-		fmt.Println("EL DISCO YA NO EXISTE")
+		fmt.Println("EL DISCO YA NO EXISTE  ")
 		fmt.Println("-----------------------")
 	}
 

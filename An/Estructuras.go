@@ -707,8 +707,8 @@ func (e *Ebr) getCadenaHTML() string {
 	nombre := e.getNameHowString()
 	// NOMBRE
 	g += ("<tr>\n")
-	g += ("<td bgcolor = \"#11fc6a\">NOMBRE</td>\n")
-	g += ("<td bgcolor = \"#11fc6a\">" + nombre + "</td>\n")
+	g += ("<td bgcolor = \"#a1fc6a\">NOMBRE</td>\n")
+	g += ("<td bgcolor = \"#a1fc6a\">" + nombre + "</td>\n")
 	g += ("</tr>\n")
 	//status
 	g += ("<tr>\n")
