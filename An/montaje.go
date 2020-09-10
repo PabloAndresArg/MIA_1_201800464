@@ -86,12 +86,27 @@ func verificarSiExisteParticion(direccion_archivo_binario string, nombreBuscar s
 		parti, posArray := mrbAuxiliar.GetParticionYposicion(nombreBuscar)
 		if yaRegistreElPathEnElMount(direccion_archivo_binario) {
 			// si ya lo registre solo retorno ese disco y le asigno su nuevos atributos
-			discoYaMontado := getDiscoMontadoPorPath(direccion_archivo_binario)
-			discoYaMontado.CantidadPartciones++
-			var idPartition string = "vd" + discoYaMontado.Letra
-			idPartition = fmt.Sprint(idPartition, discoYaMontado.CantidadPartciones)
-			discoYaMontado.agregarParticionMontada(direccion_archivo_binario, nombreBuscar, idPartition, posArray, parti)
-			println(color.Yellow + "Particion Montada" + color.Reset)
+			discoYaMontado := getDiscoMontadoPorPath(direccion_archivo_binario) // ANTES DE METER UNA NUEVA PARTICION TENGO QUE IR A VER SI EXISTE EN MI LISTA
+			validacionYaMonteEsaParticion := false
+			var aux [16]byte
+			copy(aux[:], nombreBuscar)
+			for i := 0; i < len(discoYaMontado.ParticionesMontadas); i++ {
+				if string(discoYaMontado.ParticionesMontadas[i].Nombre[:]) == string(aux[:]) {
+					validacionYaMonteEsaParticion = true
+				}
+
+			}
+			if validacionYaMonteEsaParticion == false {
+				discoYaMontado.CantidadPartciones++
+				var idPartition string = "vd" + discoYaMontado.Letra
+				idPartition = fmt.Sprint(idPartition, discoYaMontado.CantidadPartciones)
+				discoYaMontado.agregarParticionMontada(direccion_archivo_binario, nombreBuscar, idPartition, posArray, parti)
+				println(color.Yellow + "Particion Montada" + color.Reset)
+			} else {
+				println(color.Red + "---------------------------------------------------------------")
+				println(color.Red + "ESTA PARTICION YA ESTA MONTADA , NO LA PUEDES VOLVERLA A MONTAR")
+				println(color.Red + "---------------------------------------------------------------" + color.Reset)
+			}
 		} else {
 			discoNuevo := disco{Path: direccion_archivo_binario, Letra: getLetra(), CantidadPartciones: 0}
 			discoNuevo.CantidadPartciones++
@@ -109,11 +124,26 @@ func verificarSiExisteParticion(direccion_archivo_binario string, nombreBuscar s
 			if yaRegistreElPathEnElMount(direccion_archivo_binario) {
 				// si ya lo registre solo retorno ese disco y le asigno su nuevos atributos
 				discoYaMontado := getDiscoMontadoPorPath(direccion_archivo_binario)
-				discoYaMontado.CantidadPartciones++
-				var idPartition string = "vd" + discoYaMontado.Letra
-				idPartition = fmt.Sprint(idPartition, discoYaMontado.CantidadPartciones)
-				discoYaMontado.agregarParticionMontadaLOGICA(direccion_archivo_binario, nombreBuscar, idPartition, ebrParticionLogica)
-				println(color.Yellow + "Particion Montada" + color.Reset)
+				validacionYaMonteEsaParticion := false
+				var aux [16]byte
+				copy(aux[:], nombreBuscar)
+				for i := 0; i < len(discoYaMontado.ParticionesMontadas); i++ {
+					if string(discoYaMontado.ParticionesMontadas[i].Nombre[:]) == string(aux[:]) {
+						validacionYaMonteEsaParticion = true
+					}
+
+				}
+				if validacionYaMonteEsaParticion == false {
+					discoYaMontado.CantidadPartciones++
+					var idPartition string = "vd" + discoYaMontado.Letra
+					idPartition = fmt.Sprint(idPartition, discoYaMontado.CantidadPartciones)
+					discoYaMontado.agregarParticionMontadaLOGICA(direccion_archivo_binario, nombreBuscar, idPartition, ebrParticionLogica)
+					println(color.Yellow + "Particion Montada" + color.Reset)
+				} else {
+					println(color.Red + "---------------------------------------------------------------")
+					println(color.Red + "ESTA PARTICION YA ESTA MONTADA , NO LA PUEDES VOLVERLA A MONTAR")
+					println(color.Red + "---------------------------------------------------------------" + color.Reset)
+				}
 			} else {
 				discoNuevo := disco{Path: direccion_archivo_binario, Letra: getLetra(), CantidadPartciones: 0}
 				discoNuevo.CantidadPartciones++
