@@ -11,7 +11,7 @@ import (
 )
 
 func nuevo_lexico__(Fuente_ io.Reader, destino_ io.Writer, fName string) *lexer {
-	archivo_ := token.NewFileSet().AddFile(fName, -7, 1<<(8+2)) // le digo que solo soporte 1024 caracteres por liena
+	archivo_ := token.NewFileSet().AddFile(fName, -7, 1<<(8+2)) // le digo que solo soporte 1024 caracteres por liena en este caso por archivo pero como yo analizo por linea
 	lexic_, err := lex.New(archivo_, bufio.NewReader(Fuente_), lex.RuneClass(miniLexico))
 	if err != nil {
 		panic(err)

@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/TwinProduction/go-color"
@@ -677,4 +678,64 @@ func (m TipoMbr) getRangosParticionesLogicas(archivoDisco *os.File, nombreBuscar
 	}
 	//	fmt.Println(rangos) // QUITAR
 	return rangos
+}
+
+func (e Ebr) getNameHowString() string {
+	auxSalida := ""
+	for i := 0; i < 16; i++ {
+		if e.Nombre[i] != 0 {
+			auxSalida += string(e.Nombre[i])
+		}
+	}
+	return auxSalida
+}
+func (e Ebr) getFitToString() string {
+	switch e.Fit {
+	case 'w':
+		return "W"
+	case 'b':
+		return "B"
+	case 'f':
+		return "F"
+	default:
+		return " "
+	}
+}
+
+func (e *Ebr) getCadenaHTML() string {
+	g := ""
+	nombre := e.getNameHowString()
+	// NOMBRE
+	g += ("<tr>\n")
+	g += ("<td bgcolor = \"#11fc6a\">NOMBRE</td>\n")
+	g += ("<td bgcolor = \"#11fc6a\">" + nombre + "</td>\n")
+	g += ("</tr>\n")
+	//status
+	g += ("<tr>\n")
+	g += ("<td bgcolor = \"#11fc6a\">STATUS</td>\n")
+	g += ("<td bgcolor = \"#11fc6a\">" + string(e.Status) + "</td>\n")
+	g += ("</tr>\n")
+
+	// inicio
+	g += ("<tr>\n")
+	g += ("<td bgcolor = \"#11fc6a\">INICIO</td>\n")
+	g += ("<td bgcolor = \"#11fc6a\">\"" + strconv.Itoa(int(e.Inicio)) + "\"</td>\n")
+	g += ("</tr>\n")
+	// SIZE
+	g += ("<tr>\n")
+	g += ("<td bgcolor = \"#11fc6a\">SIZE</td>\n")
+	g += ("<td bgcolor = \"#11fc6a\">\"" + strconv.Itoa(int(e.Size)) + "\"</td>\n")
+	g += ("</tr>\n")
+
+	// FIT
+	g += ("<tr>\n")
+	g += ("<td bgcolor = \"#11fc6a\">FIT</td>\n")
+	g += ("<td bgcolor = \"#11fc6a\">" + (e.getFitToString()) + "</td>\n")
+	g += ("</tr>\n")
+	// NEXT
+	g += ("<tr>\n")
+	g += ("<td bgcolor = \"#11fc6a\">NEXT</td>\n")
+	g += ("<td bgcolor = \"#11fc6a\">\"" + strconv.Itoa(int(e.Next)) + "\"</td>\n")
+	g += ("</tr>\n")
+	return g
 }
