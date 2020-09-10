@@ -14,9 +14,20 @@ func desmontar(id string) {
 	print(color.Yellow + "Desmontando: " + color.Reset)
 	println(id)
 	letra := string(id[2])
+	if len(DiscosMontados_) == 0 {
+		println(color.Red + "---------------------------")
+		println(color.Red + "no hay particiones montadas ")
+		println(color.Red + "---------------------------" + color.Reset)
+		return
+	}
+	if !(validacionQueEsteMontada(letra, id)) {
+		return
+	}
+
 	for x := 0; x < len(DiscosMontados_); x++ { // primero ver si esta en la lista , luego ver si existe el disco  ,luego ver si es primaria o logica, y por ultimo escribir easy :'v , quitar de la lista 2
 		if DiscosMontados_[x].Letra == letra { // encuentro el disco
 			if _, err := os.Stat(DiscosMontados_[x].Path); !(os.IsNotExist(err)) {
+
 				for u_u := 0; u_u < len(DiscosMontados_[x].ParticionesMontadas); u_u++ {
 					if DiscosMontados_[x].ParticionesMontadas[u_u].Id == id { // tengo la particion manipulada :v osea que si existe
 						if DiscosMontados_[x].ParticionesMontadas[u_u].Tipo == 'p' {
@@ -79,7 +90,9 @@ func desmontar(id string) {
 				}
 
 			} else {
-				println(color.Red + "-- Ya no existe ese disco--" + color.Reset)
+				println(color.Red + "----------------------------")
+				println(color.Red + "-- Ya no existe ese disco --")
+				println(color.Red + "----------------------------" + color.Reset)
 			}
 
 		}
@@ -90,4 +103,23 @@ func desmontar(id string) {
 // QuitarMontaje  quita la particion montada :v
 func QuitarMontaje(mon []Montura, indiceQuit int) []Montura {
 	return append(mon[:indiceQuit], mon[indiceQuit+1:]...)
+}
+
+func validacionQueEsteMontada(letra string, id string) bool {
+	for x := 0; x < len(DiscosMontados_); x++ { // primero ver si esta en la lista , luego ver si existe el disco  ,luego ver si es primaria o logica, y por ultimo escribir easy :'v , quitar de la lista 2
+		if DiscosMontados_[x].Letra == letra { // encuentro el disco
+			if _, err := os.Stat(DiscosMontados_[x].Path); !(os.IsNotExist(err)) {
+				for u_u := 0; u_u < len(DiscosMontados_[x].ParticionesMontadas); u_u++ {
+					if DiscosMontados_[x].ParticionesMontadas[u_u].Id == id { // tengo la particion manipulada :v osea que si existe
+						return true
+					}
+				}
+
+			}
+		}
+	}
+	println(color.Red + "-------------------------------")
+	println(color.Red + "LA PARTICION NO ESTABA MONTADA")
+	println(color.Red + "-------------------------------" + color.Reset)
+	return false
 }
