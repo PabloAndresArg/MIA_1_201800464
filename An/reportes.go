@@ -196,6 +196,9 @@ func crearTxt(m TipoMbr, direccionDestino string, archivoDisco *os.File) { // pa
 		}
 		// ---------------------------------------------------------------------------- PARA LOS EBRS
 		if m.Particiones[x].Status == 'y' && (m.Particiones[x].Tipo == 'E' || m.Particiones[x].Tipo == 'e') {
+			w.WriteString("<tr>\n") // TITULO
+			w.WriteString("<td bgcolor = \"#a1fc6a\" colspan = '2'> EBRS EN LA EXTENDIDA</td> ")
+			w.WriteString("</tr>\n") // FIN TITULO
 			archivoDisco.Seek(m.Particiones[x].Inicio, 0)
 			ebrAux := Ebr{}
 			tamanioEBR := binary.Size(ebrAux) //tamanio de lo que ire a traer
@@ -282,10 +285,11 @@ func crearTxtDisk(m TipoMbr, direccionDestino string, archivoDisco *os.File) {
 	w.WriteString("Digraph DiscoRep{\n")
 	w.WriteString("tbl[\n")
 	w.WriteString("shape = plaintext\n")
-	w.WriteString("label =<")
+	w.WriteString("label =<\n")
+	//<table border = '4' color = 'black' cellborder = '4' cellspacing = '4' bgcolor= "black">
 	w.WriteString("<table border = '4' cellborder = '4' cellspacing = '4' bgcolor = \"black\">")
 	//---------- MBR ----------------
-	w.WriteString("<tr>\n")
+	w.WriteString("<tr>\n\n\n\n")
 	w.WriteString("<td height = \"100\" bgcolor = \"#11fc6a\">MBR</td>\n")
 
 	//------------ PARTICIONES Y FRAGMENTACION--------------------------
@@ -295,12 +299,47 @@ func crearTxtDisk(m TipoMbr, direccionDestino string, archivoDisco *os.File) {
 			nombre := m.Particiones[x].getNameHowString()
 			w.WriteString("<td height = \"100\" bgcolor = \"#11fc6a\">" + nombre + "</td>\n")
 		} else if status == 'y' && m.Particiones[x].Tipo == 'e' || m.Particiones[x].Tipo == 'E' {
+			nombre := m.Particiones[x].getNameHowString()
 			// ACA CREO UNA TABLA , pero tengo que tener en cuenta la cantidad de ebrs para hacer un cols = cantidadEbrs * 2 +  bloques  espacio libre :'v
+			encabezado := ""
+			cuerpo := ""
+			w.WriteString("<td bgcolor='black' height = '100'>") // INICIA LA COLUMNA  TD
+			w.WriteString("\n\n\n")
+
+			cuerpo += ("<tr>\n") //fila 2 ,  INICIAN LOS EBRS
+			// con un for consigo todos los ebr *2 + ---- y tengo que tener un contador para poder generar el encabezado mas abajo con los fatos del colspan necesarios
+			cuerpo += ("<td color = 'black' bgcolor='#01A9DB' height = '30'>EBR1</td>\n")
+			cuerpo += ("<td color = 'black' bgcolor='#f2ff51' height = '30'>LOGICA 1</td>\n")
+			cuerpo += ("</tr>\n")                                                      //FILA 2  FIN EBRS*/
+			encabezado += ("<table color='blue' cellspacing='4' bgcolor = 'black'>\n") // NO MANDARLO A ESCRIBIR DE UNA SINO QUE GUARDAR TODO EN VARIABLES TEMPORALES Y LUEGO MANDARLAS A ESCRIBIR
+			encabezado += ("<tr><td bgcolor='WHITE'  height = '50' colspan='2'>" + nombre + "</td></tr>\n")
+
+			w.WriteString(encabezado)
+			w.WriteString(cuerpo)
+			w.WriteString("</table>\n")
+			w.WriteString("\n")
+
+			w.WriteString("\n\n\n</td>\n") // FIN DE LA COLUMNA TD*/
+
 		} else if status == 'n' {
-			w.WriteString("<td height = \"100\" bgcolor = \"#ff0f00\">" + "FREE" + "</td>\n")
+			w.WriteString("<td height = \"100\" bgcolor = \"##00FFFF\">" + "Espacio para Particion" + "</td>\n")
+		}
+		RangosPrincipales := m.getRangosParticiones("")
+		if len(RangosPrincipales) != 0 && status == 'y' {
+			if x+1 != len(RangosPrincipales) {
+				fmt.Println("NO ES 3 SINO QUE ES :" + fmt.Sprint(x))
+				m.verFragmentacion(archivoDisco)
+				fmt.Println(fmt.Sprint(RangosPrincipales[x].LimiteSuperior) + "-" + fmt.Sprint(RangosPrincipales[x+1].LimiteInferior))
+				resulto := RangosPrincipales[x+1].LimiteInferior - RangosPrincipales[x].LimiteSuperior - 1
+				fmt.Println(resulto)
+				if resulto != 0 {
+					w.WriteString("<td height = \"100\" bgcolor = \"#ff0f00\">" + "FREE " + fmt.Sprint(resulto) + " bytes" + "</td>\n")
+				}
+			}
 		}
 	}
-	w.WriteString("</tr>\n")
+	w.WriteString("<td height = \"100\" bgcolor = \"#CEF6E3\">" + "FREE " + fmt.Sprint(m.getEspacioLibre()) + " bytes </td>\n")
+	w.WriteString("\n\n\n\n</tr>\n")
 	w.WriteString("</table>\n")
 	w.WriteString(">];\n")
 	w.WriteString("}\n")

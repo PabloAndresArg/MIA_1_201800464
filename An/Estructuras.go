@@ -85,6 +85,15 @@ func (m TipoMbr) hayEspacioSuficiente(nuevoEspacio int64) bool { // retornar si 
 	}
 	return false
 }
+
+func (m TipoMbr) getEspacioLibre() int64 {
+	var tamanoOcupado int64 = int64(binary.Size(m)) // primero considero el tamanio del mbr
+	for x := 0; x < len(m.Particiones); x++ {       // solo considero primarias
+		tamanoOcupado += int64(m.Particiones[x].Size)
+	}
+	return m.Tamanio - tamanoOcupado
+}
+
 func (m TipoMbr) hayEspacioSuficienteAdd(nuevoEspacio int64) bool { // retornar si si pudo agregar la particion o si no
 	var tamanoOcupado int64 = int64(binary.Size(m)) // primero considero el tamanio del mbr
 	for x := 0; x < len(m.Particiones); x++ {       // solo considero primarias
@@ -632,6 +641,13 @@ func (m TipoMbr) getRangosParticiones(nombreBuscar string) []Rango {
 		}
 	}
 	return rangos
+}
+func (m TipoMbr) verFragmentacion(archivoDisco *os.File) {
+	fmt.Println("------- RANGO DE PRIMARIAS Y EXTENDIDA----------")
+	fmt.Println(m.getRangosParticiones(""))
+	fmt.Println("------- Rangos en logicas-----------")
+	fmt.Println(m.getRangosParticionesLogicas(archivoDisco, ""))
+
 }
 
 func (m TipoMbr) getRangosParticionesLogicas(archivoDisco *os.File, nombreBuscar string) []Rango {
