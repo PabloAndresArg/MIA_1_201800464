@@ -93,7 +93,7 @@ func CrearDisco(numero string, ruta string, nombre string, K_o_M string) {
 		log.Fatal("fallo creando el archivo de salida")
 	} else {
 		fmt.Println("---------------------------------")
-		println(color.Yellow + " Disco creado Correctamente: " + color.Reset)
+		println(color.Yellow + "Disco creado Correctamente: " + color.Reset)
 	}
 	var cero int8 = 0 // asignando el cero
 	direccion_cero := &cero

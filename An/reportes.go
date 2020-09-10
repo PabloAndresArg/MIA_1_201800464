@@ -19,6 +19,8 @@ func generarReporte() {
 		switch Name_ {
 		case "mbr":
 			grahpMBR(Id_vdlentraNumero_, Path_)
+		case "disk":
+			graphDisk(Id_vdlentraNumero_, Path_)
 		default:
 			fmt.Println("ERRROR COMANDO INCORRECTO")
 		}
@@ -65,9 +67,6 @@ func separarRutaYnombreReporte(pathCompleto string) (string, string, string) { /
 
 func grahpMBR(id string, pathCompleto string) {
 	rut, nom, ext := separarRutaYnombreReporte(pathCompleto)
-	/*fmt.Println(rut)
-	fmt.Println(nom)
-	fmt.Println(ext)*/
 	verificarRuta(rut) // la crea si no existe
 	// NECESITO IR A ATRAER EL PATH , TENIENDO EN CUENTA QUE PUEDO BUSCAR EN MI LISTA id[2] me da la letra y ya tengo el disco que necesito
 	var letraID = string(id[2])
@@ -77,27 +76,32 @@ func grahpMBR(id string, pathCompleto string) {
 		return
 	}
 
-	archivoDisco, err := os.OpenFile(QuitarComillas(_disco_.Path), os.O_RDWR, 0644)
-	defer archivoDisco.Close()
-	if err != nil {
-		log.Fatal(err)
-	}
-	mrbAuxiliar := TipoMbr{}
-	tamanioMbr := binary.Size(mrbAuxiliar)
-	datosEnBytes := leerBytePorByte(archivoDisco, tamanioMbr)
-	buff := bytes.NewBuffer(datosEnBytes)
-	err = binary.Read(buff, binary.BigEndian, &mrbAuxiliar)
-	if err != nil {
-		log.Fatal("error al leer", err)
-		println(color.Red + "NO SE PUDO ENCONTRAR EL MBR " + color.Reset)
-		return
-	}
+	if _, err := os.Stat(_disco_.Path); !(os.IsNotExist(err)) {
+		archivoDisco, err := os.OpenFile(QuitarComillas(_disco_.Path), os.O_RDWR, 0644)
+		defer archivoDisco.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+		mrbAuxiliar := TipoMbr{}
+		tamanioMbr := binary.Size(mrbAuxiliar)
+		datosEnBytes := leerBytePorByte(archivoDisco, tamanioMbr)
+		buff := bytes.NewBuffer(datosEnBytes)
+		err = binary.Read(buff, binary.BigEndian, &mrbAuxiliar)
+		if err != nil {
+			log.Fatal("error al leer", err)
+			println(color.Red + "NO SE PUDO ENCONTRAR EL MBR " + color.Reset)
+			return
+		}
 
-	crearTxt(mrbAuxiliar, rut+nom+".txt")
-	generarImg(rut+nom, ext)
-
+		crearTxt(mrbAuxiliar, rut+nom+".txt")
+		generarImg(rut+nom, ext, rut)
+	} else {
+		fmt.Println("-----------------------")
+		fmt.Println("EL DISCO YA NO EXISTE")
+		fmt.Println("-----------------------")
+	}
 }
-func generarImg(fuente string, extension string) {
+func generarImg(fuente string, extension string, direccionCarpeta string) {
 	pos1 := "-T" + extension
 	pos2 := fuente + ".txt"
 	pos3 := fuente + "." + extension
@@ -112,7 +116,11 @@ func generarImg(fuente string, extension string) {
 		fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
 		return
 	}
-	println(color.Blue + "REPORTE GENERADO" + color.Reset)
+	println(color.Blue + "-----------------")
+	println(color.Blue + "REPORTE GENERADO")
+	println(color.Blue + "En: " + direccionCarpeta)
+	println(color.Blue + "-----------------" + color.Reset)
+
 }
 
 func crearTxt(m TipoMbr, direccionDestino string) { // pasar tambien la ruta
@@ -195,4 +203,79 @@ func crearTxt(m TipoMbr, direccionDestino string) { // pasar tambien la ruta
 		log.Fatal(errOr)
 		return
 	}
+}
+
+func graphDisk(id string, pathCompleto string) {
+	rut, nom, ext := separarRutaYnombreReporte(pathCompleto)
+	verificarRuta(rut) // la crea si no existe
+	// NECESITO IR A ATRAER EL PATH , TENIENDO EN CUENTA QUE PUEDO BUSCAR EN MI LISTA id[2] me da la letra y ya tengo el disco que necesito
+	var letraID = string(id[2])
+	_disco_ := getDiscoMontadoPorLetraID(letraID)
+	if _disco_.Letra == "NOENCONTRADO" { // EN TEORIA NUNCA ENTRARIA ACA
+		println(color.Red + "ESE ID NO FUE ENCONTRADO DENTRO DEL DISCO" + color.Reset)
+		return
+	}
+	if _, err := os.Stat(_disco_.Path); !(os.IsNotExist(err)) {
+		archivoDisco, err := os.OpenFile(QuitarComillas(_disco_.Path), os.O_RDWR, 0644)
+		defer archivoDisco.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+		mrbAuxiliar := TipoMbr{}
+		tamanioMbr := binary.Size(mrbAuxiliar)
+		datosEnBytes := leerBytePorByte(archivoDisco, tamanioMbr)
+		buff := bytes.NewBuffer(datosEnBytes)
+		err = binary.Read(buff, binary.BigEndian, &mrbAuxiliar)
+		if err != nil {
+			log.Fatal("error al leer", err)
+			println(color.Red + "NO SE PUDO ENCONTRAR EL MBR " + color.Reset)
+			return
+		}
+
+		crearTxtDisk(mrbAuxiliar, rut+nom+".txt", archivoDisco)
+		generarImg(rut+nom, ext, rut)
+	} else {
+		fmt.Println("-----------------------")
+		fmt.Println("EL DISCO YA NO EXISTE")
+		fmt.Println("-----------------------")
+	}
+
+}
+
+func crearTxtDisk(m TipoMbr, direccionDestino string, archivoDisco *os.File) {
+	w, err := os.Create(direccionDestino)
+	if err != nil {
+		println(color.Red + "Error al crear el archivo" + color.Reset)
+		return
+	}
+	w.WriteString("Digraph DiscoRep{\n")
+	w.WriteString("tbl[\n")
+	w.WriteString("shape = plaintext\n")
+	w.WriteString("label =<")
+	w.WriteString("<table border = '4' cellborder = '4' cellspacing = '4' bgcolor = \"black\">")
+	//---------- MBR ----------------
+	w.WriteString("<tr>\n")
+	w.WriteString("<td height = \"100\" bgcolor = \"#11fc6a\">MBR</td>\n")
+
+	//------------ PARTICIONES Y FRAGMENTACION--------------------------
+	for x := 0; x < 4; x++ {
+		status := (m.Particiones[x].Status)
+		if status == 'y' && m.Particiones[x].Tipo == 'p' || m.Particiones[x].Tipo == 'P' {
+			nombre := m.Particiones[x].getNameHowString()
+			w.WriteString("<td height = \"100\" bgcolor = \"#11fc6a\">" + nombre + "</td>\n")
+		} else if status == 'y' && m.Particiones[x].Tipo == 'e' || m.Particiones[x].Tipo == 'E' {
+			// ACA CREO UNA TABLA , pero tengo que tener en cuenta la cantidad de ebrs para hacer un cols = cantidadEbrs * 2 +  bloques  espacio libre :'v
+		} else if status == 'n' {
+			w.WriteString("<td height = \"100\" bgcolor = \"#ff0f00\">" + "FREE" + "</td>\n")
+		}
+	}
+	w.WriteString("</tr>\n")
+	w.WriteString("</table>\n")
+	w.WriteString(">];\n")
+	w.WriteString("}\n")
+	if errOr := w.Close(); errOr != nil {
+		log.Fatal(errOr)
+		return
+	}
+
 }
