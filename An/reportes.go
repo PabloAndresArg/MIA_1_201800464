@@ -305,20 +305,72 @@ func crearTxtDisk(m TipoMbr, direccionDestino string, archivoDisco *os.File) {
 			cuerpo := ""
 			w.WriteString("<td bgcolor='black' height = '100'>") // INICIA LA COLUMNA  TD
 			w.WriteString("\n\n\n")
-
 			cuerpo += ("<tr>\n") //fila 2 ,  INICIAN LOS EBRS
+
 			// con un for consigo todos los ebr *2 + ---- y tengo que tener un contador para poder generar el encabezado mas abajo con los fatos del colspan necesarios
-			cuerpo += ("<td color = 'black' bgcolor='#01A9DB' height = '30'>EBR1</td>\n")
-			cuerpo += ("<td color = 'black' bgcolor='#f2ff51' height = '30'>LOGICA 1</td>\n")
+			/*
+
+
+
+			 */
+
+			archivoDisco.Seek(m.Particiones[x].Inicio, 0)
+			ebrAux := Ebr{}
+			tamanioEBR := binary.Size(ebrAux)
+			ebrBytes := leerBytePorByte(archivoDisco, tamanioEBR)
+			buff := bytes.NewBuffer(ebrBytes)
+			err := binary.Read(buff, binary.BigEndian, &ebrAux) //ya tengo el original
+			cuantosHay := int64(0)
+			if err != nil {
+				fmt.Println("error en lectura ebr ")
+			}
+			if ebrAux.Next == -1 && ebrAux.Status == 'n' {
+				cuantosHay = 2
+				cuerpo += ("<td color = 'black' bgcolor='#01A9DB' height = '30'>EBR1</td>\n")
+				cuerpo += ("<td color = 'black' bgcolor='#01A9DB' height = '30'>FREE " + fmt.Sprint(m.Particiones[x].Size-m.getTamanioOcupadoDeLosEbrs(archivoDisco)) + " bytes</td>\n")
+
+			} else if ebrAux.Next == -1 && ebrAux.Status == 'y' {
+				cuantosHay += 3
+				cuerpo += ("<td color = 'black' bgcolor='#01A9DB' height = '30'>EBR1</td>\n")
+				cuerpo += ("<td color = 'black' bgcolor='#f2ff51' height = '30'>" + ebrAux.getNameHowString() + "</td>\n")
+				cuerpo += ("<td color = 'black' bgcolor='#01A9DB' height = '30'>FREE " + fmt.Sprint(m.Particiones[x].Size-m.getTamanioOcupadoDeLosEbrs(archivoDisco)) + " bytes</td>\n")
+			} else {
+				cuerpo += ("<td color = 'black' bgcolor='#01A9DB' height = '30'>EBR1</td>\n")
+				cuerpo += ("<td color = 'black' bgcolor='#f2ff51' height = '30'>" + ebrAux.getNameHowString() + "</td>\n")
+				indice := 2
+				cuantosHay += 2
+				for ebrAux.Next != -1 { // ACA ADENTRO VERIFICARIA LO DE LA FRAGMENTACION
+					archivoDisco.Seek(ebrAux.Next, 0)
+					tamanioEBR := binary.Size(ebrAux)
+					ebr_en_bytes := leerBytePorByte(archivoDisco, tamanioEBR)
+					buff := bytes.NewBuffer(ebr_en_bytes)
+					err = binary.Read(buff, binary.BigEndian, &ebrAux)
+					cuantosHay += 2
+					cuerpo += ("<td color = 'black' bgcolor='#01A9DB' height = '30'>EBR" + fmt.Sprint(indice) + "</td>\n")
+					cuerpo += ("<td color = 'black' bgcolor='#f2ff51' height = '30'>" + ebrAux.getNameHowString() + "</td>\n")
+					indice++
+				}
+				cuantosHay++
+				cuerpo += ("<td color = 'black' bgcolor='#01A9DB' height = '30'>FREE " + fmt.Sprint(m.Particiones[x].Size-m.getTamanioOcupadoDeLosEbrs(archivoDisco)) + " bytes</td>\n")
+			}
+
+			//			cuerpo += ("<td color = 'black' bgcolor='#01A9DB' height = '30'>EBR1</td>\n")
+			//			cuerpo += ("<td color = 'black' bgcolor='#f2ff51' height = '30'>LOGICA 1</td>\n")
+
+			/*
+
+
+
+			 */
+
 			cuerpo += ("</tr>\n")                                                      //FILA 2  FIN EBRS*/
 			encabezado += ("<table color='blue' cellspacing='4' bgcolor = 'black'>\n") // NO MANDARLO A ESCRIBIR DE UNA SINO QUE GUARDAR TODO EN VARIABLES TEMPORALES Y LUEGO MANDARLAS A ESCRIBIR
-			encabezado += ("<tr><td bgcolor='WHITE'  height = '50' colspan='2'>" + nombre + "</td></tr>\n")
+			encabezado += ("<tr><td bgcolor='WHITE'  height = '50' colspan='" + fmt.Sprint(cuantosHay) + "'>" + nombre + "</td></tr>\n")
 
 			w.WriteString(encabezado)
 			w.WriteString(cuerpo)
 			w.WriteString("</table>\n")
 			w.WriteString("\n")
-
 			w.WriteString("\n\n\n</td>\n") // FIN DE LA COLUMNA TD*/
 
 		} else if status == 'n' {
@@ -333,7 +385,6 @@ func crearTxtDisk(m TipoMbr, direccionDestino string, archivoDisco *os.File) {
 			if resulto != 0 {
 				w.WriteString("<td height = \"100\" bgcolor = \"#ff0f00\">" + "FREE " + fmt.Sprint(resulto) + " bytes" + "</td>\n")
 			}
-
 		}
 	}
 	w.WriteString("<td height = \"100\" bgcolor = \"#CEF6E3\">" + "FREE " + fmt.Sprint(m.getEspacioLibre()) + " bytes </td>\n")
