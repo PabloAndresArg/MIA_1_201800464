@@ -74,13 +74,6 @@ func (m TipoMbr) hayEspacioSuficiente(nuevoEspacio int64) bool { // retornar si 
 		tamanoOcupado += int64(m.Particiones[x].Size)
 	}
 	if m.Tamanio >= (tamanoOcupado + nuevoEspacio + 1) {
-		//fmt.Println("\n" + fmt.Sprint("tamanio del disco:", m.Tamanio) + fmt.Sprint(" tamanio Ocupado: ", tamanoOcupado) + fmt.Sprint(" Espacio de la nueva particion: ", nuevoEspacio))
-		//TAMANIO DEL DISCO - (INICIO+SIZE) DE LA ULTIMA POSICION DE MI ARRAY DE PARTICIONES
-		// disponibleDisco - disponible = FRAGMENTACION    y considerar que tengo un byte menos a la hora de escribir hasta el final
-		if m.hayFragmentacion() { // TENER EN CUENTA QUE LA FRAGMENTACION SOLO APARECE ENTRE PARTICIONES , NO EN LOS EXTREMOS
-			println(color.Yellow + "Cuidado este disco posee fragmentacion" + color.Reset)
-		}
-
 		return true
 	}
 	return false
@@ -99,7 +92,7 @@ func (m TipoMbr) hayEspacioSuficienteAdd(nuevoEspacio int64) bool { // retornar 
 	for x := 0; x < len(m.Particiones); x++ {       // solo considero primarias
 		tamanoOcupado += int64(m.Particiones[x].Size)
 	}
-	if m.Tamanio >= (tamanoOcupado + nuevoEspacio) {
+	if m.Tamanio > (tamanoOcupado + nuevoEspacio) {
 		//fmt.Println("\n" + fmt.Sprint("tamanio del disco:", m.Tamanio) + fmt.Sprint(" tamanio Ocupado: ", tamanoOcupado) + fmt.Sprint(" Espacio de la nueva particion: ", nuevoEspacio))
 		if m.hayFragmentacion() { // TENER EN CUENTA QUE LA FRAGMENTACION SOLO APARECE ENTRE PARTICIONES , NO EN LOS EXTREMOS
 			println(color.Yellow + "Cuidado este disco posee fragmentacion" + color.Reset)
@@ -155,21 +148,24 @@ func (m TipoMbr) crearParticion(fit string, size int64, nombre string, tipo byte
 			if m.validacionPrimerAjusteHayTraslape(m.getInicio(uint8(x)), size) { // SI HAY TRASLAPE LO SALTA
 				continue
 			}
-			m.Particiones[x].Status = 'y'
-			m.Particiones[x].Tipo = tipo
-			m.Particiones[x].Fit = getFit(fit)
-			m.Particiones[x].Size = size
-			copy(m.Particiones[x].Nombre[:], nombre)
-			m.Particiones[x].Inicio = m.getInicio(uint8(x))
-			fmt.Println("---------------------------------")
-			println(color.Yellow + "PARTICION PRIMARIA CREADA CON EXITO" + color.Reset)
-			m.Particiones[x].imprimirDatosParticion()
-			fmt.Println("---------------------------------")
-			return m
-			//break
+			if m.Tamanio >= m.getInicio(uint8(x))+size {
+				m.Particiones[x].Status = 'y'
+				m.Particiones[x].Tipo = tipo
+				m.Particiones[x].Fit = getFit(fit)
+				m.Particiones[x].Size = size
+				copy(m.Particiones[x].Nombre[:], nombre)
+				m.Particiones[x].Inicio = m.getInicio(uint8(x))
+				fmt.Println("---------------------------------")
+				println(color.Yellow + "PARTICION PRIMARIA CREADA CON EXITO" + color.Reset)
+				m.Particiones[x].imprimirDatosParticion()
+				fmt.Println("---------------------------------")
+				return m
+			}
 		}
 	}
-	fmt.Println(color.Red + "No encontro el espacio necesario..." + color.Reset) // QUITAR
+	fmt.Println(color.Red + "-----------------------------------" + color.Reset)
+	fmt.Println(color.Red + "No encontro el espacio necesario..." + color.Reset)
+	fmt.Println(color.Red + "-----------------------------------" + color.Reset)
 	return m
 }
 func (m *TipoMbr) crearParticionExtendida(fit string, size int64, nombre string, tipo byte) uint8 { // retornar si si pudo agregar la particion o si no
@@ -179,20 +175,24 @@ func (m *TipoMbr) crearParticionExtendida(fit string, size int64, nombre string,
 			if m.validacionPrimerAjusteHayTraslape(m.getInicio(uint8(x)), size) { // SI HAY TRASLAPE LO SALTA
 				continue
 			}
-			m.Particiones[x].Status = 'y'
-			m.Particiones[x].Tipo = tipo
-			m.Particiones[x].Fit = getFit(fit)
-			m.Particiones[x].Size = size
-			copy(m.Particiones[x].Nombre[:], nombre)
-			m.Particiones[x].Inicio = m.getInicio(uint8(x))
-			fmt.Println("---------------------------------")
-			println(color.Yellow + "PARTICION EXTENDIDA CREADA CON EXITO" + color.Reset)
-			m.Particiones[x].imprimirDatosParticion()
-			fmt.Println("---------------------------------")
-			return uint8(x) // retorno la posicion para poder saber que pos del arreglo tiene y obtener el byte donde escribite un ebr
-			//break
+			if m.Tamanio >= m.getInicio(uint8(x))+size {
+				m.Particiones[x].Status = 'y'
+				m.Particiones[x].Tipo = tipo
+				m.Particiones[x].Fit = getFit(fit)
+				m.Particiones[x].Size = size
+				copy(m.Particiones[x].Nombre[:], nombre)
+				m.Particiones[x].Inicio = m.getInicio(uint8(x))
+				fmt.Println("---------------------------------")
+				println(color.Yellow + "PARTICION EXTENDIDA CREADA CON EXITO" + color.Reset)
+				m.Particiones[x].imprimirDatosParticion()
+				fmt.Println("---------------------------------")
+				return uint8(x) // retorno la posicion para poder saber que pos del arreglo tiene y obtener el byte donde escribite un ebr
+			}
 		}
 	}
+	fmt.Println(color.Red + "-----------------------------------" + color.Reset)
+	fmt.Println(color.Red + "No encontro el espacio necesario..." + color.Reset)
+	fmt.Println(color.Red + "-----------------------------------" + color.Reset)
 	return 0
 }
 func (p Particion) imprimirDatosParticion() {
@@ -600,9 +600,8 @@ func (m *TipoMbr) getTamanioOcupadoDeLosEbrs(archivoDisco *os.File) int64 { // r
 			if ebrAux.Next == -1 {
 				ocupado = int64(binary.Size(ebrAux))
 			} else {
-				cuantosHay := int64(0)
-				ocupado = int64(binary.Size(ebrAux)) // CONTANDO EL PRIMERO
-				cuantosHay++
+				cuantosHay := int64(1)
+
 				sizes := ebrAux.Size
 				for ebrAux.Next != -1 {
 					archivoDisco.Seek(ebrAux.Next, 0)
@@ -610,14 +609,17 @@ func (m *TipoMbr) getTamanioOcupadoDeLosEbrs(archivoDisco *os.File) int64 { // r
 					ebr_en_bytes := leerBytePorByte(archivoDisco, tamanioEBR)
 					buff := bytes.NewBuffer(ebr_en_bytes)
 					err = binary.Read(buff, binary.BigEndian, &ebrAux)
-					//fmt.Printf(color.Cyan+"EBR actual: %s\n", ebrAux.Nombre) // QUITAR
-					ocupado = ocupado + int64(binary.Size(ebrAux))
+
 					sizes += ebrAux.Size
 					cuantosHay++
 				}
+				// LO MALO ES QUE NO CONSIDERO FRAGMENTACION ACA
 				fmt.Println(color.Cyan + "HAY " + fmt.Sprint(cuantosHay) + " EBRs en esta particion Extendida el peso es de " + fmt.Sprint(int64(binary.Size(ebrAux))) + " bytes C/U")
-				fmt.Println("OCUPAN EN TOTAL: " + fmt.Sprint(ocupado+sizes+cuantosHay-1) + " se considera que el espacio disponible es el size - tamEbrs - sizes de particiones logicas" + color.Reset)
-				ocupado += sizes + cuantosHay - 1
+				ocupado += int64(binary.Size(ebrAux)) * cuantosHay
+				ocupado += int64(sizes) + int64((cuantosHay - 1))
+				fmt.Println("OCUPAN EN TOTAL: " + fmt.Sprint(42*cuantosHay) + "+" + fmt.Sprint(sizes) + "+" + fmt.Sprint(cuantosHay-1) + " se considera que el espacio disponible es el size - tamEbrs - sizes de particiones logicas" + color.Reset)
+				fmt.Println("Ocupado: ", ocupado)
+				fmt.Println("Disponible: " + fmt.Sprint((m.Particiones[x].Inicio+m.Particiones[x].Size)-(ebrAux.Inicio+ebrAux.Size)))
 			}
 		}
 	}
@@ -754,4 +756,16 @@ func (e *Ebr) getCadenaHTML() string {
 	g += ("<td bgcolor = \"#11fc6a\">\"" + strconv.Itoa(int(e.Next)) + "\"</td>\n")
 	g += ("</tr>\n")
 	return g
+}
+
+func (m TipoMbr) getEspacioDisponibleMasDerecha() int64 {
+	ultimoSizeAbsoluto := int64(0)
+	for x := 0; x < len(m.Particiones); x++ {
+		if m.Particiones[x].Status == 'y' {
+			ultimoSizeAbsoluto = m.Particiones[x].Inicio + m.Particiones[x].Size
+		}
+	}
+	disponible := m.Tamanio - ultimoSizeAbsoluto
+	println(color.Cyan + "Dispoible en Disco: " + fmt.Sprint(disponible))
+	return disponible
 }
