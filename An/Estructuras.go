@@ -91,7 +91,7 @@ func (m TipoMbr) getEspacioLibre() int64 {
 	for x := 0; x < len(m.Particiones); x++ {       // solo considero primarias
 		tamanoOcupado += int64(m.Particiones[x].Size)
 	}
-	return m.Tamanio - tamanoOcupado
+	return m.Tamanio - tamanoOcupado - 4
 }
 
 func (m TipoMbr) hayEspacioSuficienteAdd(nuevoEspacio int64) bool { // retornar si si pudo agregar la particion o si no

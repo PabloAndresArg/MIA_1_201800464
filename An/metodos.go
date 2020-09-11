@@ -252,7 +252,7 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 			CREANDO LA PARTICION Y VOLVIENDO A ESCRIBIR EN EL ARCHIVO
 		*/
 		if len(delete) == 0 && len(add) == 0 {
-			if mrbAuxiliar.hayUnaParticionDisponible() {
+			if mrbAuxiliar.hayUnaParticionDisponible() || getTipoEnBytes(tipo__) == 'l' {
 				size, _ := strconv.ParseInt(sizeTamanio, 10, 64)
 				size = getSizeConUnidad(size, unit)
 				if mrbAuxiliar.hayEspacioSuficiente(size) {

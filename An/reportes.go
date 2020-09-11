@@ -325,17 +325,15 @@ func crearTxtDisk(m TipoMbr, direccionDestino string, archivoDisco *os.File) {
 			w.WriteString("<td height = \"100\" bgcolor = \"##00FFFF\">" + "Espacio para Particion" + "</td>\n")
 		}
 		RangosPrincipales := m.getRangosParticiones("")
-		if len(RangosPrincipales) != 0 && status == 'y' {
-			if x+1 != len(RangosPrincipales) {
-				fmt.Println("NO ES 3 SINO QUE ES :" + fmt.Sprint(x))
-				m.verFragmentacion(archivoDisco)
-				fmt.Println(fmt.Sprint(RangosPrincipales[x].LimiteSuperior) + "-" + fmt.Sprint(RangosPrincipales[x+1].LimiteInferior))
-				resulto := RangosPrincipales[x+1].LimiteInferior - RangosPrincipales[x].LimiteSuperior - 1
-				fmt.Println(resulto)
-				if resulto != 0 {
-					w.WriteString("<td height = \"100\" bgcolor = \"#ff0f00\">" + "FREE " + fmt.Sprint(resulto) + " bytes" + "</td>\n")
-				}
+		if len(RangosPrincipales) != 0 && status == 'y' && x+1 != len(RangosPrincipales) {
+			m.verFragmentacion(archivoDisco)
+			fmt.Println(fmt.Sprint(RangosPrincipales[x].LimiteSuperior) + "-" + fmt.Sprint(RangosPrincipales[x+1].LimiteInferior))
+			resulto := RangosPrincipales[x+1].LimiteInferior - RangosPrincipales[x].LimiteSuperior - 1
+			fmt.Println(resulto)
+			if resulto != 0 {
+				w.WriteString("<td height = \"100\" bgcolor = \"#ff0f00\">" + "FREE " + fmt.Sprint(resulto) + " bytes" + "</td>\n")
 			}
+
 		}
 	}
 	w.WriteString("<td height = \"100\" bgcolor = \"#CEF6E3\">" + "FREE " + fmt.Sprint(m.getEspacioLibre()) + " bytes </td>\n")
