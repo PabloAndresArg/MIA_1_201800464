@@ -101,7 +101,10 @@ func verificarSiExisteParticion(direccion_archivo_binario string, nombreBuscar s
 				var idPartition string = "vd" + discoYaMontado.Letra
 				idPartition = fmt.Sprint(idPartition, discoYaMontado.CantidadPartciones)
 				discoYaMontado.agregarParticionMontada(direccion_archivo_binario, nombreBuscar, idPartition, posArray, parti)
+				println(color.Yellow + "\n------------------" + color.Reset)
 				println(color.Yellow + "Particion Montada" + color.Reset)
+				println(color.Yellow + "ID generado: " + idPartition + color.Reset)
+				println(color.Yellow + "------------------" + color.Reset)
 			} else {
 				println(color.Red + "\n---------------------------------------------------------------")
 				println(color.Red + "ESTA PARTICION YA ESTA MONTADA , NO LA PUEDES VOLVERLA A MONTAR")
@@ -114,7 +117,10 @@ func verificarSiExisteParticion(direccion_archivo_binario string, nombreBuscar s
 			idPartition = fmt.Sprint(idPartition, discoNuevo.CantidadPartciones)
 			discoNuevo.agregarParticionMontada(direccion_archivo_binario, nombreBuscar, idPartition, posArray, parti)
 			addMonturaDisco(discoNuevo)
+			println(color.Yellow + "\n------------------" + color.Reset)
 			println(color.Yellow + "Particion Montada" + color.Reset)
+			println(color.Yellow + "ID generado: " + idPartition + color.Reset)
+			println(color.Yellow + "------------------" + color.Reset)
 		}
 	} else {
 		// PUEDO HACER ALGO PARA LEER LAS LOGICAS , SI NO ESTA EN LAS LOGICAS SI F no esta :'v
@@ -138,7 +144,10 @@ func verificarSiExisteParticion(direccion_archivo_binario string, nombreBuscar s
 					var idPartition string = "vd" + discoYaMontado.Letra
 					idPartition = fmt.Sprint(idPartition, discoYaMontado.CantidadPartciones)
 					discoYaMontado.agregarParticionMontadaLOGICA(direccion_archivo_binario, nombreBuscar, idPartition, ebrParticionLogica)
+					println(color.Yellow + "\n------------------" + color.Reset)
 					println(color.Yellow + "Particion Montada" + color.Reset)
+					println(color.Yellow + "ID generado: " + idPartition + color.Reset)
+					println(color.Yellow + "------------------" + color.Reset)
 				} else {
 					println(color.Red + "\n---------------------------------------------------------------")
 					println(color.Red + "ESTA PARTICION YA ESTA MONTADA , NO LA PUEDES VOLVERLA A MONTAR")
@@ -151,7 +160,10 @@ func verificarSiExisteParticion(direccion_archivo_binario string, nombreBuscar s
 				idPartition = fmt.Sprint(idPartition, discoNuevo.CantidadPartciones)
 				discoNuevo.agregarParticionMontadaLOGICA(direccion_archivo_binario, nombreBuscar, idPartition, ebrParticionLogica)
 				addMonturaDisco(discoNuevo)
+				println(color.Yellow + "\n------------------" + color.Reset)
 				println(color.Yellow + "Particion Montada" + color.Reset)
+				println(color.Yellow + "ID generado: " + idPartition + color.Reset)
+				println(color.Yellow + "------------------" + color.Reset)
 			}
 		} else {
 			println(color.Red + "Error ese nombre no se encontro en ninguna particion de este disco" + color.Reset)
@@ -160,7 +172,7 @@ func verificarSiExisteParticion(direccion_archivo_binario string, nombreBuscar s
 }
 
 func mostrarMounts() {
-	fmt.Println("***************PARTICIONES MONTADOS****************")
+	fmt.Println("\n*************** PARTICIONES MONTADOS ****************")
 	b := false
 	for u_u := 0; u_u < len(DiscosMontados_); u_u++ {
 		b = true
@@ -169,7 +181,7 @@ func mostrarMounts() {
 	if !(b) {
 		println(color.Yellow + "POR EL MOMENTO NO HAY PARTICIONES MONTADAS" + color.Reset)
 	}
-	fmt.Println("**********************************************")
+	fmt.Println("******************************************************")
 }
 
 func yaRegistreElPathEnElMount(path string) bool {

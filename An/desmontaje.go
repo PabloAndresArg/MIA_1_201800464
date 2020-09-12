@@ -11,7 +11,7 @@ import (
 )
 
 func desmontar(id string) {
-	print(color.Yellow + "Desmontando: " + color.Reset)
+	print(color.Yellow + "\nDesmontando: " + color.Reset)
 	println(id)
 	letra := string(id[2])
 	if len(DiscosMontados_) == 0 {
