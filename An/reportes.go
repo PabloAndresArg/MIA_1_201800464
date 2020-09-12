@@ -397,7 +397,7 @@ func crearTxtDisk(m TipoMbr, direccionDestino string, archivoDisco *os.File) {
 			w.WriteString("\n\n\n</td>\n") // FIN DE LA COLUMNA TD*/
 
 		}
-		/*else if status == 'n' {
+		/*else if status == 'n' {// solo si quisiera mostrara que hay disponible
 			w.WriteString("<td height = \"100\" bgcolor = \"#00FFFF\">" + "Espacio para Particion" + "</td>\n")
 		}*/
 		// PLANTEAR DIFERENTE ------------------ ESTA PARTE DE LA FRAGMENTACION  asi con los size :v y pos relativas como hice arriba
