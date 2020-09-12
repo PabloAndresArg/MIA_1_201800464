@@ -298,12 +298,12 @@ func crearTxtDisk(m TipoMbr, direccionDestino string, archivoDisco *os.File) {
 
 	for x := 0; x < 4; x++ {
 		status := (m.Particiones[x].Status)
-		fmt.Println("----------------------" + fmt.Sprint(x) + "----------------------------")
+		//fmt.Println("----------------------" + fmt.Sprint(x) + "----------------------------")
 		if status == 'y' {
 			derecha = m.Particiones[x].Inicio - 1
-			fmt.Println("NUEVO DERECHA: " + fmt.Sprint(derecha))
+			//fmt.Println("NUEVO DERECHA: " + fmt.Sprint(derecha))
 		}
-		fmt.Println("RESULTADO: " + fmt.Sprint(derecha-izquierda))
+		//fmt.Println("RESULTADO: " + fmt.Sprint(derecha-izquierda))
 		if derecha-izquierda > 0 {
 			w.WriteString("<td height = \"100\" bgcolor = \"#ff0f00\">" + "FREE " + fmt.Sprint(derecha-izquierda) + " bytes" + "</td>\n")
 		}
@@ -373,7 +373,7 @@ func crearTxtDisk(m TipoMbr, direccionDestino string, archivoDisco *os.File) {
 					//	fmt.Println(resulto)
 					//	fmt.Println("----------------------------------------------")
 					if resulto != 0 { // considerar poner > 0
-						cuerpo += ("<td color = 'black' bgcolor=\"#ff0f00\" height = '30'>" + "FREE " + fmt.Sprint(resulto) + "</td>\n")
+						cuerpo += ("<td color = 'black' bgcolor=\"#ff0f00\" height = '30'>" + "FREE " + fmt.Sprint(resulto) + " bytes</td>\n")
 						cuantosHay++
 					}
 
@@ -385,15 +385,6 @@ func crearTxtDisk(m TipoMbr, direccionDestino string, archivoDisco *os.File) {
 				cuantosHay++
 				cuerpo += ("<td color = 'black' bgcolor='#CEF6E3' height = '30'>FREE " + fmt.Sprint(((m.Particiones[x].Inicio + m.Particiones[x].Size) - (ebrAux.Inicio + ebrAux.Size))) + " bytes</td>\n")
 			}
-
-			//			cuerpo += ("<td color = 'black' bgcolor='#01A9DB' height = '30'>EBR1</td>\n")
-			//			cuerpo += ("<td color = 'black' bgcolor='#f2ff51' height = '30'>LOGICA 1</td>\n")
-
-			/*
-
-
-
-			 */
 
 			cuerpo += ("</tr>\n")                                                      //FILA 2  FIN EBRS*/
 			encabezado += ("<table color='blue' cellspacing='4' bgcolor = 'black'>\n") // NO MANDARLO A ESCRIBIR DE UNA SINO QUE GUARDAR TODO EN VARIABLES TEMPORALES Y LUEGO MANDARLAS A ESCRIBIR
@@ -413,9 +404,9 @@ func crearTxtDisk(m TipoMbr, direccionDestino string, archivoDisco *os.File) {
 
 		if status == 'y' { // lo actualizo para tener el ultimo
 			izquierda = m.Particiones[x].Inicio + m.Particiones[x].Size
-			fmt.Println("NUEVO IZQUIERDA: " + fmt.Sprint(izquierda))
+			//fmt.Println("NUEVO IZQUIERDA: " + fmt.Sprint(izquierda))
 		}
-		fmt.Println("---------------------------------------------------")
+		//	fmt.Println("---------------------------------------------------")
 	}
 	w.WriteString("<td height = \"100\" bgcolor = \"#CEF6E3\">" + "FREE " + fmt.Sprint(m.getEspacioDisponibleMasDerecha()) + " bytes </td>\n")
 	w.WriteString("\n\n\n\n</tr>\n")

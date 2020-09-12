@@ -573,7 +573,7 @@ func (m *TipoMbr) getUltimoEbrDeLasLogicas(archivoDisco *os.File) (Ebr, bool) { 
 				}
 
 				if ebrAux.Status == 'y' && ebrAux.Next == -1 { //	si es el ultimo solo hago esto :v
-					fmt.Printf(color.Cyan+"El ultimo EBR es: %s\n"+color.Reset, ebrAux.Nombre) // QUITAR
+					//fmt.Printf(color.Cyan+"El ultimo EBR es: %s\n"+color.Reset, ebrAux.Nombre) // QUITAR
 					return ebrAux, true
 				}
 			}
@@ -614,12 +614,12 @@ func (m *TipoMbr) getTamanioOcupadoDeLosEbrs(archivoDisco *os.File) int64 { // r
 					cuantosHay++
 				}
 				// LO MALO ES QUE NO CONSIDERO FRAGMENTACION ACA
-				fmt.Println(color.Cyan + "HAY " + fmt.Sprint(cuantosHay) + " EBRs en esta particion Extendida el peso es de " + fmt.Sprint(int64(binary.Size(ebrAux))) + " bytes C/U")
+				//	fmt.Println(color.Cyan + "HAY " + fmt.Sprint(cuantosHay) + " EBRs en esta particion Extendida el peso es de " + fmt.Sprint(int64(binary.Size(ebrAux))) + " bytes C/U")
 				ocupado += int64(binary.Size(ebrAux)) * cuantosHay
 				ocupado += int64(sizes) + int64((cuantosHay - 1))
-				fmt.Println("OCUPAN EN TOTAL: " + fmt.Sprint(42*cuantosHay) + "+" + fmt.Sprint(sizes) + "+" + fmt.Sprint(cuantosHay-1) + " se considera que el espacio disponible es el size - tamEbrs - sizes de particiones logicas" + color.Reset)
+				/*fmt.Println("OCUPAN EN TOTAL: " + fmt.Sprint(42*cuantosHay) + "+" + fmt.Sprint(sizes) + "+" + fmt.Sprint(cuantosHay-1) + " se considera que el espacio disponible es el size - tamEbrs - sizes de particiones logicas" + color.Reset)
 				fmt.Println("Ocupado: ", ocupado)
-				fmt.Println("Disponible: " + fmt.Sprint((m.Particiones[x].Inicio+m.Particiones[x].Size)-(ebrAux.Inicio+ebrAux.Size)))
+				fmt.Println("Disponible: " + fmt.Sprint((m.Particiones[x].Inicio+m.Particiones[x].Size)-(ebrAux.Inicio+ebrAux.Size)))*/
 			}
 		}
 	}
@@ -766,6 +766,6 @@ func (m TipoMbr) getEspacioDisponibleMasDerecha() int64 {
 		}
 	}
 	disponible := m.Tamanio - ultimoSizeAbsoluto
-	println(color.Cyan + "Dispoible en Disco: " + fmt.Sprint(disponible))
+	//	println(color.Cyan + "Dispoible en Disco: " + fmt.Sprint(disponible))
 	return disponible
 }

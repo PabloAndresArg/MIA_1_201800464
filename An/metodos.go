@@ -153,16 +153,22 @@ func EliminarDisco(ruta_absoluta string) {
 	ruta_absoluta = QuitarComillas(ruta_absoluta)
 	if _, err := os.Stat(ruta_absoluta); !(os.IsNotExist(err)) {
 		fmt.Println("¿ESTA SEGURO DE QUERER ELIMINAR ESTE DISCO? ")
-		fmt.Print("Presione 1 para confirmar, dsino presione 0")
+		fmt.Println("Presione 1 para confirmar, sino presione 0")
 		var decision int
 		fmt.Scanln(&decision)
 		if decision == 1 {
 			erro := os.Remove(ruta_absoluta)
 			if erro == nil {
-				fmt.Println("Disco eliminado...")
+				println(color.Yellow + "----------------" + color.Reset)
+				println(color.Yellow + "DISCO ELIMINADO" + color.Reset)
+				println(color.Yellow + "----------------" + color.Reset)
 			} else {
 				fmt.Printf("ERROR , NO SE PUEDO ELIMINAR EL DISCO: %v\n", erro)
 			}
+		} else {
+			println(color.Blue + "-------------" + color.Reset)
+			println(color.Blue + "NO SE ELIMINO" + color.Reset)
+			println(color.Blue + "-------------" + color.Reset)
 		}
 	} else {
 		println(color.Red + "-- No existe ese disco --" + color.Reset)
