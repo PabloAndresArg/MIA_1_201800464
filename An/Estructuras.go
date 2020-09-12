@@ -155,7 +155,7 @@ func (m TipoMbr) crearParticion(fit string, size int64, nombre string, tipo byte
 				m.Particiones[x].Size = size
 				copy(m.Particiones[x].Nombre[:], nombre)
 				m.Particiones[x].Inicio = m.getInicio(uint8(x))
-				fmt.Println("---------------------------------")
+				fmt.Println("\n---------------------------------")
 				println(color.Yellow + "PARTICION PRIMARIA CREADA CON EXITO" + color.Reset)
 				m.Particiones[x].imprimirDatosParticion()
 				fmt.Println("---------------------------------")
@@ -163,7 +163,7 @@ func (m TipoMbr) crearParticion(fit string, size int64, nombre string, tipo byte
 			}
 		}
 	}
-	fmt.Println(color.Red + "-----------------------------------" + color.Reset)
+	fmt.Println(color.Red + "\n-----------------------------------" + color.Reset)
 	fmt.Println(color.Red + "No encontro el espacio necesario..." + color.Reset)
 	fmt.Println(color.Red + "-----------------------------------" + color.Reset)
 	return m
@@ -182,7 +182,7 @@ func (m *TipoMbr) crearParticionExtendida(fit string, size int64, nombre string,
 				m.Particiones[x].Size = size
 				copy(m.Particiones[x].Nombre[:], nombre)
 				m.Particiones[x].Inicio = m.getInicio(uint8(x))
-				fmt.Println("---------------------------------")
+				fmt.Println("\n---------------------------------")
 				println(color.Yellow + "PARTICION EXTENDIDA CREADA CON EXITO" + color.Reset)
 				m.Particiones[x].imprimirDatosParticion()
 				fmt.Println("---------------------------------")
@@ -190,7 +190,7 @@ func (m *TipoMbr) crearParticionExtendida(fit string, size int64, nombre string,
 			}
 		}
 	}
-	fmt.Println(color.Red + "-----------------------------------" + color.Reset)
+	fmt.Println(color.Red + "\n-----------------------------------" + color.Reset)
 	fmt.Println(color.Red + "No encontro el espacio necesario..." + color.Reset)
 	fmt.Println(color.Red + "-----------------------------------" + color.Reset)
 	return 0

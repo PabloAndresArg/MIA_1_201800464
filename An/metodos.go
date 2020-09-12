@@ -171,7 +171,9 @@ func EliminarDisco(ruta_absoluta string) {
 			println(color.Blue + "-------------" + color.Reset)
 		}
 	} else {
+		println(color.Red + "-------------------------" + color.Reset)
 		println(color.Red + "-- No existe ese disco --" + color.Reset)
+		println(color.Red + "-------------------------" + color.Reset)
 	}
 }
 
@@ -277,7 +279,9 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 							ebr := Ebr{Inicio: desde, Status: 'n', Size: 0, Next: -1, Fit: 'w'} // el name esta vacio
 							escribirUnEBR(archivoDisco, desde, ebr)
 						} else {
+							println(color.Red + "\n---------------------------------------------------------------" + color.Reset)
 							println(color.Red + "Lo siento solo se puede tener una particion extendida por disco" + color.Reset)
+							println(color.Red + "---------------------------------------------------------------" + color.Reset)
 						}
 
 					case 'l':
@@ -303,7 +307,7 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 										copy(ebrAux.Nombre[:], nombreName)
 										ebrAux.Next = -1
 										escribirUnEBR(archivoDisco, extendida.Inicio, ebrAux)
-										fmt.Println("---------------------------------")
+										fmt.Println("\n---------------------------------")
 										println(color.Green + "PARTICION LOGICA CREADA CON EXITO" + color.Reset)
 										ebrAux.imprimirDatosEbr()
 										fmt.Println("---------------------------------")
@@ -322,7 +326,7 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 									for ebrAux.Next != -1 {
 										ocupado += ebrAux.Size + int64(binary.Size(ebrAux)) // por cada iteracion se va acumulando el espacio ocupad
 										if (ocupado + size + 1) > extendida.Size {
-											println(color.Red + "------------------------------" + color.Reset)
+											println(color.Red + "\n------------------------------" + color.Reset)
 											println(color.Red + "NO CABE UNA LOGICA DE ESE SIZE" + color.Reset)
 											println(color.Red + "------------------------------" + color.Reset)
 											return
@@ -350,12 +354,12 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 										ebrNuevo.Next = -1
 										escribirUnEBR(archivoDisco, (ebrAux.Inicio - int64(binary.Size(ebrAux))), ebrAux) // REFRESCTO SU NEXT
 										escribirUnEBR(archivoDisco, ebrAux.Next, ebrNuevo)
-										fmt.Println("---------------------------------")
+										fmt.Println("\n---------------------------------")
 										println(color.Green + "PARTICION LOGICA CREADA CON EXITO" + color.Reset)
 										ebrNuevo.imprimirDatosEbr()
 										fmt.Println("---------------------------------")
 									} else {
-										println(color.Red + "-------------------------------------------" + color.Reset)
+										println(color.Red + "\n-------------------------------------------" + color.Reset)
 										println(color.Red + "LO SIENTO , NO CABE UNA LOGICA DE ESE SIZE" + color.Reset)
 										println(color.Red + "-------------------------------------------" + color.Reset)
 									}
@@ -380,12 +384,14 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 					escribirBinariamente(archivoDisco, escritor.Bytes())
 
 				} else {
-					println(color.Red + "--------------------" + color.Reset)
+					println(color.Red + "\n--------------------" + color.Reset)
 					println(color.Red + "Espacio insuficiente" + color.Reset)
 					println(color.Red + "--------------------" + color.Reset)
 				}
 			} else {
-				println(color.Yellow + "Lo siento no es posible porque ya tiene 4 particiones en este disco" + color.Reset)
+				println(color.Red + "\n-------------------------------------------------------------------" + color.Reset)
+				println(color.Red + "Lo siento no es posible porque ya tiene 4 particiones en este disco" + color.Reset)
+				println(color.Red + "-------------------------------------------------------------------" + color.Reset)
 			} /*
 
 
@@ -495,7 +501,7 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 							limite := ebrEncont.Inicio + ebrEncont.Size // EL VALOR NUEVO TIENE QUE SER MAYOR AL DEL limite
 							if parti.Inicio+parti.Size+add >= limite {  // tons si , size realtivo 												 TOMAR EN CUENTA STRUCST PARA ESPACIO DISPONIBLE EN EL DISCO Y EN LA EXTENDIDA
 								mrbAuxiliar.Particiones[pos].Size = parti.Size + add // EN REALIDAD ES UNA RESTA
-								fmt.Println("---------------------------------")
+								fmt.Println("\n---------------------------------")
 								fmt.Println("la particion actualmente es de: " + fmt.Sprint(parti.Size) + " bytes")
 								fmt.Println("Disponible: " + fmt.Sprint(parti.Size-mrbAuxiliar.getTamanioOcupadoDeLosEbrs(archivoDisco)))
 								mrbAuxiliar.Particiones[pos].Size = parti.Size + add // EN REALIDAD ES UNA RESTA
@@ -514,7 +520,7 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 								println(color.Red + "ERROR ESPACIO NEGATIVO o INSUFICIENTE PARA ALMACENAR UN EBR con una particion minima " + color.Reset)
 							} else {
 								mrbAuxiliar.Particiones[pos].Size = parti.Size + add // EN REALIDAD ES UNA RESTA
-								fmt.Println("---------------------------------")
+								fmt.Println("\n---------------------------------")
 								fmt.Println("la particion actualmente es de: " + fmt.Sprint(parti.Size) + " bytes")
 								fmt.Println("Sobran: " + fmt.Sprint(parti.Size-mrbAuxiliar.getTamanioOcupadoDeLosEbrs(archivoDisco)) + " bytes disponibles")
 								mrbAuxiliar.Particiones[pos].Size = parti.Size + add // EN REALIDAD ES UNA RESTA
@@ -529,7 +535,7 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 							println(color.Red + "ERROR LA PARTICION SE QUEDA SIN ESPACIO O CON ESPACIO NEGATIVO" + color.Reset)
 						} else {
 
-							fmt.Println("---------------------------------")
+							fmt.Println("\n---------------------------------")
 							fmt.Println("la particion actualmente es de: " + fmt.Sprint(parti.Size) + " bytes")
 							mrbAuxiliar.Particiones[pos].Size = parti.Size + add // EN REALIDAD ES UNA RESTA
 							escribirMBR(archivoDisco, mrbAuxiliar)
@@ -545,7 +551,7 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 						ebrEncontrado, bandera := mrbAuxiliar.getLOGICA(nombreName, archivoDisco)
 						if bandera {
 							if ebrEncontrado.Size+add > 0 { // LA RESTA ES PERMITIDA
-								fmt.Println("---------------------------------")
+								fmt.Println("\n---------------------------------")
 								fmt.Println("la particion actualmente es de: " + fmt.Sprint(ebrEncontrado.Size) + " bytes")
 								ebrEncontrado.Size = ebrEncontrado.Size + add
 								escribirUnEBR(archivoDisco, (ebrEncontrado.Inicio - int64(binary.Size(ebrEncontrado))), ebrEncontrado) // SIEMPRE ES RELATIVO A SU INICIO
@@ -585,7 +591,7 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 						} else {
 							// SE PUEDE AGRANDAR LA PARTICION
 							if mrbAuxiliar.hayEspacioSuficienteAdd(add) && nuevoLimiteSuperior <= mrbAuxiliar.Tamanio {
-								fmt.Println("---------------------------------")
+								fmt.Println("\n---------------------------------")
 								fmt.Println("la particion actualmente es de: " + fmt.Sprint(mrbAuxiliar.Particiones[pos].Size) + " bytes")
 								mrbAuxiliar.Particiones[pos].Size = mrbAuxiliar.Particiones[pos].Size + add // corro a la derecha
 								escribirMBR(archivoDisco, mrbAuxiliar)
@@ -593,7 +599,7 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 								fmt.Println("ahora esta paricion tiene: " + fmt.Sprint(mrbAuxiliar.Particiones[pos].Size) + " bytes")
 								fmt.Println("---------------------------------")
 							} else {
-								println(color.Red + "--------------------------------" + color.Reset)
+								println(color.Red + "\n--------------------------------" + color.Reset)
 								println(color.Red + "Espacio insuficiente en el DISCO" + color.Reset)
 								println(color.Red + "--------------------------------" + color.Reset)
 							}
@@ -604,7 +610,7 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 						_, pos := mrbAuxiliar.GetParticionYposicion(nombreName) // DISQUE SOLO EXISTE UNA PARTICION
 						// validando que no sobre pase el tamaño del disco-mbr size
 						if mrbAuxiliar.Particiones[pos].Size+add <= mrbAuxiliar.Tamanio-int64(binary.Size(mrbAuxiliar)) {
-							fmt.Println("---------------------------------")
+							fmt.Println("\n---------------------------------")
 							fmt.Println("la particion actualmente es de: " + fmt.Sprint(mrbAuxiliar.Particiones[pos].Size) + " bytes")
 							mrbAuxiliar.Particiones[pos].Size = mrbAuxiliar.Particiones[pos].Size + add // corro a la derecha
 							escribirMBR(archivoDisco, mrbAuxiliar)
@@ -639,7 +645,7 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 									nuevoLimite := ebrEncontrado.Inicio + ebrEncontrado.Size + add
 									limiteExtendida := mrbAuxiliar.getExtendida().Inicio + mrbAuxiliar.getExtendida().Size
 									if nuevoLimite <= limiteExtendida { // ES PERMITIDO PORQUE PASO LO ANTERIOR
-										fmt.Println("---------------------------------")
+										fmt.Println("\n---------------------------------")
 										fmt.Println("la particion actualmente es de: " + fmt.Sprint(ebrEncontrado.Size) + " bytes")
 										ebrEncontrado.Size = ebrEncontrado.Size + add
 										escribirUnEBR(archivoDisco, (ebrEncontrado.Inicio - int64(binary.Size(ebrEncontrado))), ebrEncontrado) // SIEMPRE ES RELATIVO A SU INICIO
@@ -656,7 +662,7 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 								nuevoLimite := ebrEncontrado.Inicio + ebrEncontrado.Size + add
 								limiteExtendida := mrbAuxiliar.getExtendida().Inicio + mrbAuxiliar.getExtendida().Size
 								if nuevoLimite <= limiteExtendida { // ES PERMITIDO
-									fmt.Println("---------------------------------")
+									fmt.Println("\n---------------------------------")
 									fmt.Println("la particion actualmente es de: " + fmt.Sprint(ebrEncontrado.Size) + " bytes")
 									ebrEncontrado.Size = ebrEncontrado.Size + add
 									escribirUnEBR(archivoDisco, (ebrEncontrado.Inicio - int64(binary.Size(ebrEncontrado))), ebrEncontrado) // SIEMPRE ES RELATIVO A SU INICIO
@@ -674,7 +680,9 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 							println(color.Red + "Esa particion no esta en este disco.. (l) " + color.Reset)
 						}
 					} else {
+						println(color.Red + "\n------------------------------------------------------------------" + color.Reset)
 						println(color.Red + "Esa particion no esta en este disco Ni si quiera hay una Extendida" + color.Reset)
+						println(color.Red + "------------------------------------------------------------------" + color.Reset)
 					}
 				}
 
@@ -683,7 +691,7 @@ func MetodosParticiones(rutaPath string, nombreName string, sizeTamanio string, 
 		}
 
 	} else {
-		println(color.Red + "ERROR FALTO UN PARAMETRO OBLIGATORIO..!" + color.Reset)
+		println(color.Red + "\nERROR FALTO UN PARAMETRO OBLIGATORIO..!" + color.Reset)
 	}
 	//LeerBinariamenteMimbr(rutaPath)
 	limpiarVariableFdisk()
@@ -726,7 +734,7 @@ func getSizeConUnidad(size int64, unit string) int64 {
 }
 
 func pausar_() {
-	fmt.Println("---------------------------------")
+	fmt.Println("\n---------------------------------")
 	println(color.Blue + "--Presiona Enter para continuar--" + color.Reset)
 	fmt.Println("---------------------------------")
 	bufio.NewReader(os.Stdin).ReadBytes('\n')

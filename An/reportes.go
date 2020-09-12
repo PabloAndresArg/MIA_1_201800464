@@ -52,16 +52,35 @@ func separarRutaYnombreReporte(pathCompleto string) (string, string, string) { /
 	for k := 0; k <= posFinRuta; k++ { // debo incluir su /
 		ruta += string(pathCompleto[k])
 	}
+	encontroEl_punto := false
 	aux := ""
 	for t := 0; t < len(nombre); t++ {
 		if nombre[t] == '.' {
 			aux = extension
+			encontroEl_punto = true
 			extension = ""
 		} else {
 			extension += string(nombre[t])
 		}
 	}
-	nombre = aux
+	if encontroEl_punto == false {
+		extension = "jpg"
+		println(color.Yellow + "\nAtencion:")
+		fmt.Println("El reporte no tiene extension de salida asi que por defecto se le deja JPG")
+		println(color.Reset)
+		fmt.Println(color.Blue)
+		fmt.Println("Ruta: " + ruta)
+		fmt.Println("Nombre: " + nombre)
+		fmt.Println("Extension: " + extension)
+		fmt.Print(color.Reset)
+	} else {
+		nombre = aux
+		fmt.Println(color.Blue)
+		fmt.Println("Ruta: " + ruta)
+		fmt.Println("Nombre: " + nombre)
+		fmt.Println("Extension: " + extension)
+		fmt.Print(color.Reset)
+	}
 	return ruta, nombre, extension
 }
 

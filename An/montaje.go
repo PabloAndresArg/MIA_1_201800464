@@ -103,7 +103,7 @@ func verificarSiExisteParticion(direccion_archivo_binario string, nombreBuscar s
 				discoYaMontado.agregarParticionMontada(direccion_archivo_binario, nombreBuscar, idPartition, posArray, parti)
 				println(color.Yellow + "Particion Montada" + color.Reset)
 			} else {
-				println(color.Red + "---------------------------------------------------------------")
+				println(color.Red + "\n---------------------------------------------------------------")
 				println(color.Red + "ESTA PARTICION YA ESTA MONTADA , NO LA PUEDES VOLVERLA A MONTAR")
 				println(color.Red + "---------------------------------------------------------------" + color.Reset)
 			}
@@ -140,7 +140,7 @@ func verificarSiExisteParticion(direccion_archivo_binario string, nombreBuscar s
 					discoYaMontado.agregarParticionMontadaLOGICA(direccion_archivo_binario, nombreBuscar, idPartition, ebrParticionLogica)
 					println(color.Yellow + "Particion Montada" + color.Reset)
 				} else {
-					println(color.Red + "---------------------------------------------------------------")
+					println(color.Red + "\n---------------------------------------------------------------")
 					println(color.Red + "ESTA PARTICION YA ESTA MONTADA , NO LA PUEDES VOLVERLA A MONTAR")
 					println(color.Red + "---------------------------------------------------------------" + color.Reset)
 				}
