@@ -293,8 +293,21 @@ func crearTxtDisk(m TipoMbr, direccionDestino string, archivoDisco *os.File) {
 	w.WriteString("<td height = \"100\" bgcolor = \"#11fc6a\">MBR</td>\n")
 
 	//------------ PARTICIONES Y FRAGMENTACION--------------------------
+	izquierda := int64(binary.Size(m))
+	derecha := int64(binary.Size(m))
+
 	for x := 0; x < 4; x++ {
 		status := (m.Particiones[x].Status)
+		fmt.Println("----------------------" + fmt.Sprint(x) + "----------------------------")
+		if status == 'y' {
+			derecha = m.Particiones[x].Inicio - 1
+			fmt.Println("NUEVO DERECHA: " + fmt.Sprint(derecha))
+		}
+		fmt.Println("RESULTADO: " + fmt.Sprint(derecha-izquierda))
+		if derecha-izquierda > 0 {
+			w.WriteString("<td height = \"100\" bgcolor = \"#ff0f00\">" + "FREE " + fmt.Sprint(derecha-izquierda) + " bytes" + "</td>\n")
+		}
+
 		if status == 'y' && m.Particiones[x].Tipo == 'p' || m.Particiones[x].Tipo == 'P' {
 			nombre := m.Particiones[x].getNameHowString()
 			w.WriteString("<td height = \"100\" bgcolor = \"#11fc6a\">" + nombre + "</td>\n")
@@ -325,15 +338,16 @@ func crearTxtDisk(m TipoMbr, direccionDestino string, archivoDisco *os.File) {
 				fmt.Println("error en lectura ebr ")
 			}
 			if ebrAux.Next == -1 && ebrAux.Status == 'n' {
+				println(color.Yellow + "NO HAY LOGICAS CREADAS" + color.Reset)
 				cuantosHay = 2
 				cuerpo += ("<td color = 'black' bgcolor='#01A9DB' height = '30'>EBR1</td>\n")
-				cuerpo += ("<td color = 'black' bgcolor='#01A9DB' height = '30'>FREE " + fmt.Sprint(m.Particiones[x].Size-m.getTamanioOcupadoDeLosEbrs(archivoDisco)) + " bytes</td>\n")
+				cuerpo += ("<td color = 'black' bgcolor='#CEF6E3' height = '30'>FREE " + fmt.Sprint(m.Particiones[x].Size-int64(binary.Size(ebrAux))) + " bytes</td>\n")
 
 			} else if ebrAux.Next == -1 && ebrAux.Status == 'y' {
 				cuantosHay += 3
 				cuerpo += ("<td color = 'black' bgcolor='#01A9DB' height = '30'>EBR1</td>\n")
 				cuerpo += ("<td color = 'black' bgcolor='#f2ff51' height = '30'>" + ebrAux.getNameHowString() + "</td>\n")
-				cuerpo += ("<td color = 'black' bgcolor='#01A9DB' height = '30'>FREE " + fmt.Sprint(m.Particiones[x].Size-m.getTamanioOcupadoDeLosEbrs(archivoDisco)) + " bytes</td>\n")
+				cuerpo += ("<td color = 'black' bgcolor='#CEF6E3' height = '30'>FREE " + fmt.Sprint(((m.Particiones[x].Inicio + m.Particiones[x].Size) - (ebrAux.Inicio + ebrAux.Size))) + " bytes</td>\n")
 			} else {
 				// NECESITO UN EBR ANTERIOR PARA COMPARAR Y VER SI EXISTE O NO FRAGMENTACION........................
 				cuerpo += ("<td color = 'black' bgcolor='#01A9DB' height = '30'>EBR1</td>\n")
@@ -353,11 +367,11 @@ func crearTxtDisk(m TipoMbr, direccionDestino string, archivoDisco *os.File) {
 					cuantosHay += 2
 					final1 := ebrAnt.Inicio + ebrAnt.Size + 1
 					actual := ebrAux.Inicio - int64(binary.Size(ebrAux))
-					fmt.Println("----------------------------------------------")
-					fmt.Println(fmt.Sprint(final1) + "-" + fmt.Sprint(actual))
-					resulto := final1 - actual
-					fmt.Println(resulto)
-					fmt.Println("----------------------------------------------")
+					//	fmt.Println("----------------------------------------------")
+					//	fmt.Println(fmt.Sprint(final1) + "-" + fmt.Sprint(actual))
+					resulto := actual - final1
+					//	fmt.Println(resulto)
+					//	fmt.Println("----------------------------------------------")
 					if resulto != 0 { // considerar poner > 0
 						cuerpo += ("<td color = 'black' bgcolor=\"#ff0f00\" height = '30'>" + "FREE " + fmt.Sprint(resulto) + "</td>\n")
 						cuantosHay++
@@ -369,7 +383,7 @@ func crearTxtDisk(m TipoMbr, direccionDestino string, archivoDisco *os.File) {
 
 				}
 				cuantosHay++
-				cuerpo += ("<td color = 'black' bgcolor='#CEF6E3' height = '30'>FREE " + fmt.Sprint((m.Particiones[x].Inicio+m.Particiones[x].Size)-(ebrAux.Inicio+ebrAux.Size)) + " bytes</td>\n")
+				cuerpo += ("<td color = 'black' bgcolor='#CEF6E3' height = '30'>FREE " + fmt.Sprint(((m.Particiones[x].Inicio + m.Particiones[x].Size) - (ebrAux.Inicio + ebrAux.Size))) + " bytes</td>\n")
 			}
 
 			//			cuerpo += ("<td color = 'black' bgcolor='#01A9DB' height = '30'>EBR1</td>\n")
@@ -391,21 +405,17 @@ func crearTxtDisk(m TipoMbr, direccionDestino string, archivoDisco *os.File) {
 			w.WriteString("\n")
 			w.WriteString("\n\n\n</td>\n") // FIN DE LA COLUMNA TD*/
 
-		} else if status == 'n' {
-			w.WriteString("<td height = \"100\" bgcolor = \"##00FFFF\">" + "Espacio para Particion" + "</td>\n")
 		}
-		// PLANTEAR DIFERENTE ------------------ ESTA PARTE DE LA FRAGMENTACION
+		/*else if status == 'n' {
+			w.WriteString("<td height = \"100\" bgcolor = \"#00FFFF\">" + "Espacio para Particion" + "</td>\n")
+		}*/
+		// PLANTEAR DIFERENTE ------------------ ESTA PARTE DE LA FRAGMENTACION  asi con los size :v y pos relativas como hice arriba
 
-		RangosPrincipales := m.getRangosParticiones("")
-		if len(RangosPrincipales) != 0 && status == 'y' && x+1 != len(RangosPrincipales) {
-			//	m.verFragmentacion(archivoDisco)
-			//fmt.Println(fmt.Sprint(RangosPrincipales[x].LimiteSuperior) + "-" + fmt.Sprint(RangosPrincipales[x+1].LimiteInferior))
-			resulto := RangosPrincipales[x+1].LimiteInferior - RangosPrincipales[x].LimiteSuperior - 1
-			//fmt.Println(resulto)
-			if resulto != 0 {
-				w.WriteString("<td height = \"100\" bgcolor = \"#ff0f00\">" + "FREE " + fmt.Sprint(resulto) + " bytes" + "</td>\n")
-			}
+		if status == 'y' { // lo actualizo para tener el ultimo
+			izquierda = m.Particiones[x].Inicio + m.Particiones[x].Size
+			fmt.Println("NUEVO IZQUIERDA: " + fmt.Sprint(izquierda))
 		}
+		fmt.Println("---------------------------------------------------")
 	}
 	w.WriteString("<td height = \"100\" bgcolor = \"#CEF6E3\">" + "FREE " + fmt.Sprint(m.getEspacioDisponibleMasDerecha()) + " bytes </td>\n")
 	w.WriteString("\n\n\n\n</tr>\n")
