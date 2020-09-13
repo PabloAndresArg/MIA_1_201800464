@@ -9,3 +9,11 @@ type Inodo struct {
 	AptIndirecto           int64
 	IDProper               [16]byte
 }
+
+func (i *Inodo) crearPrimerInodo() {
+	i.NumeroInodo = 1
+	i.SizeArchivo = 34
+	i.NumeroBloquesAsignados = 2
+	i.AptIndirecto = 0
+	copy(i.IDProper[:], "root")
+}

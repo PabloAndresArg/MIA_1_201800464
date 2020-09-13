@@ -90,7 +90,8 @@ func CrearDisco(numero string, ruta string, nombre string, K_o_M string) {
 	fichero, err := os.Create(rutaCompleta)
 	defer fichero.Close()
 	if err != nil {
-		log.Fatal("fallo creando el archivo de salida")
+		fmt.Println("fallo en la creacion de archivo de salida")
+		return
 	} else {
 		fmt.Println("---------------------------------")
 		println(color.Yellow + "Disco creado Correctamente: " + color.Reset)

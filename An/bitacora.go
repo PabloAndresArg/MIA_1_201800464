@@ -2,9 +2,9 @@ package An
 
 // bitacora es el log o lo mismo
 type Bitacora struct {
-	TipoOpe   int64
-	Tipo      int64
-	Nombre    int64
+	TipoOpe   [20]byte
+	Tipo      [20]byte
+	Nombre    [20]byte
 	Contenido [25]byte
 	fecha     [19]byte
 }

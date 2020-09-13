@@ -22,7 +22,7 @@ func generarReporte() {
 		case "disk":
 			graphDisk(Id_vdlentraNumero_, Path_)
 		default:
-			fmt.Println("ERRROR COMANDO INCORRECTO")
+			fmt.Println("ERRROR COMANDO INCORRECTO , o no tengo ese reporte :( ")
 		}
 	}
 	limpiarVariablesRep()
