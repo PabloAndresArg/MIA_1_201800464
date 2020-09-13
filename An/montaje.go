@@ -30,6 +30,42 @@ type disco struct {
 	CantidadPartciones  int64 // para el id
 }
 
+func (d disco) getOnlyName() string {
+	nombre := ""
+	posFinRuta := 0
+	for x := len(d.Path) - 1; x >= 0; x-- {
+		if d.Path[x] == '/' {
+			posFinRuta = x
+			break
+		}
+	}
+	for i := posFinRuta + 1; i < len(d.Path); i++ {
+		if d.Path[i] == '.' {
+			break
+		}
+		nombre += string(d.Path[i])
+	}
+	return nombre
+}
+
+func getDiscoYparticionDelMount(letra string, id string) (disco, Montura) {
+	for x := 0; x < len(DiscosMontados_); x++ { // primero ver si esta en la lista , luego ver si existe el disco  ,luego ver si es primaria o logica, y por ultimo escribir easy :'v , quitar de la lista 2
+		if DiscosMontados_[x].Letra == letra { // encuentro el disco
+			if _, err := os.Stat(DiscosMontados_[x].Path); !(os.IsNotExist(err)) {
+				for u_u := 0; u_u < len(DiscosMontados_[x].ParticionesMontadas); u_u++ {
+					if DiscosMontados_[x].ParticionesMontadas[u_u].Id == id { // tengo la particion manipulada :v osea que si existe
+						return DiscosMontados_[x], DiscosMontados_[x].ParticionesMontadas[u_u]
+					}
+				}
+
+			}
+		}
+	}
+	dis := disco{}
+	mont := Montura{}
+	return dis, mont
+}
+
 func (d *disco) agregarParticionMontada(path string, nombre string, id string, posArray uint8, partition Particion) { // ACA DEBO ENVIAR UN EBR TAMBIEN
 
 	mon := Montura{PathDisco: path, Id: id, PosArray: posArray, Parti: partition, Tipo: 'p'}
