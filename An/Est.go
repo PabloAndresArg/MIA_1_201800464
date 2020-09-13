@@ -9,7 +9,7 @@ var Path_ string = ""
 var Size_ string = ""
 var Unit_m_ string = "M"
 
-var Unit_k_ string = "k" // para fdisk el por defecto es K
+var Unit_k_ string = "k" // para fdisk el por defecto es K Y unit
 var tipo_particion_ string = "p"
 var FIT_ string = "wf" // por defecto
 var OPCION_DELETE_ string = ""
@@ -47,3 +47,6 @@ func esRepetido(id int64) bool {
 */
 
 var CONT_lETRA int16 = 0
+
+// PARA LA FASE 2 , unit_k , add_  Id_vdlentraNumero_
+var type_ string = "full"

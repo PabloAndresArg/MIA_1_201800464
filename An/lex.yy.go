@@ -4,11 +4,19 @@ package An
 
 import (
 	"bufio"
+	"fmt"
 	"go/token"
 	"io"
 	"modernc.org/golex/lex"
 	"unicode"
 )
+
+func probandoFuncionesGOlang() {
+
+	fmt.Println("-------------------------------------")
+	fmt.Println("---- ESTE ES MI LEXICO 201800464 ----")
+	fmt.Println("-------------------------------------")
+}
 
 func nuevo_lexico__(Fuente_ io.Reader, destino_ io.Writer, fName string) *lexer {
 	archivo_ := token.NewFileSet().AddFile(fName, -7, 1<<(8+2)) // le digo que solo soporte 1024 caracteres por liena en este caso por archivo pero como yo analizo por linea
@@ -18,6 +26,13 @@ func nuevo_lexico__(Fuente_ io.Reader, destino_ io.Writer, fName string) *lexer 
 	}
 	return &lexer{lexic_}
 	// necesaria para el sintactico :D
+}
+
+func funcionNOmbre() {
+
+	fmt.Println("----------------------------------------")
+	fmt.Println("---- PABLO ANDRES ARGUETA HERNANDEZ ----")
+	fmt.Println("----------------------------------------")
 }
 
 type lexer struct {
@@ -42,6 +57,21 @@ func miniLexico(caracter rune) int { // necesario para hacer el nuevo_lex
 		return classUnicodeDigit
 	}
 	return classOther
+}
+func probandoGO() {
+	bandera := false
+	fmt.Println("----------------------------------------")
+	fmt.Println("---- INICIO EL METODO ADENTRO DEL LEX ----")
+	fmt.Println("----------------------------------------")
+	if bandera {
+		fmt.Println("----------------------------------------")
+		fmt.Println("---- NO HACE NADA                   ----")
+		fmt.Println("----------------------------------------")
+	} else {
+		fmt.Println("----------------------------------------")
+		fmt.Println("---- AHORA YA HACE ALGO :D          ----")
+		fmt.Println("----------------------------------------")
+	}
 }
 
 func (l *lexer) Lex(yylval *yySymType) int {

@@ -170,7 +170,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line sint.y:140
+//line sint.y:153
 
 func leerArchivoDeEntrada(ruta string) {
 	fmt.Println("")
@@ -242,7 +242,7 @@ func AnalizarComando() {
 				}
 
 			}
-			l := nuevo_lexico__(bytes.NewBufferString(entrada), os.Stdout, "file.name") // ESTA FUNCION VIENE DEL ANALIZADOR LEXICO
+			l := nuevo_lexico__(bytes.NewBufferString(entrada), os.Stdout, "archivo.PabloAndres") // ESTA FUNCION VIENE DEL ANALIZADOR LEXICO
 			yyParse(l)
 		} else {
 			break
@@ -267,92 +267,100 @@ var yyExca = [...]int{
 
 const yyPrivate = 57344
 
-const yyLast = 115
+const yyLast = 134
 
 var yyAct = [...]int{
-	90, 29, 26, 24, 20, 21, 17, 42, 48, 106,
-	107, 113, 41, 43, 44, 50, 45, 46, 47, 16,
-	36, 51, 15, 92, 56, 35, 37, 38, 110, 89,
-	87, 82, 80, 39, 33, 91, 78, 77, 8, 76,
-	55, 75, 74, 73, 72, 71, 70, 69, 68, 67,
-	66, 65, 64, 63, 62, 61, 60, 59, 58, 14,
-	12, 115, 112, 54, 2, 31, 11, 99, 100, 53,
-	13, 28, 25, 96, 23, 111, 85, 86, 83, 114,
-	94, 95, 102, 103, 104, 19, 108, 79, 98, 109,
-	88, 81, 32, 22, 30, 105, 57, 40, 49, 52,
-	97, 93, 6, 18, 34, 5, 84, 4, 3, 7,
-	101, 1, 9, 27, 10,
+	107, 119, 104, 17, 37, 31, 16, 28, 26, 22,
+	23, 19, 120, 121, 47, 53, 106, 68, 61, 46,
+	48, 49, 8, 50, 51, 52, 41, 127, 105, 55,
+	124, 40, 42, 43, 60, 56, 103, 101, 96, 94,
+	93, 66, 44, 15, 13, 38, 92, 67, 2, 65,
+	12, 91, 90, 88, 14, 87, 33, 59, 86, 85,
+	18, 84, 83, 58, 82, 81, 80, 79, 78, 77,
+	76, 75, 74, 73, 72, 71, 70, 69, 63, 129,
+	126, 113, 114, 36, 30, 27, 25, 125, 110, 62,
+	99, 100, 130, 133, 21, 108, 109, 116, 117, 118,
+	97, 134, 112, 131, 128, 122, 132, 102, 123, 95,
+	89, 45, 34, 54, 57, 39, 24, 35, 32, 64,
+	111, 6, 20, 5, 98, 4, 3, 7, 115, 1,
+	9, 29, 10, 11,
 }
 
 var yyPact = [...]int{
-	15, -1000, -62, -1000, -1000, -1000, -1000, -1000, -1000, -1000,
-	-1000, -64, -63, -65, -66, -67, 87, -13, -64, -1000,
-	-27, -14, -65, -1000, -40, -66, -32, -67, -1000, 16,
-	87, -1000, 12, 11, -1000, 10, 9, 8, 7, 6,
-	-1000, 5, 4, 3, 2, 1, 0, -1, -2, -1000,
-	-3, -4, -1000, -5, -7, -9, -10, -1000, 77, -18,
-	85, -19, 67, 57, -20, 84, -21, -15, 61, 54,
-	66, -50, 80, -22, -15, 24, -39, 69, 23, -1000,
+	-1, -1000, -57, -1000, -1000, -1000, -1000, -1000, -1000, -1000,
+	-1000, -1000, -59, -58, -60, -61, -63, 107, -64, -2,
+	-59, -1000, -21, -5, -60, -1000, -33, -61, -18, -63,
+	-1000, 10, 107, -1000, 32, -64, -1000, -7, 31, -1000,
+	30, 29, 28, 27, 26, -1000, 25, 24, 23, 22,
+	21, 20, 19, 18, -1000, 16, 15, -1000, 13, 12,
+	9, 7, -1000, 100, -1000, 6, 5, 0, -6, -11,
+	103, -12, 89, 71, -13, 101, -14, -22, 76, 68,
+	81, -47, 99, -20, -22, 42, -23, 94, 41, -1000,
+	-47, 97, 76, 91, -1000, -1000, -1000, -1000, -1000, -1000,
 	-1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000,
 	-1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000,
 	-1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000,
-	-1000, -1000, -1000, -1000, -1000, -1000,
+	-1000, -1000, -1000, -1000, -1000,
 }
 
 var yyPgo = [...]int{
-	0, 114, 113, 74, 112, 111, 110, 109, 0, 108,
-	107, 106, 105, 103, 85, 102, 101, 100, 95, 71,
-	94, 65, 72, 93,
+	0, 133, 83, 132, 131, 86, 130, 129, 128, 127,
+	2, 126, 125, 124, 123, 122, 94, 121, 0, 120,
+	1, 84, 118, 56, 85, 117, 116,
 }
 
 var yyR1 = [...]int{
-	0, 5, 5, 5, 9, 9, 9, 9, 9, 9,
-	9, 1, 20, 20, 21, 7, 7, 22, 22, 12,
-	10, 13, 13, 14, 14, 14, 14, 11, 11, 16,
-	16, 16, 15, 23, 23, 3, 3, 3, 3, 3,
-	3, 3, 3, 3, 18, 18, 6, 6, 6, 17,
-	17, 17, 8, 8, 4, 2, 2, 19, 19, 19,
-	19,
+	0, 7, 7, 7, 11, 11, 11, 11, 11, 11,
+	11, 11, 3, 22, 22, 23, 9, 9, 24, 24,
+	1, 25, 25, 2, 2, 2, 2, 2, 14, 12,
+	15, 15, 16, 16, 16, 16, 13, 13, 18, 18,
+	18, 17, 26, 26, 5, 5, 5, 5, 5, 5,
+	5, 5, 5, 20, 20, 8, 8, 8, 19, 19,
+	19, 10, 10, 6, 4, 4, 21, 21, 21, 21,
 }
 
 var yyR2 = [...]int{
 	0, 0, 5, 1, 1, 1, 1, 1, 1, 1,
-	1, 2, 2, 1, 3, 3, 1, 4, 4, 5,
-	2, 2, 1, 4, 4, 4, 4, 1, 1, 1,
-	1, 1, 2, 2, 1, 4, 4, 4, 4, 4,
-	4, 4, 4, 4, 1, 1, 1, 1, 1, 1,
-	1, 1, 1, 1, 2, 2, 1, 4, 4, 4,
-	4,
+	1, 1, 2, 2, 1, 3, 3, 1, 4, 4,
+	2, 2, 1, 4, 4, 4, 4, 4, 5, 2,
+	2, 1, 4, 4, 4, 4, 1, 1, 1, 1,
+	1, 2, 2, 1, 4, 4, 4, 4, 4, 4,
+	4, 4, 4, 1, 1, 1, 1, 1, 1, 1,
+	1, 1, 1, 2, 2, 1, 4, 4, 4, 4,
 }
 
 var yyChk = [...]int{
-	-1000, -5, 49, -9, -10, -12, -15, -7, 23, -4,
-	-1, 51, 45, 55, 44, 7, 4, 68, -13, -14,
-	68, 68, -23, -3, 68, -22, 68, -2, -19, 68,
-	-20, -21, 5, 47, -14, 52, 47, 53, 54, 47,
-	-3, 52, 47, 53, 54, 56, 57, 58, 48, -22,
-	47, 53, -19, 53, 47, 24, 8, -21, 46, 46,
+	-1000, -7, 49, -11, -12, -14, -17, -9, 23, -6,
+	-3, -1, 51, 45, 55, 44, 7, 4, 61, 68,
+	-15, -16, 68, 68, -26, -5, 68, -24, 68, -4,
+	-21, 68, -22, -23, 5, -25, -2, 68, 47, -16,
+	52, 47, 53, 54, 47, -5, 52, 47, 53, 54,
+	56, 57, 58, 48, -24, 47, 53, -21, 53, 47,
+	24, 8, -23, 46, -2, 56, 48, 54, 24, 46,
 	46, 46, 46, 46, 46, 46, 46, 46, 46, 46,
 	46, 46, 46, 46, 46, 46, 46, 46, 46, 10,
-	50, 6, 50, 11, -11, 19, 20, 50, 6, 50,
-	-8, 50, 38, -16, 19, 20, 12, -17, 34, 13,
-	14, -6, 16, 17, 18, -18, 59, 60, 6, 9,
-	50, -8, 38, 50, 10, 38,
+	46, 46, 46, 46, 50, 6, 50, 11, -13, 19,
+	20, 50, 6, 50, -10, 50, 38, -18, 19, 20,
+	12, -19, 34, 13, 14, -8, 16, 17, 18, -20,
+	59, 60, 6, 9, 50, -10, 38, 50, 10, 38,
+	-20, 6, 9, -18, 10,
 }
 
 var yyDef = [...]int{
 	1, -2, 0, 3, 4, 5, 6, 7, 8, 9,
-	10, 0, 0, 0, 16, 0, 0, 0, 20, 22,
-	0, 0, 32, 34, 0, 0, 0, 54, 56, 0,
-	11, 13, 0, 0, 21, 0, 0, 0, 0, 0,
-	33, 0, 0, 0, 0, 0, 0, 0, 0, 15,
-	0, 0, 55, 0, 0, 0, 0, 12, 0, 0,
+	10, 11, 0, 0, 0, 17, 0, 0, 0, 0,
+	29, 31, 0, 0, 41, 43, 0, 0, 0, 63,
+	65, 0, 12, 14, 0, 20, 22, 0, 0, 30,
+	0, 0, 0, 0, 0, 42, 0, 0, 0, 0,
+	0, 0, 0, 0, 16, 0, 0, 64, 0, 0,
+	0, 0, 13, 0, 21, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 14,
-	2, 23, 24, 25, 26, 27, 28, 19, 35, 36,
-	37, 52, 53, 38, 29, 30, 31, 39, 49, 50,
-	51, 40, 46, 47, 48, 41, 44, 45, 42, 43,
-	17, 18, 57, 58, 59, 60,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 15,
+	0, 0, 0, 0, 2, 32, 33, 34, 35, 36,
+	37, 28, 44, 45, 46, 61, 62, 47, 38, 39,
+	40, 48, 58, 59, 60, 49, 55, 56, 57, 50,
+	53, 54, 51, 52, 18, 19, 66, 67, 68, 69,
+	23, 24, 25, 26, 27,
 }
 
 var yyTok1 = [...]int{
@@ -731,254 +739,290 @@ yydefault:
 		{
 			pausar_()
 		}
-	case 11:
+	case 12:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line sint.y:53
+//line sint.y:55
 		{ /*NO HACE NADA PORQUE LO HAGO CADA QUE RECIBE UNA PRODUCCION ABAJO :v */
-		}
-	case 14:
-		yyDollar = yyS[yypt-3 : yypt+1]
-//line sint.y:57
-		{
-			desmontar(yyDollar[3].str)
 		}
 	case 15:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line sint.y:60
+//line sint.y:59
+		{
+			desmontar(yyDollar[3].str)
+		}
+	case 16:
+		yyDollar = yyS[yypt-3 : yypt+1]
+//line sint.y:62
 		{
 			crearMontaje(QuitarComillas(Path_), QuitarComillas(Name_))
 		}
-	case 16:
+	case 17:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:61
+//line sint.y:63
 		{
 			mostrarMounts()
 		}
-	case 17:
+	case 18:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:63
+//line sint.y:65
 		{
 			Path_ = yyDollar[4].str
 		}
-	case 18:
+	case 19:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:64
+//line sint.y:66
 		{
 			Name_ = yyDollar[4].NoTerminal
-		}
-	case 19:
-		yyDollar = yyS[yypt-5 : yypt+1]
-//line sint.y:67
-		{
-			EliminarDisco(yyDollar[5].str)
 		}
 	case 20:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line sint.y:69
+//line sint.y:68
 		{
-			CrearDisco(Size_, Path_, Name_, Unit_m_)
+			metodoMKFS(Id_vdlentraNumero_, type_, add_, Unit_k_)
 		}
 	case 23:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:74
+//line sint.y:73
 		{
-			Size_ = yyDollar[4].str
+			type_ = yyDollar[4].NoTerminal
 		}
 	case 24:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:75
+//line sint.y:74
 		{
-			Path_ = yyDollar[4].str
+			add_ = yyDollar[4].str
 		}
 	case 25:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:76
+//line sint.y:75
 		{
-			Name_ = yyDollar[4].str
+			add_ = yyDollar[4].str
 		}
 	case 26:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:77
-		{
-			Unit_m_ = yyDollar[4].NoTerminal
-		}
-	case 27:
-		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:82
-		{
-			yyVAL.NoTerminal = yyDollar[1].str
-		}
-	case 28:
-		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:83
-		{
-			yyVAL.NoTerminal = yyDollar[1].str
-		}
-	case 29:
-		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:86
-		{
-			yyVAL.NoTerminal = yyDollar[1].str
-		}
-	case 30:
-		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:87
-		{
-			yyVAL.NoTerminal = yyDollar[1].str
-		}
-	case 31:
-		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:88
-		{
-			yyVAL.NoTerminal = yyDollar[1].str
-		}
-	case 32:
-		yyDollar = yyS[yypt-2 : yypt+1]
-//line sint.y:92
-		{
-			MetodosParticiones(Path_, Name_, Size_, FIT_, OPCION_DELETE_, add_, tipo_particion_, Unit_k_)
-		}
-	case 35:
-		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:98
-		{
-			Size_ = yyDollar[4].str
-		}
-	case 36:
-		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:99
-		{
-			Path_ = yyDollar[4].str
-		}
-	case 37:
-		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:100
-		{
-			Name_ = yyDollar[4].NoTerminal
-		}
-	case 38:
-		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:101
+//line sint.y:76
 		{
 			Unit_k_ = yyDollar[4].NoTerminal
 		}
-	case 39:
+	case 27:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:102
-		{
-			tipo_particion_ = yyDollar[4].NoTerminal
-		}
-	case 40:
-		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:103
-		{
-			FIT_ = yyDollar[4].NoTerminal
-		}
-	case 41:
-		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:104
-		{
-			OPCION_DELETE_ = yyDollar[4].NoTerminal
-		}
-	case 42:
-		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:105
-		{
-			add_ = yyDollar[4].str
-		}
-	case 43:
-		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:106
-		{
-			add_ = yyDollar[4].str
-		}
-	case 44:
-		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:109
-		{
-			yyVAL.NoTerminal = yyDollar[1].str
-		}
-	case 45:
-		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:110
-		{
-			yyVAL.NoTerminal = yyDollar[1].str
-		}
-	case 46:
-		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:113
-		{
-			yyVAL.NoTerminal = yyDollar[1].str
-		}
-	case 47:
-		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:114
-		{
-			yyVAL.NoTerminal = yyDollar[1].str
-		}
-	case 48:
-		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:115
-		{
-			yyVAL.NoTerminal = yyDollar[1].str
-		}
-	case 49:
-		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:118
-		{
-			yyVAL.NoTerminal = yyDollar[1].str
-		}
-	case 50:
-		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:119
-		{
-			yyVAL.NoTerminal = yyDollar[1].str
-		}
-	case 51:
-		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:120
-		{
-			yyVAL.NoTerminal = yyDollar[1].str
-		}
-	case 52:
-		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:124
-		{
-			yyVAL.NoTerminal = QuitarComillas(yyDollar[1].str)
-		}
-	case 53:
-		yyDollar = yyS[yypt-1 : yypt+1]
-//line sint.y:125
-		{
-			yyVAL.NoTerminal = QuitarComillas(yyDollar[1].str)
-		}
-	case 54:
-		yyDollar = yyS[yypt-2 : yypt+1]
-//line sint.y:127
-		{
-			generarReporte()
-		}
-	case 57:
-		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:132
-		{
-			Name_ = yyDollar[4].str
-		}
-	case 58:
-		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:133
-		{
-			Path_ = QuitarComillas(yyDollar[4].str)
-		}
-	case 59:
-		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:134
+//line sint.y:77
 		{
 			Id_vdlentraNumero_ = yyDollar[4].str
 		}
-	case 60:
+	case 28:
+		yyDollar = yyS[yypt-5 : yypt+1]
+//line sint.y:80
+		{
+			EliminarDisco(yyDollar[5].str)
+		}
+	case 29:
+		yyDollar = yyS[yypt-2 : yypt+1]
+//line sint.y:82
+		{
+			CrearDisco(Size_, Path_, Name_, Unit_m_)
+		}
+	case 32:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line sint.y:135
+//line sint.y:87
+		{
+			Size_ = yyDollar[4].str
+		}
+	case 33:
+		yyDollar = yyS[yypt-4 : yypt+1]
+//line sint.y:88
+		{
+			Path_ = yyDollar[4].str
+		}
+	case 34:
+		yyDollar = yyS[yypt-4 : yypt+1]
+//line sint.y:89
+		{
+			Name_ = yyDollar[4].str
+		}
+	case 35:
+		yyDollar = yyS[yypt-4 : yypt+1]
+//line sint.y:90
+		{
+			Unit_m_ = yyDollar[4].NoTerminal
+		}
+	case 36:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line sint.y:95
+		{
+			yyVAL.NoTerminal = yyDollar[1].str
+		}
+	case 37:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line sint.y:96
+		{
+			yyVAL.NoTerminal = yyDollar[1].str
+		}
+	case 38:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line sint.y:99
+		{
+			yyVAL.NoTerminal = yyDollar[1].str
+		}
+	case 39:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line sint.y:100
+		{
+			yyVAL.NoTerminal = yyDollar[1].str
+		}
+	case 40:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line sint.y:101
+		{
+			yyVAL.NoTerminal = yyDollar[1].str
+		}
+	case 41:
+		yyDollar = yyS[yypt-2 : yypt+1]
+//line sint.y:105
+		{
+			MetodosParticiones(Path_, Name_, Size_, FIT_, OPCION_DELETE_, add_, tipo_particion_, Unit_k_)
+		}
+	case 44:
+		yyDollar = yyS[yypt-4 : yypt+1]
+//line sint.y:111
+		{
+			Size_ = yyDollar[4].str
+		}
+	case 45:
+		yyDollar = yyS[yypt-4 : yypt+1]
+//line sint.y:112
+		{
+			Path_ = yyDollar[4].str
+		}
+	case 46:
+		yyDollar = yyS[yypt-4 : yypt+1]
+//line sint.y:113
+		{
+			Name_ = yyDollar[4].NoTerminal
+		}
+	case 47:
+		yyDollar = yyS[yypt-4 : yypt+1]
+//line sint.y:114
+		{
+			Unit_k_ = yyDollar[4].NoTerminal
+		}
+	case 48:
+		yyDollar = yyS[yypt-4 : yypt+1]
+//line sint.y:115
+		{
+			tipo_particion_ = yyDollar[4].NoTerminal
+		}
+	case 49:
+		yyDollar = yyS[yypt-4 : yypt+1]
+//line sint.y:116
+		{
+			FIT_ = yyDollar[4].NoTerminal
+		}
+	case 50:
+		yyDollar = yyS[yypt-4 : yypt+1]
+//line sint.y:117
+		{
+			OPCION_DELETE_ = yyDollar[4].NoTerminal
+		}
+	case 51:
+		yyDollar = yyS[yypt-4 : yypt+1]
+//line sint.y:118
+		{
+			add_ = yyDollar[4].str
+		}
+	case 52:
+		yyDollar = yyS[yypt-4 : yypt+1]
+//line sint.y:119
+		{
+			add_ = yyDollar[4].str
+		}
+	case 53:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line sint.y:122
+		{
+			yyVAL.NoTerminal = yyDollar[1].str
+		}
+	case 54:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line sint.y:123
+		{
+			yyVAL.NoTerminal = yyDollar[1].str
+		}
+	case 55:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line sint.y:126
+		{
+			yyVAL.NoTerminal = yyDollar[1].str
+		}
+	case 56:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line sint.y:127
+		{
+			yyVAL.NoTerminal = yyDollar[1].str
+		}
+	case 57:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line sint.y:128
+		{
+			yyVAL.NoTerminal = yyDollar[1].str
+		}
+	case 58:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line sint.y:131
+		{
+			yyVAL.NoTerminal = yyDollar[1].str
+		}
+	case 59:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line sint.y:132
+		{
+			yyVAL.NoTerminal = yyDollar[1].str
+		}
+	case 60:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line sint.y:133
+		{
+			yyVAL.NoTerminal = yyDollar[1].str
+		}
+	case 61:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line sint.y:137
+		{
+			yyVAL.NoTerminal = QuitarComillas(yyDollar[1].str)
+		}
+	case 62:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line sint.y:138
+		{
+			yyVAL.NoTerminal = QuitarComillas(yyDollar[1].str)
+		}
+	case 63:
+		yyDollar = yyS[yypt-2 : yypt+1]
+//line sint.y:140
+		{
+			generarReporte()
+		}
+	case 66:
+		yyDollar = yyS[yypt-4 : yypt+1]
+//line sint.y:145
+		{
+			Name_ = yyDollar[4].str
+		}
+	case 67:
+		yyDollar = yyS[yypt-4 : yypt+1]
+//line sint.y:146
+		{
+			Path_ = QuitarComillas(yyDollar[4].str)
+		}
+	case 68:
+		yyDollar = yyS[yypt-4 : yypt+1]
+//line sint.y:147
+		{
+			Id_vdlentraNumero_ = yyDollar[4].str
+		}
+	case 69:
+		yyDollar = yyS[yypt-4 : yypt+1]
+//line sint.y:148
 		{
 			Commando_Ruta_ = yyDollar[4].str /*aun no se usara*/
 		}
