@@ -36,6 +36,7 @@ func generarReporte() {
 		case "tree_file":
 		case "tree_directorio":
 		case "tree_complete":
+			generarTreeComplete(Id_vdlentraNumero_, Path_)
 		case "ls":
 		default:
 			fmt.Println("ERRROR COMANDO INCORRECTO")
@@ -938,6 +939,10 @@ func SBTxt(sb SuperB, direccionDestino string) { // pasar tambien la ruta
 	w.WriteString("<td color = \"black\" colspan = '2'> REPORTE SUPER BOOT  </td> ")
 	w.WriteString("</tr>\n") // FIN TITULO
 	w.WriteString("<tr>\n")
+	w.WriteString("<td color = \"black\" bgcolor = \"#86B404\"> NOMBRE </td>\n")
+	w.WriteString("<td color = \"black\" bgcolor = \"#86B404\"> VALOR  </td>\n")
+	w.WriteString("</tr>\n")
+	w.WriteString("<tr>\n")
 	w.WriteString("<td color = \"black\">Nombre</td>\n")
 	w.WriteString("<td color = \"black\">\"" + sb.getNameHowString() + "\"</td>\n")
 	w.WriteString("</tr>\n")
@@ -988,7 +993,7 @@ func SBTxt(sb SuperB, direccionDestino string) { // pasar tambien la ruta
 	w.WriteString("</tr>\n")
 
 	w.WriteString("<tr>\n") // FECHAS
-	w.WriteString("<td color = \"black\">Fecha Creacion</td>\n")
+	w.WriteString("<td color = \"black\">Fecha ultimo Montaje </td>\n")
 	w.WriteString("<td color = \"black\">" + string(sb.SbFechaUltimoMontaje[:]) + "</td>\n")
 	w.WriteString("</tr>\n")
 
@@ -1092,6 +1097,287 @@ func SBTxt(sb SuperB, direccionDestino string) { // pasar tambien la ruta
 	w.WriteString("</table>\n")
 	w.WriteString(">];\n")
 	w.WriteString("}\n")
+	if errOr := w.Close(); errOr != nil {
+		log.Fatal(errOr)
+		return
+	}
+}
+
+func generarTreeComplete(id string, pathCompleto string) {
+	rut, nom, ext := separarRutaYnombreReporte(pathCompleto)
+	verificarRuta(rut) // la crea si no existe
+	// NECESITO IR A ATRAER EL PATH , TENIENDO EN CUENTA QUE PUEDO BUSCAR EN MI LISTA id[2] me da la letra y ya tengo el disco que necesito
+	var letraID = string(id[2])
+	_disco_ := getDiscoMontadoPorLetraID(letraID)
+	if _disco_.Letra == "NOENCONTRADO" { // EN TEORIA NUNCA ENTRARIA ACA
+		println(color.Red + "ESE ID NO FUE ENCONTRADO DENTRO DEL DISCO" + color.Reset)
+		return
+	}
+
+	if _, err := os.Stat(_disco_.Path); !(os.IsNotExist(err)) {
+		archivoDisco, err := os.OpenFile(QuitarComillas(_disco_.Path), os.O_RDWR, 0644)
+		defer archivoDisco.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+		_, part := getDiscoYparticionDelMount(string(id[2]), id)
+
+		if part.Tipo == 'l' {
+			archivoDisco.Seek(part.PartiLogica.Inicio, 0)
+			super := SuperB{}
+			tamanioSb := binary.Size(super)
+			datosEnBytes := leerBytePorByte(archivoDisco, tamanioSb)
+			buff := bytes.NewBuffer(datosEnBytes)
+			err = binary.Read(buff, binary.BigEndian, &super)
+			if err != nil {
+				log.Fatal("error al leer", err)
+				println(color.Red + "ERROR AL LEER EL SUPER BOOT" + color.Reset)
+				return
+			}
+
+			if super.SbAVDcount != 0 { // 										SI PASA LAS VALIDACIONES ENTTONCES PROCEDO A GENERAR EL REPORTE
+				treeCompletetxt(super, rut+nom+".txt", archivoDisco)
+				generarImg(rut+nom, ext, rut)
+			} else {
+				println(color.Red + "ESTA PARTICION NO TIENE SUPER BOOT " + color.Reset)
+				return
+			}
+
+		} else { // PRIMARIA
+			archivoDisco.Seek(part.Parti.Inicio, 0)
+			super := SuperB{}
+			tamanioSb := binary.Size(super)
+			datosEnBytes := leerBytePorByte(archivoDisco, tamanioSb)
+			buff := bytes.NewBuffer(datosEnBytes)
+			err = binary.Read(buff, binary.BigEndian, &super)
+			if err != nil {
+				log.Fatal("error al leer", err)
+				println(color.Red + "ERROR AL LEER EL SUPER BOOT" + color.Reset)
+				return
+			}
+			if super.SbAVDcount != 0 { // // 										SI PASA LAS VALIDACIONES ENTTONCES PROCEDO A GENERAR EL REPORTE
+
+				treeCompletetxt(super, rut+nom+".txt", archivoDisco)
+				generarImg(rut+nom, ext, rut)
+			} else {
+				println(color.Red + "ESTA PARTICION NO TIENE SUPER BOOT " + color.Reset)
+				return
+			}
+
+		}
+
+	} else {
+		fmt.Println("-----------------------")
+		fmt.Println("EL DISCO YA NO EXISTE")
+		fmt.Println("-----------------------")
+	}
+}
+
+func treeCompletetxt(sb SuperB, direccionDestino string, archivoDisco *os.File) { // pasar tambien la ruta
+	w, err := os.Create(direccionDestino)
+	if err != nil {
+		println(color.Red + "Error al crear el archivo" + color.Reset)
+		return
+	}
+
+	archivoDisco.Seek(sb.AptAVD, 0)
+	avd := AVD{}
+	tamanioAvd := binary.Size(avd)
+	datosEnBytes := leerBytePorByte(archivoDisco, tamanioAvd)
+	buff := bytes.NewBuffer(datosEnBytes)
+	err = binary.Read(buff, binary.BigEndian, &avd)
+	if err != nil {
+		println(color.Red + "ERROR AL LEER EL AVD" + color.Reset)
+		return
+	}
+	g := "digraph treeCompl { \n "
+	g += "node[shape=plaintext]\n"
+	g += "rankdir=LR;\n"
+	g += "avdRoot[label=<\n"
+	g += "<table cellborder='2' border='1' cellspacing= '0'> \n"
+	// CONTENIDO DEL ROOT
+	g += "<tr port= '0'> \n"
+	g += "<td colspan = '2' bgcolor = '#86B404'> / </td>\n"
+	g += "</tr> \n"
+	// FECHA
+	g += "<tr port= '1'> \n"
+	g += "<td bgcolor = '#86B404'> fecha Creacion  </td>\n"
+	g += "<td bgcolor = '#86B404'>" + string(avd.FechaCreacion[:]) + "</td>\n"
+	g += "</tr> \n"
+	// punteros
+	for y := 0; y < 6; y++ {
+		g += "<tr> \n"
+		g += "<td bgcolor = '#86B404'> puntero " + fmt.Sprint(y+1) + "  </td>\n"
+		g += "<td bgcolor = '#86B404'>" + fmt.Sprint(avd.SubDirectorios[y]) + "</td>\n"
+		g += "</tr> \n"
+	}
+	// detalle
+	g += "<tr port= '2'> \n"
+	g += "<td bgcolor = '#86B404'> Detalle </td>\n"
+	g += "<td bgcolor = '#86B404'>" + fmt.Sprint(avd.ApuntadorDetalleDir) + "</td>\n"
+	g += "</tr> \n"
+	// indirecto
+	g += "<tr> \n"
+	g += "<td bgcolor = '#86B404'> apuntador indirecto </td>\n"
+	g += "<td bgcolor = '#86B404'>" + fmt.Sprint(avd.ApuntadorAVDextra) + "</td>\n"
+	g += "</tr> \n"
+	// propietario
+	g += "<tr> \n"
+	g += "<td bgcolor = '#86B404'> Proper </td>\n"
+	g += "<td bgcolor = '#86B404'>ROOT</td>\n"
+	g += "</tr> \n"
+
+	g += "</table>\n"
+	g += ">];\n"
+	// -------------------- FIN TABLA AVD
+	// inicia el detalle
+	archivoDisco.Seek(sb.AptDetalleDir, 0)
+	detalle := DetalleDir{}
+	tamanioDetalle := binary.Size(detalle)
+	datosEnBytes2 := leerBytePorByte(archivoDisco, tamanioDetalle)
+	buff2 := bytes.NewBuffer(datosEnBytes2)
+	err = binary.Read(buff2, binary.BigEndian, &detalle)
+	if err != nil {
+		println(color.Red + "ERROR AL LEER EL DETALLE " + color.Reset)
+		return
+	}
+
+	g += "detalle[label=<\n"
+	g += "<table cellborder='2' border='1' cellspacing= '0'> \n"
+	// CONTENIDO DEL ROOT
+	g += "<tr port= '0'> \n"
+	g += "<td bgcolor = '#FE642E'> DETALLE DIR </td>\n"
+	g += "<td bgcolor = '#FE642E'>1</td>\n"
+	g += "</tr> \n"
+	//user
+	g += "<tr port= '1'> \n"
+	g += "<td bgcolor = '#FE642E'> users.txt </td>\n"
+	g += "<td bgcolor = '#FE642E'>1</td>\n"
+	g += "</tr> \n"
+	// fecha
+	g += "<tr> \n"
+	g += "<td bgcolor = '#FE642E'>  fecha Creacion  </td>\n"
+	g += "<td bgcolor = '#FE642E'>" + string(detalle.ArrayFiles[0].FechaCreacion[:]) + "</td>\n"
+	g += "</tr> \n"
+
+	// punteros
+	for y := 1; y < 5; y++ {
+		g += "<tr> \n"
+		g += "<td bgcolor = '#FE642E'> puntero " + fmt.Sprint(y+1) + "  </td>\n"
+		g += "<td bgcolor = '#FE642E'>" + fmt.Sprint(avd.SubDirectorios[y]) + "</td>\n"
+		g += "</tr> \n"
+	}
+	g += "<tr> \n"
+	g += "<td bgcolor = '#FE642E'> puntero indirecto </td>\n"
+	g += "<td bgcolor = '#FE642E'>0</td>\n"
+	g += "</tr> \n"
+
+	g += "</table>\n"
+	g += ">];\n"
+	// ****************************************************** TABLA I -NODO
+	// inicia el detalle
+	archivoDisco.Seek(sb.AptTablaInicioInodos, 0)
+	nodo := Inodo{}
+	tamanioNodo := binary.Size(nodo)
+	datosEnBytes3 := leerBytePorByte(archivoDisco, tamanioNodo)
+	buff3 := bytes.NewBuffer(datosEnBytes3)
+	err = binary.Read(buff3, binary.BigEndian, &nodo)
+	if err != nil {
+		println(color.Red + "ERROR AL LEER EL DETALLE " + color.Reset)
+		return
+	}
+
+	g += "INODO[label=<\n"
+	g += "<table cellborder='2' border='1' cellspacing= '0'> \n"
+	// CONTENIDO DEL ROOT
+	g += "<tr port= '0'> \n"
+	g += "<td bgcolor = '#2E9AFE'> I-NODO </td>\n"
+	g += "<td bgcolor = '#2E9AFE'>1</td>\n"
+	g += "</tr> \n"
+	//user
+	g += "<tr> \n"
+	g += "<td bgcolor = '#2E9AFE'>SIZE</td>\n"
+	g += "<td bgcolor = '#2E9AFE'>34</td>\n"
+	g += "</tr> \n"
+	// fecha
+	g += "<tr> \n"
+	g += "<td bgcolor = '#2E9AFE'>  bloques </td>\n"
+	g += "<td bgcolor = '#2E9AFE'>" + fmt.Sprint(nodo.NumeroBloquesAsignados) + "</td>\n"
+	g += "</tr> \n"
+
+	// punteros
+	for y := 0; y < 4; y++ {
+		if y == 0 {
+			g += "<tr port= '1'> \n"
+			g += "<td bgcolor = '#2E9AFE'> puntero " + fmt.Sprint(y+1) + "  </td>\n"
+			g += "<td bgcolor = '#2E9AFE'>1</td>\n"
+			g += "</tr> \n"
+		} else if y == 1 {
+			g += "<tr port= '2'> \n"
+			g += "<td bgcolor = '#2E9AFE'> puntero " + fmt.Sprint(y+1) + "  </td>\n"
+			g += "<td bgcolor = '#2E9AFE'>2</td>\n"
+			g += "</tr> \n"
+		} else {
+			g += "<tr> \n"
+			g += "<td bgcolor = '#2E9AFE'> puntero " + fmt.Sprint(y+1) + "  </td>\n"
+			g += "<td bgcolor = '#2E9AFE'>0</td>\n"
+			g += "</tr> \n"
+		}
+
+	}
+	g += "<tr> \n"
+	g += "<td bgcolor = '#2E9AFE'> puntero indirecto </td>\n"
+	g += "<td bgcolor = '#2E9AFE'>0</td>\n"
+	g += "</tr> \n"
+
+	g += "<tr> \n"
+	g += "<td bgcolor = '#2E9AFE'>Proper</td>\n"
+	g += "<td bgcolor = '#2E9AFE'>ROOT</td>\n"
+	g += "</tr> \n"
+
+	g += "</table>\n"
+	g += ">];\n"
+
+	// BLOQUES
+
+	g += "BLOQUE1[label=<\n"
+	g += "<table cellborder='2' border='1' cellspacing= '0'> \n"
+	// CONTENIDO DEL ROOT
+	g += "<tr port= '0'> \n"
+	g += "<td bgcolor = '#F5DA81'>Bloque</td>\n"
+	g += "<td bgcolor = '#F5DA81'>1</td>\n"
+	g += "</tr> \n"
+
+	g += "<tr port= '0'> \n"
+	g += "<td colspan = '2' bgcolor = '#F5DA81'>1,G,root\\n1,U,root,root,2</td>\n"
+	g += "</tr> \n"
+
+	g += "</table>\n"
+	g += ">];\n"
+
+	g += "BLOQUE2[label=<\n"
+	g += "<table cellborder='2' border='1' cellspacing= '0'> \n"
+	// CONTENIDO DEL ROOT
+	g += "<tr port= '0'> \n"
+	g += "<td bgcolor = '#F5DA81'> bloque </td>\n"
+	g += "<td bgcolor = '#F5DA81'>2</td>\n"
+	g += "</tr> \n"
+
+	g += "<tr port= '0'> \n"
+	g += "<td colspan = '2' bgcolor = '#F5DA81'> 01800464 </td>\n"
+	g += "</tr> \n"
+
+	g += "</table>\n"
+	g += ">];\n"
+	// APUNTADORES
+	g += "avdRoot:2 -> detalle ;\n"
+	g += "detalle:1 -> INODO ;\n"
+	g += "INODO:1 -> BLOQUE1 ;\n"
+	g += "INODO:2 -> BLOQUE2 ;\n"
+
+	g += "}\n"
+	w.WriteString(g)
+
 	if errOr := w.Close(); errOr != nil {
 		log.Fatal(errOr)
 		return

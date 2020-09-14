@@ -105,11 +105,12 @@ func metodoMKFS(id string, tipo string, add string, unit string) {
 				escribirBitMap(archivoDisco, superBoot.AptBitMapDetalleDir, bitMapDetalleDir)
 				//*********************************************************************** ESCRIBIENDO UN DETALLE DIR
 				detalle := DetalleDir{}
-				if superBoot.SbMontajesCount == 0 {
-					fcreacion := time.Now()
-					copy(detalle.ArrayFiles[0].FechaCreacion[:], fcreacion.String())
-				}
+
+				fcreacion := time.Now()
+				copy(detalle.ArrayFiles[0].FechaCreacion[:], fcreacion.String())
+
 				detalle.llenarDatosUsertxt(superBoot.AptTablaInicioInodos)
+				escribirDetalleDir(archivoDisco, superBoot.AptDetalleDir, detalle)
 				//*********************************************************************** BIT MAP TABLA I-NODO
 				var bitMapTablaInodo []byte
 				for r := 0; r < int(superBoot.SbInodosCount); r++ {
@@ -251,11 +252,12 @@ func metodoMKFS(id string, tipo string, add string, unit string) {
 				escribirBitMap(archivoDisco, superBoot.AptBitMapDetalleDir, bitMapDetalleDir)
 				//*********************************************************************** ESCRIBIENDO UN DETALLE DIR
 				detalle := DetalleDir{}
-				if superBoot.SbMontajesCount == 0 {
-					fcreacion := time.Now()
-					copy(detalle.ArrayFiles[0].FechaCreacion[:], fcreacion.String())
-				}
+
+				fcreacion := time.Now()
+				copy(detalle.ArrayFiles[0].FechaCreacion[:], fcreacion.String())
+
 				detalle.llenarDatosUsertxt(superBoot.AptTablaInicioInodos)
+				escribirDetalleDir(archivoDisco, superBoot.AptDetalleDir, detalle)
 				//*********************************************************************** BIT MAP TABLA I-NODO
 				var bitMapTablaInodo []byte
 				for r := 0; r < int(superBoot.SbInodosCount); r++ {
