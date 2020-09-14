@@ -16,13 +16,28 @@ import (
 func generarReporte() {
 	if len(Path_) != 0 && len(Name_) != 0 && len(Id_vdlentraNumero_) != 0 {
 		Path_ = QuitarComillas(Path_)
-		switch Name_ {
+		switch strings.ToLower(Name_) {
 		case "mbr":
 			grahpMBR(Id_vdlentraNumero_, Path_)
 		case "disk":
 			graphDisk(Id_vdlentraNumero_, Path_)
+		case "bm_arbdir":
+			generarBitMapAVD(Id_vdlentraNumero_, Path_)
+		case "bm_detdir":
+			generarBitMapDetalle(Id_vdlentraNumero_, Path_)
+		case "bm_inode":
+			generarBitMapInodo(Id_vdlentraNumero_, Path_)
+		case "bm_block":
+			generarBitMapBloques(Id_vdlentraNumero_, Path_)
+		case "sb":
+		case "bitacora":
+		case "directorio":
+		case "tree_file":
+		case "tree_directorio":
+		case "tree_complete":
+		case "ls":
 		default:
-			fmt.Println("ERRROR COMANDO INCORRECTO , o no tengo ese reporte :( ")
+			fmt.Println("ERRROR COMANDO INCORRECTO")
 		}
 	}
 	limpiarVariablesRep()
@@ -437,4 +452,402 @@ func crearTxtDisk(m TipoMbr, direccionDestino string, archivoDisco *os.File) {
 		return
 	}
 
+}
+
+func generarBitMapAVD(id string, pathCompleto string) {
+	rut, nom, _ := separarRutaYnombreReporte(pathCompleto)
+	verificarRuta(rut) // la crea si no existe
+	var letraID = string(id[2])
+	_disco_ := getDiscoMontadoPorLetraID(letraID)
+	if _disco_.Letra == "NOENCONTRADO" { // EN TEORIA NUNCA ENTRARIA ACA
+		println(color.Red + "ESE ID NO FUE ENCONTRADO DENTRO DEL DISCO" + color.Reset)
+		return
+	}
+
+	if _, err := os.Stat(_disco_.Path); !(os.IsNotExist(err)) {
+		archivoDisco, err := os.OpenFile(QuitarComillas(_disco_.Path), os.O_RDWR, 0644)
+		defer archivoDisco.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+		_, part := getDiscoYparticionDelMount(string(id[2]), id)
+		if part.Tipo == 'l' {
+			archivoDisco.Seek(part.PartiLogica.Inicio, 0)
+			super := SuperB{}
+			tamanioSb := binary.Size(super)
+			datosEnBytes := leerBytePorByte(archivoDisco, tamanioSb)
+			buff := bytes.NewBuffer(datosEnBytes)
+			err = binary.Read(buff, binary.BigEndian, &super)
+			if err != nil {
+				log.Fatal("error al leer", err)
+				println(color.Red + "ERROR AL LEER EL SUPER BOOT" + color.Reset)
+				return
+			}
+			contenido := "			REPORTE BITMAP ARBOL DE DIRECTORIO    \n"
+			if super.SbAVDcount != 0 {
+				// Con un máximo de 20 bit de información por línea a generada
+				contLinea := 0
+				for x := 0; x < int(super.SbAVDcount); x++ {
+					if x == 0 {
+						contenido += " 1 |"
+					} else {
+						contenido += " 0 |"
+					}
+					contLinea++
+					if contLinea == 20 {
+						contenido += "\n"
+						contLinea = 0
+					}
+				}
+				contenido += "\n fin de bitmap"
+				crearBitMaptxt(rut+nom+".txt", contenido)
+			} else {
+				println(color.Red + "ESTA PARTICION NO TIENE SUPER BOOT " + color.Reset)
+				return
+			}
+
+		} else { // PRIMARIA
+			archivoDisco.Seek(part.Parti.Inicio, 0)
+			super := SuperB{}
+			tamanioSb := binary.Size(super)
+			datosEnBytes := leerBytePorByte(archivoDisco, tamanioSb)
+			buff := bytes.NewBuffer(datosEnBytes)
+			err = binary.Read(buff, binary.BigEndian, &super)
+			if err != nil {
+				log.Fatal("error al leer", err)
+				println(color.Red + "ERROR AL LEER EL SUPER BOOT" + color.Reset)
+				return
+			}
+			contenido := "			REPORTE BITMAP ARBOL DE DIRECTORIO    \n"
+			if super.SbAVDcount != 0 {
+				// Con un máximo de 20 bit de información por línea a generada
+				contLinea := 0
+				for x := 0; x < int(super.SbAVDcount); x++ {
+					if x == 0 {
+						contenido += " 1 |"
+					} else {
+						contenido += " 0 |"
+					}
+					contLinea++
+					if contLinea == 20 {
+						contenido += "\n"
+						contLinea = 0
+					}
+				}
+				contenido += "\n fin de bitmap"
+				crearBitMaptxt(rut+nom+".txt", contenido)
+
+			} else {
+				println(color.Red + "ESTA PARTICION NO TIENE SUPER BOOT " + color.Reset)
+				return
+			}
+
+		}
+	} else {
+		fmt.Println("-----------------------")
+		fmt.Println("EL DISCO YA NO EXISTE")
+		fmt.Println("-----------------------")
+	}
+}
+
+func crearBitMaptxt(direccionDestino string, contenido string) {
+	w, err := os.Create(direccionDestino)
+	if err != nil {
+		println(color.Red + "Error al crear el archivo" + color.Reset)
+		return
+	}
+	fmt.Println("CREANDO UN ARCHIVO TXT PARA LOS BIT MAP")
+	w.WriteString(contenido)
+	if errOr := w.Close(); errOr != nil {
+		log.Fatal(errOr)
+		return
+	}
+}
+
+func generarBitMapDetalle(id string, pathCompleto string) {
+	rut, nom, _ := separarRutaYnombreReporte(pathCompleto)
+	verificarRuta(rut) // la crea si no existe
+	var letraID = string(id[2])
+	_disco_ := getDiscoMontadoPorLetraID(letraID)
+	if _disco_.Letra == "NOENCONTRADO" { // EN TEORIA NUNCA ENTRARIA ACA
+		println(color.Red + "ESE ID NO FUE ENCONTRADO DENTRO DEL DISCO" + color.Reset)
+		return
+	}
+
+	if _, err := os.Stat(_disco_.Path); !(os.IsNotExist(err)) {
+		archivoDisco, err := os.OpenFile(QuitarComillas(_disco_.Path), os.O_RDWR, 0644)
+		defer archivoDisco.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+		_, part := getDiscoYparticionDelMount(string(id[2]), id)
+		if part.Tipo == 'l' {
+			archivoDisco.Seek(part.PartiLogica.Inicio, 0)
+			super := SuperB{}
+			tamanioSb := binary.Size(super)
+			datosEnBytes := leerBytePorByte(archivoDisco, tamanioSb)
+			buff := bytes.NewBuffer(datosEnBytes)
+			err = binary.Read(buff, binary.BigEndian, &super)
+			if err != nil {
+				log.Fatal("error al leer", err)
+				println(color.Red + "ERROR AL LEER EL SUPER BOOT" + color.Reset)
+				return
+			}
+			contenido := "			REPORTE BITMAP DETALLE DE DIRECTORIO    \n"
+			if super.SbAVDcount != 0 {
+				// Con un máximo de 20 bit de información por línea a generada
+				contLinea := 0
+				for x := 0; x < int(super.SbDetalleDirCount); x++ {
+					if x == 0 {
+						contenido += " 1 |"
+					} else {
+						contenido += " 0 |"
+					}
+					contLinea++
+					if contLinea == 20 {
+						contenido += "\n"
+						contLinea = 0
+					}
+				}
+				contenido += "\n fin de bitmap"
+				crearBitMaptxt(rut+nom+".txt", contenido)
+			} else {
+				println(color.Red + "ESTA PARTICION NO TIENE SUPER BOOT " + color.Reset)
+				return
+			}
+
+		} else { // PRIMARIA
+			archivoDisco.Seek(part.Parti.Inicio, 0)
+			super := SuperB{}
+			tamanioSb := binary.Size(super)
+			datosEnBytes := leerBytePorByte(archivoDisco, tamanioSb)
+			buff := bytes.NewBuffer(datosEnBytes)
+			err = binary.Read(buff, binary.BigEndian, &super)
+			if err != nil {
+				log.Fatal("error al leer", err)
+				println(color.Red + "ERROR AL LEER EL SUPER BOOT" + color.Reset)
+				return
+			}
+			contenido := "			REPORTE BITMAP DETALLE DE DIRECTORIO    \n"
+			if super.SbAVDcount != 0 {
+				// Con un máximo de 20 bit de información por línea a generada
+				contLinea := 0
+				for x := 0; x < int(super.SbDetalleDirCount); x++ {
+					if x == 0 {
+						contenido += " 1 |"
+					} else {
+						contenido += " 0 |"
+					}
+					contLinea++
+					if contLinea == 20 {
+						contenido += "\n"
+						contLinea = 0
+					}
+				}
+				contenido += "\n fin de bitmap"
+				crearBitMaptxt(rut+nom+".txt", contenido)
+
+			} else {
+				println(color.Red + "ESTA PARTICION NO TIENE SUPER BOOT " + color.Reset)
+				return
+			}
+
+		}
+	} else {
+		fmt.Println("-----------------------")
+		fmt.Println("EL DISCO YA NO EXISTE")
+		fmt.Println("-----------------------")
+	}
+}
+
+func generarBitMapInodo(id string, pathCompleto string) {
+	rut, nom, _ := separarRutaYnombreReporte(pathCompleto)
+	verificarRuta(rut) // la crea si no existe
+	var letraID = string(id[2])
+	_disco_ := getDiscoMontadoPorLetraID(letraID)
+	if _disco_.Letra == "NOENCONTRADO" { // EN TEORIA NUNCA ENTRARIA ACA
+		println(color.Red + "ESE ID NO FUE ENCONTRADO DENTRO DEL DISCO" + color.Reset)
+		return
+	}
+
+	if _, err := os.Stat(_disco_.Path); !(os.IsNotExist(err)) {
+		archivoDisco, err := os.OpenFile(QuitarComillas(_disco_.Path), os.O_RDWR, 0644)
+		defer archivoDisco.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+		_, part := getDiscoYparticionDelMount(string(id[2]), id)
+		if part.Tipo == 'l' {
+			archivoDisco.Seek(part.PartiLogica.Inicio, 0)
+			super := SuperB{}
+			tamanioSb := binary.Size(super)
+			datosEnBytes := leerBytePorByte(archivoDisco, tamanioSb)
+			buff := bytes.NewBuffer(datosEnBytes)
+			err = binary.Read(buff, binary.BigEndian, &super)
+			if err != nil {
+				log.Fatal("error al leer", err)
+				println(color.Red + "ERROR AL LEER EL SUPER BOOT" + color.Reset)
+				return
+			}
+			contenido := "			REPORTE BITMAP DE I-NODOS    \n"
+			if super.SbAVDcount != 0 {
+				// Con un máximo de 20 bit de información por línea a generada
+				contLinea := 0
+				for x := 0; x < int(super.SbDetalleDirCount); x++ {
+					if x == 0 {
+						contenido += " 1 |"
+					} else {
+						contenido += " 0 |"
+					}
+					contLinea++
+					if contLinea == 20 {
+						contenido += "\n"
+						contLinea = 0
+					}
+				}
+				contenido += "\n fin de bitmap"
+				crearBitMaptxt(rut+nom+".txt", contenido)
+			} else {
+				println(color.Red + "ESTA PARTICION NO TIENE SUPER BOOT " + color.Reset)
+				return
+			}
+
+		} else { // PRIMARIA
+			archivoDisco.Seek(part.Parti.Inicio, 0)
+			super := SuperB{}
+			tamanioSb := binary.Size(super)
+			datosEnBytes := leerBytePorByte(archivoDisco, tamanioSb)
+			buff := bytes.NewBuffer(datosEnBytes)
+			err = binary.Read(buff, binary.BigEndian, &super)
+			if err != nil {
+				log.Fatal("error al leer", err)
+				println(color.Red + "ERROR AL LEER EL SUPER BOOT" + color.Reset)
+				return
+			}
+			contenido := "			REPORTE BITMAP DE I-NODOS    \n"
+			if super.SbAVDcount != 0 {
+				// Con un máximo de 20 bit de información por línea a generada
+				contLinea := 0
+				for x := 0; x < int(super.SbDetalleDirCount); x++ {
+					if x == 0 {
+						contenido += " 1 |"
+					} else {
+						contenido += " 0 |"
+					}
+					contLinea++
+					if contLinea == 20 {
+						contenido += "\n"
+						contLinea = 0
+					}
+				}
+				contenido += "\n fin de bitmap"
+				crearBitMaptxt(rut+nom+".txt", contenido)
+
+			} else {
+				println(color.Red + "ESTA PARTICION NO TIENE SUPER BOOT " + color.Reset)
+				return
+			}
+
+		}
+	} else {
+		fmt.Println("-----------------------")
+		fmt.Println("EL DISCO YA NO EXISTE")
+		fmt.Println("-----------------------")
+	}
+}
+
+func generarBitMapBloques(id string, pathCompleto string) {
+	rut, nom, _ := separarRutaYnombreReporte(pathCompleto)
+	verificarRuta(rut) // la crea si no existe
+	var letraID = string(id[2])
+	_disco_ := getDiscoMontadoPorLetraID(letraID)
+	if _disco_.Letra == "NOENCONTRADO" { // EN TEORIA NUNCA ENTRARIA ACA
+		println(color.Red + "ESE ID NO FUE ENCONTRADO DENTRO DEL DISCO" + color.Reset)
+		return
+	}
+
+	if _, err := os.Stat(_disco_.Path); !(os.IsNotExist(err)) {
+		archivoDisco, err := os.OpenFile(QuitarComillas(_disco_.Path), os.O_RDWR, 0644)
+		defer archivoDisco.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+		_, part := getDiscoYparticionDelMount(string(id[2]), id)
+		if part.Tipo == 'l' {
+			archivoDisco.Seek(part.PartiLogica.Inicio, 0)
+			super := SuperB{}
+			tamanioSb := binary.Size(super)
+			datosEnBytes := leerBytePorByte(archivoDisco, tamanioSb)
+			buff := bytes.NewBuffer(datosEnBytes)
+			err = binary.Read(buff, binary.BigEndian, &super)
+			if err != nil {
+				log.Fatal("error al leer", err)
+				println(color.Red + "ERROR AL LEER EL SUPER BOOT" + color.Reset)
+				return
+			}
+			contenido := "			REPORTE BITMAP BLOQUES   \n"
+			if super.SbAVDcount != 0 {
+				// Con un máximo de 20 bit de información por línea a generada
+				contLinea := 0
+				for x := 0; x < int(super.SbDetalleDirCount); x++ {
+					if x == 0 || x == 1 {
+						contenido += " 1 |"
+					} else {
+						contenido += " 0 |"
+					}
+					contLinea++
+					if contLinea == 20 {
+						contenido += "\n"
+						contLinea = 0
+					}
+				}
+				contenido += "\n fin de bitmap"
+				crearBitMaptxt(rut+nom+".txt", contenido)
+			} else {
+				println(color.Red + "ESTA PARTICION NO TIENE SUPER BOOT " + color.Reset)
+				return
+			}
+
+		} else { // PRIMARIA
+			archivoDisco.Seek(part.Parti.Inicio, 0)
+			super := SuperB{}
+			tamanioSb := binary.Size(super)
+			datosEnBytes := leerBytePorByte(archivoDisco, tamanioSb)
+			buff := bytes.NewBuffer(datosEnBytes)
+			err = binary.Read(buff, binary.BigEndian, &super)
+			if err != nil {
+				log.Fatal("error al leer", err)
+				println(color.Red + "ERROR AL LEER EL SUPER BOOT" + color.Reset)
+				return
+			}
+			contenido := "			REPORTE BITMAP BLOQUES   \n"
+			if super.SbAVDcount != 0 {
+				// Con un máximo de 20 bit de información por línea a generada
+				contLinea := 0
+				for x := 0; x < int(super.SbDetalleDirCount); x++ {
+					if x == 0 || x == 1 {
+						contenido += " 1 |"
+					} else {
+						contenido += " 0 |"
+					}
+					contLinea++
+					if contLinea == 20 {
+						contenido += "\n"
+						contLinea = 0
+					}
+				}
+				contenido += "\n fin de bitmap"
+				crearBitMaptxt(rut+nom+".txt", contenido)
+
+			} else {
+				println(color.Red + "ESTA PARTICION NO TIENE SUPER BOOT " + color.Reset)
+				return
+			}
+
+		}
+	} else {
+		fmt.Println("-----------------------")
+		fmt.Println("EL DISCO YA NO EXISTE")
+		fmt.Println("-----------------------")
+	}
 }
