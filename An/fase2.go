@@ -65,10 +65,10 @@ func metodoMKFS(id string, tipo string, add string, unit string) {
 				// bitacora
 				superBoot.AptLog = superBoot.AptInicioBloques + int64(superBoot.SbBloquesCount*superBoot.SizeBloque) + 1
 				// AHORA LOS FREE PRIMER BYTE
-				superBoot.FirstLibreAVD = superBoot.AptBitMapAVD
-				superBoot.FirstLibreDetalleDir = superBoot.AptBitMapDetalleDir
-				superBoot.FirstLibreTablaInodo = superBoot.AptBitMapInodos
-				superBoot.FirstLibreBloque = superBoot.AptBitMapBloques
+				superBoot.FirstLibreAVD = superBoot.AptBitMapAVD + int64(binary.Size(AVD{})) + 1
+				superBoot.FirstLibreDetalleDir = superBoot.AptBitMapDetalleDir + int64(binary.Size(DetalleDir{})) + 1
+				superBoot.FirstLibreTablaInodo = superBoot.AptBitMapInodos + int64(binary.Size(Inodo{})) + 1
+				superBoot.FirstLibreBloque = superBoot.AptBitMapBloques + 2*int64(binary.Size(Inodo{})) + 2
 				// FIN
 				superBoot.SbMontajesCount++
 				// ESCRIBIENDO EL SUPER BOOT :v
@@ -211,10 +211,10 @@ func metodoMKFS(id string, tipo string, add string, unit string) {
 				// bitacora
 				superBoot.AptLog = superBoot.AptInicioBloques + int64(superBoot.SbBloquesCount*superBoot.SizeBloque) + 1
 				// AHORA LOS FREE PRIMER BYTE
-				superBoot.FirstLibreAVD = superBoot.AptBitMapAVD
-				superBoot.FirstLibreDetalleDir = superBoot.AptBitMapDetalleDir
-				superBoot.FirstLibreTablaInodo = superBoot.AptBitMapInodos
-				superBoot.FirstLibreBloque = superBoot.AptBitMapBloques
+				superBoot.FirstLibreAVD = superBoot.AptBitMapAVD + int64(binary.Size(AVD{})) + 1
+				superBoot.FirstLibreDetalleDir = superBoot.AptBitMapDetalleDir + int64(binary.Size(DetalleDir{})) + 1
+				superBoot.FirstLibreTablaInodo = superBoot.AptBitMapInodos + int64(binary.Size(Inodo{})) + 1
+				superBoot.FirstLibreBloque = superBoot.AptBitMapBloques + 2*int64(binary.Size(Inodo{})) + 2
 				// FIN
 				superBoot.SbMontajesCount++
 

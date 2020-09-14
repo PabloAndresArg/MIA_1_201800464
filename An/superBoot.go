@@ -88,3 +88,13 @@ func (sb SuperB) imprimirDatosBoot() {
 	fmt.Println("*************************************************************************************")
 	print(color.Reset)
 }
+
+func (sb SuperB) getNameHowString() string {
+	auxSalida := ""
+	for i := 0; i < 16; i++ {
+		if sb.SbNombre[i] != 0 {
+			auxSalida += string(sb.SbNombre[i])
+		}
+	}
+	return auxSalida
+}

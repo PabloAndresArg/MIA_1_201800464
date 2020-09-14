@@ -30,6 +30,7 @@ func generarReporte() {
 		case "bm_block":
 			generarBitMapBloques(Id_vdlentraNumero_, Path_)
 		case "sb":
+			reporteSB(Id_vdlentraNumero_, Path_)
 		case "bitacora":
 		case "directorio":
 		case "tree_file":
@@ -849,5 +850,250 @@ func generarBitMapBloques(id string, pathCompleto string) {
 		fmt.Println("-----------------------")
 		fmt.Println("EL DISCO YA NO EXISTE")
 		fmt.Println("-----------------------")
+	}
+}
+
+func reporteSB(id string, pathCompleto string) {
+	rut, nom, ext := separarRutaYnombreReporte(pathCompleto)
+	verificarRuta(rut) // la crea si no existe
+	// NECESITO IR A ATRAER EL PATH , TENIENDO EN CUENTA QUE PUEDO BUSCAR EN MI LISTA id[2] me da la letra y ya tengo el disco que necesito
+	var letraID = string(id[2])
+	_disco_ := getDiscoMontadoPorLetraID(letraID)
+	if _disco_.Letra == "NOENCONTRADO" { // EN TEORIA NUNCA ENTRARIA ACA
+		println(color.Red + "ESE ID NO FUE ENCONTRADO DENTRO DEL DISCO" + color.Reset)
+		return
+	}
+
+	if _, err := os.Stat(_disco_.Path); !(os.IsNotExist(err)) {
+		archivoDisco, err := os.OpenFile(QuitarComillas(_disco_.Path), os.O_RDWR, 0644)
+		defer archivoDisco.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+		_, part := getDiscoYparticionDelMount(string(id[2]), id)
+
+		if part.Tipo == 'l' {
+			archivoDisco.Seek(part.PartiLogica.Inicio, 0)
+			super := SuperB{}
+			tamanioSb := binary.Size(super)
+			datosEnBytes := leerBytePorByte(archivoDisco, tamanioSb)
+			buff := bytes.NewBuffer(datosEnBytes)
+			err = binary.Read(buff, binary.BigEndian, &super)
+			if err != nil {
+				log.Fatal("error al leer", err)
+				println(color.Red + "ERROR AL LEER EL SUPER BOOT" + color.Reset)
+				return
+			}
+
+			if super.SbAVDcount != 0 { // 										SI PASA LAS VALIDACIONES ENTTONCES PROCEDO A GENERAR EL REPORTE
+				SBTxt(super, rut+nom+".txt")
+				generarImg(rut+nom, ext, rut)
+			} else {
+				println(color.Red + "ESTA PARTICION NO TIENE SUPER BOOT " + color.Reset)
+				return
+			}
+
+		} else { // PRIMARIA
+			archivoDisco.Seek(part.Parti.Inicio, 0)
+			super := SuperB{}
+			tamanioSb := binary.Size(super)
+			datosEnBytes := leerBytePorByte(archivoDisco, tamanioSb)
+			buff := bytes.NewBuffer(datosEnBytes)
+			err = binary.Read(buff, binary.BigEndian, &super)
+			if err != nil {
+				log.Fatal("error al leer", err)
+				println(color.Red + "ERROR AL LEER EL SUPER BOOT" + color.Reset)
+				return
+			}
+			if super.SbAVDcount != 0 { // // 										SI PASA LAS VALIDACIONES ENTTONCES PROCEDO A GENERAR EL REPORTE
+
+				SBTxt(super, rut+nom+".txt")
+				generarImg(rut+nom, ext, rut)
+			} else {
+				println(color.Red + "ESTA PARTICION NO TIENE SUPER BOOT " + color.Reset)
+				return
+			}
+
+		}
+
+	} else {
+		fmt.Println("-----------------------")
+		fmt.Println("EL DISCO YA NO EXISTE")
+		fmt.Println("-----------------------")
+	}
+}
+
+func SBTxt(sb SuperB, direccionDestino string) { // pasar tambien la ruta
+	w, err := os.Create(direccionDestino)
+	if err != nil {
+		println(color.Red + "Error al crear el archivo" + color.Reset)
+		return
+	}
+	w.WriteString("Digraph tablaMbr{\n")
+	w.WriteString("tbl[\n")
+	w.WriteString("shape = plaintext\n")
+	w.WriteString("label =<")
+	w.WriteString("<table border = '4' cellborder = '3' color = 'black' cellspacing = '4' bgcolor = \"#ACFA58\">")
+	w.WriteString("<tr>\n") // TITULO
+	w.WriteString("<td color = \"black\" colspan = '2'> REPORTE SUPER BOOT  </td> ")
+	w.WriteString("</tr>\n") // FIN TITULO
+	w.WriteString("<tr>\n")
+	w.WriteString("<td color = \"black\">Nombre</td>\n")
+	w.WriteString("<td color = \"black\">\"" + sb.getNameHowString() + "\"</td>\n")
+	w.WriteString("</tr>\n")
+
+	w.WriteString("<tr>\n")
+	w.WriteString("<td color = \"black\">Numero de AVDs</td>\n")
+	w.WriteString("<td color = \"black\">\"" + strconv.Itoa(int(sb.SbAVDcount)) + "\"</td>\n")
+	w.WriteString("</tr>\n")
+
+	w.WriteString("<tr>\n")
+	w.WriteString("<td color = \"black\">Numero de Detalles Dir</td>\n")
+	w.WriteString("<td color = \"black\">\"" + strconv.Itoa(int(sb.SbDetalleDirCount)) + "\"</td>\n")
+	w.WriteString("</tr>\n")
+
+	w.WriteString("<tr>\n")
+	w.WriteString("<td color = \"black\">Numero de I-Nodos </td>\n")
+	w.WriteString("<td color = \"black\">\"" + strconv.Itoa(int(sb.SbInodosCount)) + "\"</td>\n")
+	w.WriteString("</tr>\n")
+
+	w.WriteString("<tr>\n")
+	w.WriteString("<td color = \"black\">Numero de Bloques </td>\n")
+	w.WriteString("<td color = \"black\">\"" + strconv.Itoa(int(sb.SbBloquesCount)) + "\"</td>\n")
+	w.WriteString("</tr>\n")
+
+	w.WriteString("<tr>\n")
+	w.WriteString("<td color = \"black\">AVD Libres </td>\n")
+	w.WriteString("<td color = \"black\">\"" + strconv.Itoa(int(sb.SbAVDfree)) + "\"</td>\n")
+	w.WriteString("</tr>\n")
+
+	w.WriteString("<tr>\n")
+	w.WriteString("<td color = \"black\">Detalles Dir Libres </td>\n")
+	w.WriteString("<td color = \"black\">\"" + strconv.Itoa(int(sb.SbDetalleDirFree)) + "\"</td>\n")
+	w.WriteString("</tr>\n")
+
+	w.WriteString("<tr>\n")
+	w.WriteString("<td color = \"black\">I-nodos Libres </td>\n")
+	w.WriteString("<td color = \"black\">\"" + strconv.Itoa(int(sb.SbInodosFree)) + "\"</td>\n")
+	w.WriteString("</tr>\n")
+
+	w.WriteString("<tr>\n")
+	w.WriteString("<td color = \"black\">Bloques Libres </td>\n")
+	w.WriteString("<td color = \"black\">\"" + strconv.Itoa(int(sb.SbBloquesFree)) + "\"</td>\n")
+	w.WriteString("</tr>\n")
+
+	w.WriteString("<tr>\n") // FECHAS
+	w.WriteString("<td color = \"black\">Fecha Creacion</td>\n")
+	w.WriteString("<td color = \"black\">" + string(sb.SbFechaCreacion[:]) + "</td>\n")
+	w.WriteString("</tr>\n")
+
+	w.WriteString("<tr>\n") // FECHAS
+	w.WriteString("<td color = \"black\">Fecha Creacion</td>\n")
+	w.WriteString("<td color = \"black\">" + string(sb.SbFechaUltimoMontaje[:]) + "</td>\n")
+	w.WriteString("</tr>\n")
+
+	w.WriteString("<tr>\n")
+	w.WriteString("<td color = \"black\">Cantidad de Montajes </td>\n")
+	w.WriteString("<td color = \"black\">\"" + strconv.Itoa(int(sb.SbMontajesCount)) + "\"</td>\n")
+	w.WriteString("</tr>\n")
+
+	w.WriteString("<tr>\n")
+	w.WriteString("<td color = \"black\">Puntero bitMap AVD </td>\n")
+	w.WriteString("<td color = \"black\">\"" + strconv.Itoa(int(sb.AptBitMapAVD)) + "\"</td>\n")
+	w.WriteString("</tr>\n")
+
+	w.WriteString("<tr>\n")
+	w.WriteString("<td color = \"black\">Puntero AVD </td>\n")
+	w.WriteString("<td color = \"black\">\"" + strconv.Itoa(int(sb.AptAVD)) + "\"</td>\n")
+	w.WriteString("</tr>\n")
+
+	w.WriteString("<tr>\n")
+	w.WriteString("<td color = \"black\">Puntero bitMap DetalleDir </td>\n")
+	w.WriteString("<td color = \"black\">\"" + strconv.Itoa(int(sb.AptBitMapDetalleDir)) + "\"</td>\n")
+	w.WriteString("</tr>\n")
+
+	w.WriteString("<tr>\n")
+	w.WriteString("<td color = \"black\">Puntero DetallesDir </td>\n")
+	w.WriteString("<td color = \"black\">\"" + strconv.Itoa(int(sb.AptDetalleDir)) + "\"</td>\n")
+	w.WriteString("</tr>\n")
+
+	w.WriteString("<tr>\n")
+	w.WriteString("<td color = \"black\">Puntero bitMap I-nodos </td>\n")
+	w.WriteString("<td color = \"black\">\"" + strconv.Itoa(int(sb.AptBitMapInodos)) + "\"</td>\n")
+	w.WriteString("</tr>\n")
+
+	w.WriteString("<tr>\n")
+	w.WriteString("<td color = \"black\">Puntero Inicio I-nodos </td>\n")
+	w.WriteString("<td color = \"black\">\"" + strconv.Itoa(int(sb.AptTablaInicioInodos)) + "\"</td>\n")
+	w.WriteString("</tr>\n")
+
+	w.WriteString("<tr>\n")
+	w.WriteString("<td color = \"black\">Puntero bitMap bloques </td>\n")
+	w.WriteString("<td color = \"black\">\"" + strconv.Itoa(int(sb.AptBitMapBloques)) + "\"</td>\n")
+	w.WriteString("</tr>\n")
+
+	w.WriteString("<tr>\n")
+	w.WriteString("<td color = \"black\">Puntero Inicio Bloques </td>\n")
+	w.WriteString("<td color = \"black\">\"" + strconv.Itoa(int(sb.AptInicioBloques)) + "\"</td>\n")
+	w.WriteString("</tr>\n")
+
+	w.WriteString("<tr>\n")
+	w.WriteString("<td color = \"black\">Puntero Bitacora </td>\n")
+	w.WriteString("<td color = \"black\">\"" + strconv.Itoa(int(sb.AptLog)) + "\"</td>\n")
+	w.WriteString("</tr>\n")
+
+	//******************************************************************************************* SIZES
+
+	w.WriteString("<tr>\n")
+	w.WriteString("<td color = \"black\">SIZE AVD </td>\n")
+	w.WriteString("<td color = \"black\">\"" + strconv.Itoa(int(sb.SizeAVD)) + "\"</td>\n")
+	w.WriteString("</tr>\n")
+
+	w.WriteString("<tr>\n")
+	w.WriteString("<td color = \"black\">SIZE DETALLE DIR  </td>\n")
+	w.WriteString("<td color = \"black\">\"" + strconv.Itoa(int(sb.SizeDetalleDir)) + "\"</td>\n")
+	w.WriteString("</tr>\n")
+
+	w.WriteString("<tr>\n")
+	w.WriteString("<td color = \"black\">SIZE I-NODO  </td>\n")
+	w.WriteString("<td color = \"black\">\"" + strconv.Itoa(int(sb.SizeInodo)) + "\"</td>\n")
+	w.WriteString("</tr>\n")
+
+	w.WriteString("<tr>\n")
+	w.WriteString("<td color = \"black\">SIZE BLOQUE </td>\n")
+	w.WriteString("<td color = \"black\">\"" + strconv.Itoa(int(sb.SizeBloque)) + "\"</td>\n")
+	w.WriteString("</tr>\n")
+
+	w.WriteString("<tr>\n")
+	w.WriteString("<td color = \"black\">FIST FREE AVD </td>\n")
+	w.WriteString("<td color = \"black\">\"" + strconv.Itoa(int(sb.FirstLibreAVD)) + "\"</td>\n")
+	w.WriteString("</tr>\n")
+
+	w.WriteString("<tr>\n")
+	w.WriteString("<td color = \"black\">FIST FREE DETALLE DIR </td>\n")
+	w.WriteString("<td color = \"black\">\"" + strconv.Itoa(int(sb.FirstLibreDetalleDir)) + "\"</td>\n")
+	w.WriteString("</tr>\n")
+
+	w.WriteString("<tr>\n")
+	w.WriteString("<td color = \"black\">FIST FREE TABLA INODO </td>\n")
+	w.WriteString("<td color = \"black\">\"" + strconv.Itoa(int(sb.FirstLibreTablaInodo)) + "\"</td>\n")
+	w.WriteString("</tr>\n")
+
+	w.WriteString("<tr>\n")
+	w.WriteString("<td color = \"black\">FIST FREE BLOQUE </td>\n")
+	w.WriteString("<td color = \"black\">\"" + strconv.Itoa(int(sb.FirstLibreBloque)) + "\"</td>\n")
+	w.WriteString("</tr>\n")
+
+	w.WriteString("<tr>\n") // EL MAGIC :V
+	w.WriteString("<td color = \"black\">Super Boot MAGIC </td>\n")
+	w.WriteString("<td color = \"black\">\"" + strconv.Itoa(int(sb.SbMagicNum)) + "\"</td>\n")
+	w.WriteString("</tr>\n")
+
+	w.WriteString("</table>\n")
+	w.WriteString(">];\n")
+	w.WriteString("}\n")
+	if errOr := w.Close(); errOr != nil {
+		log.Fatal(errOr)
+		return
 	}
 }
