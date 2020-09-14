@@ -32,12 +32,17 @@ func generarReporte() {
 		case "sb":
 			reporteSB(Id_vdlentraNumero_, Path_)
 		case "bitacora":
+			fmt.Println("no tengo ese reporte :( ")
 		case "directorio":
+			generarDirectorios(Id_vdlentraNumero_, Path_)
 		case "tree_file":
+			generarTreeComplete(Id_vdlentraNumero_, Path_)
 		case "tree_directorio":
+			generarDirectorios(Id_vdlentraNumero_, Path_)
 		case "tree_complete":
 			generarTreeComplete(Id_vdlentraNumero_, Path_)
 		case "ls":
+			fmt.Println("no tengo ese reporte :( ")
 		default:
 			fmt.Println("ERRROR COMANDO INCORRECTO")
 		}
@@ -1104,6 +1109,76 @@ func SBTxt(sb SuperB, direccionDestino string) { // pasar tambien la ruta
 	}
 }
 
+func generarDirectorios(id string, pathCompleto string) {
+	rut, nom, ext := separarRutaYnombreReporte(pathCompleto)
+	verificarRuta(rut) // la crea si no existe
+	// NECESITO IR A ATRAER EL PATH , TENIENDO EN CUENTA QUE PUEDO BUSCAR EN MI LISTA id[2] me da la letra y ya tengo el disco que necesito
+	var letraID = string(id[2])
+	_disco_ := getDiscoMontadoPorLetraID(letraID)
+	if _disco_.Letra == "NOENCONTRADO" { // EN TEORIA NUNCA ENTRARIA ACA
+		println(color.Red + "ESE ID NO FUE ENCONTRADO DENTRO DEL DISCO" + color.Reset)
+		return
+	}
+
+	if _, err := os.Stat(_disco_.Path); !(os.IsNotExist(err)) {
+		archivoDisco, err := os.OpenFile(QuitarComillas(_disco_.Path), os.O_RDWR, 0644)
+		defer archivoDisco.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+		_, part := getDiscoYparticionDelMount(string(id[2]), id)
+
+		if part.Tipo == 'l' {
+			archivoDisco.Seek(part.PartiLogica.Inicio, 0)
+			super := SuperB{}
+			tamanioSb := binary.Size(super)
+			datosEnBytes := leerBytePorByte(archivoDisco, tamanioSb)
+			buff := bytes.NewBuffer(datosEnBytes)
+			err = binary.Read(buff, binary.BigEndian, &super)
+			if err != nil {
+				log.Fatal("error al leer", err)
+				println(color.Red + "ERROR AL LEER EL SUPER BOOT" + color.Reset)
+				return
+			}
+
+			if super.SbAVDcount != 0 { // 										SI PASA LAS VALIDACIONES ENTTONCES PROCEDO A GENERAR EL REPORTE
+				Directoriotxt(super, rut+nom+".txt", archivoDisco)
+				generarImg(rut+nom, ext, rut)
+			} else {
+				println(color.Red + "ESTA PARTICION NO TIENE SUPER BOOT " + color.Reset)
+				return
+			}
+
+		} else { // PRIMARIA
+			archivoDisco.Seek(part.Parti.Inicio, 0)
+			super := SuperB{}
+			tamanioSb := binary.Size(super)
+			datosEnBytes := leerBytePorByte(archivoDisco, tamanioSb)
+			buff := bytes.NewBuffer(datosEnBytes)
+			err = binary.Read(buff, binary.BigEndian, &super)
+			if err != nil {
+				log.Fatal("error al leer", err)
+				println(color.Red + "ERROR AL LEER EL SUPER BOOT" + color.Reset)
+				return
+			}
+			if super.SbAVDcount != 0 { // // 										SI PASA LAS VALIDACIONES ENTTONCES PROCEDO A GENERAR EL REPORTE
+
+				Directoriotxt(super, rut+nom+".txt", archivoDisco)
+				generarImg(rut+nom, ext, rut)
+			} else {
+				println(color.Red + "ESTA PARTICION NO TIENE SUPER BOOT " + color.Reset)
+				return
+			}
+
+		}
+
+	} else {
+		fmt.Println("-----------------------")
+		fmt.Println("EL DISCO YA NO EXISTE")
+		fmt.Println("-----------------------")
+	}
+}
+
 func generarTreeComplete(id string, pathCompleto string) {
 	rut, nom, ext := separarRutaYnombreReporte(pathCompleto)
 	verificarRuta(rut) // la crea si no existe
@@ -1376,6 +1451,71 @@ func treeCompletetxt(sb SuperB, direccionDestino string, archivoDisco *os.File) 
 	g += "INODO:1 -> BLOQUE1 ;\n"
 	g += "INODO:2 -> BLOQUE2 ;\n"
 
+	g += "}\n"
+	w.WriteString(g)
+
+	if errOr := w.Close(); errOr != nil {
+		log.Fatal(errOr)
+		return
+	}
+}
+
+func Directoriotxt(sb SuperB, direccionDestino string, archivoDisco *os.File) { // pasar tambien la ruta
+	w, err := os.Create(direccionDestino)
+	if err != nil {
+		println(color.Red + "Error al crear el archivo" + color.Reset)
+		return
+	}
+
+	archivoDisco.Seek(sb.AptAVD, 0)
+	avd := AVD{}
+	tamanioAvd := binary.Size(avd)
+	datosEnBytes := leerBytePorByte(archivoDisco, tamanioAvd)
+	buff := bytes.NewBuffer(datosEnBytes)
+	err = binary.Read(buff, binary.BigEndian, &avd)
+	if err != nil {
+		println(color.Red + "ERROR AL LEER EL AVD" + color.Reset)
+		return
+	}
+	g := "digraph treeCompl { \n "
+	g += "node[shape=plaintext]\n"
+	g += "rankdir=LR;\n"
+	g += "avdRoot[label=<\n"
+	g += "<table cellborder='2' border='1' cellspacing= '0'> \n"
+	// CONTENIDO DEL ROOT
+	g += "<tr port= '0'> \n"
+	g += "<td colspan = '2' bgcolor = '#86B404'> / </td>\n"
+	g += "</tr> \n"
+	// FECHA
+	g += "<tr port= '1'> \n"
+	g += "<td bgcolor = '#86B404'> fecha Creacion  </td>\n"
+	g += "<td bgcolor = '#86B404'>" + string(avd.FechaCreacion[:]) + "</td>\n"
+	g += "</tr> \n"
+	// punteros
+	for y := 0; y < 6; y++ {
+		g += "<tr> \n"
+		g += "<td bgcolor = '#86B404'> puntero " + fmt.Sprint(y+1) + "  </td>\n"
+		g += "<td bgcolor = '#86B404'>" + fmt.Sprint(avd.SubDirectorios[y]) + "</td>\n"
+		g += "</tr> \n"
+	}
+	// detalle
+	g += "<tr port= '2'> \n"
+	g += "<td bgcolor = '#86B404'> Detalle </td>\n"
+	g += "<td bgcolor = '#86B404'>" + fmt.Sprint(avd.ApuntadorDetalleDir) + "</td>\n"
+	g += "</tr> \n"
+	// indirecto
+	g += "<tr> \n"
+	g += "<td bgcolor = '#86B404'> apuntador indirecto </td>\n"
+	g += "<td bgcolor = '#86B404'>" + fmt.Sprint(avd.ApuntadorAVDextra) + "</td>\n"
+	g += "</tr> \n"
+	// propietario
+	g += "<tr> \n"
+	g += "<td bgcolor = '#86B404'> Proper </td>\n"
+	g += "<td bgcolor = '#86B404'>ROOT</td>\n"
+	g += "</tr> \n"
+
+	g += "</table>\n"
+	g += ">];\n"
 	g += "}\n"
 	w.WriteString(g)
 
